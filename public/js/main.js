@@ -4,8 +4,13 @@ async function loadHome() {
       api.get('/products?bestseller=true&limit=8'),
       api.get('/products?featured=true&limit=8'),
     ]);
-    renderProductGrid('best-sellers-grid', bestSellers);
-    renderProductGrid('featured-grid', featured);
+    const seen = new Set();
+    const trending = [...bestSellers, ...featured].filter((p) => {
+      if (seen.has(p._id)) return false;
+      seen.add(p._id);
+      return true;
+    });
+    renderProductGrid('trending-grid', trending.slice(0, 8));
   } catch (err) {
     showToast(err.message);
   }
@@ -50,9 +55,31 @@ function startCycleWords() {
   }, 2200);
 }
 
+function startShoppingQuotes() {
+  const el = document.getElementById('shopping-quote');
+  if (!el) return;
+  const quotes = [
+    "Great style shouldn't cost a fortune.",
+    'Shop today, glow tomorrow.',
+    'Where quality meets everyday prices.',
+    'Small cart, big smiles.',
+    'Your happiness, delivered to your door.',
+  ];
+  let i = 0;
+  setInterval(() => {
+    el.classList.add('swap');
+    setTimeout(() => {
+      i = (i + 1) % quotes.length;
+      el.textContent = quotes[i];
+      el.classList.remove('swap');
+    }, 350);
+  }, 3500);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderCategoryTiles();
   renderCategoryNav();
   loadHome();
   startCycleWords();
+  startShoppingQuotes();
 });
