@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Login — Retalla</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body>
+<div class="login-shell">
+  <div class="login-card">
+    <h2>Retalla Admin</h2>
+    <p class="sub">Sign in to manage your store</p>
+    <div id="admin-login-message" class="form-message error" style="display:none;"></div>
+    <form onsubmit="handleAdminLogin(event)">
+      <div class="field"><label>Email</label><input id="admin-email" type="email" required /></div>
+      <div class="field"><label>Password</label><input id="admin-password" type="password" required /></div>
+      <button id="admin-login-submit" type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Login to Dashboard</button>
+    </form>
+  </div>
+</div>
+<script src="/admin/js/admin-api.js"></script>
+<script src="/admin/js/admin-login.js"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Retalla — Smart Shopping for Everyday Life</title>
+<meta name="description" content="Retalla — trusted online store for home gadgets, fashion, beauty, kids and more. Free shipping, cash on delivery, 7 days easy return." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-perks">
+      <span>↩️ 7 Days Easy Return</span>
+      <span>💳 Cash on Delivery</span>
+      <span>🚚 Free Shipping over Rs. 499</span>
+    </div>
+    <div class="topbar-perks"><span>🔥 Mega Sale — Up to 50% Off</span></div>
+  </div>
+</div>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/index.html" class="brand">Retalla</a>
+    <form class="search-form" action="/shop.html" method="get">
+      <input type="text" name="search" placeholder="Search for gadgets, fashion, beauty & more..." />
+      <button type="submit">🔍</button>
+    </form>
+    <div class="nav-actions">
+      <a id="nav-account" class="nav-icon-link" href="/login.html">
+        <span class="icon">👤</span><span>Login</span>
+      </a>
+      <a class="nav-icon-link" href="/cart.html">
+        <span class="icon">🛒</span><span>Cart</span>
+        <span class="cart-badge" id="cart-count">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+<div class="category-nav">
+  <div class="container category-nav-list"></div>
+</div>
+
+<main class="container">
+
+  <section class="hero">
+    <div>
+      <span class="hero-badge">🔥 Mega Sale — Up to 50% Off</span>
+      <h1>Smart Gadgets &amp; Everyday Essentials</h1>
+      <p>Discover top-rated kitchen, fashion, beauty &amp; home products — trusted by 10,000+ happy customers across India.</p>
+      <a href="/shop.html" class="btn btn-accent">Shop Now →</a>
+    </div>
+    <div class="hero-art">🛍️</div>
+  </section>
+
+  <section class="perks">
+    <div class="perk-card"><span class="icon">↩️</span><div><strong>7 Days Return</strong><span>Easy &amp; free returns</span></div></div>
+    <div class="perk-card"><span class="icon">💳</span><div><strong>Cash on Delivery</strong><span>Pay when it arrives</span></div></div>
+    <div class="perk-card"><span class="icon">🚚</span><div><strong>Free Shipping</strong><span>On orders over Rs. 499</span></div></div>
+    <div class="perk-card"><span class="icon">🏷️</span><div><strong>Lowest Prices</strong><span>Best deals guaranteed</span></div></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Shop by Category</h2></div>
+    <div class="category-grid" id="category-tiles"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><span class="eyebrow">Trending</span><h2>Best Sellers</h2></div>
+      <a href="/shop.html">View all →</a>
+    </div>
+    <div class="product-grid" id="best-sellers-grid"><div class="loading">Loading products...</div></div>
+  </section>
+
+  <section class="section">
+    <div class="trust-strip">
+      <div class="stat"><strong>15,000+</strong><span>Happy Customers</span></div>
+      <div class="stat"><strong>4.8/5</strong><span>Average Rating</span></div>
+      <div class="stat"><strong>50%</strong><span>Max Discount</span></div>
+      <div class="stat"><strong>24/7</strong><span>Customer Support</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><span class="eyebrow">Handpicked</span><h2>Featured Products</h2></div>
+      <a href="/shop.html">View all →</a>
+    </div>
+    <div class="product-grid" id="featured-grid"><div class="loading">Loading products...</div></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>What our customers say</h2></div>
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p>"Amazing quality and super-fast delivery. The vacuum cleaner works perfectly!"</p>
+        <div class="who">— Priya S., Mumbai</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p>"Great prices and genuine cash on delivery option. Will shop again."</p>
+        <div class="who">— Rahul K., Delhi</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★☆</div>
+        <p>"Loved the kids toy collection, my daughter is obsessed with it!"</p>
+        <div class="who">— Anita M., Pune</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>Retalla</h4>
+        <ul>
+          <li>Rated 4.8/5 by 15,000+ customers</li>
+          <li>💳 Visa • MasterCard • UPI • PayPal</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="/shop.html">All Products</a></li>
+          <li><a href="/shop.html?category=Home%20%26%20Kitchen">Home &amp; Kitchen</a></li>
+          <li><a href="/shop.html?category=Beauty%20%26%20Health">Beauty &amp; Health</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Account</h4>
+        <ul>
+          <li><a href="/login.html">Login</a></li>
+          <li><a href="/register.html">Register</a></li>
+          <li><a href="/account.html">My Orders</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul>
+          <li>7 Days Easy Return</li>
+          <li>Cash on Delivery</li>
+          <li>Free Shipping over Rs. 499</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 Retalla. All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="/js/config.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/ui.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

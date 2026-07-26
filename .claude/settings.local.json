@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(where mongod *)",
+      "Bash(where mongosh *)",
+      "Bash(sc query *)",
+      "Bash(npm install *)",
+      "Bash(npm run-script *)",
+      "Bash(node node_modules/mongodb-memory-server/postinstall.js)",
+      "Bash(node mongo-mem-temp.js)",
+      "Bash(MONGO_URI=mongodb://127.0.0.1:27117/retalla JWT_SECRET=test_secret JWT_EXPIRES_IN=7d NODE_ENV=development ADMIN_EMAIL=admin@retalla.in ADMIN_PASSWORD=Admin@12345 ADMIN_NAME='Retalla Admin' node -e ' *)",
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27117/retalla\" JWT_SECRET=\"test_secret\" ADMIN_EMAIL=\"admin@retalla.in\" ADMIN_PASSWORD=\"Admin@12345\" ADMIN_NAME=\"Retalla Admin\" node seed/seed.js)",
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27117/retalla\" JWT_SECRET=\"test_secret\" JWT_EXPIRES_IN=\"7d\" NODE_ENV=\"development\" PORT=\"5050\" node server.js)",
+      "Bash(curl -s http://localhost:5050/api/products)",
+      "Bash(curl -s http://localhost:5050/api/products/categories)",
+      "Bash(curl -s -X POST http://localhost:5050/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"admin@retalla.in\",\"password\":\"Admin@12345\"}')",
+      "Bash(rm -f \"C:\\\\Users\\\\sande\\\\Desktop\\\\retalla\\\\server\\\\mongo-mem-temp.js\")",
+      "Bash(npm uninstall *)"
+    ]
+  }
+}

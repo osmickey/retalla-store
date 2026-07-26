@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Retalla Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="sidebar">
+    <a href="/admin/index.html" class="brand">Retalla<span>.</span>Admin</a>
+    <nav>
+      <a href="/admin/index.html">📊 Dashboard</a>
+      <a href="/admin/products.html">📦 Products</a>
+      <a href="/admin/orders.html">🧾 Orders</a>
+    </nav>
+    <button class="logout-btn" onclick="adminAuth.logout()">↩ Logout</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1>Dashboard</h1>
+      <div class="who" id="admin-who"></div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="icon">🧾</div><div><strong id="stat-orders">0</strong><span>Total Orders</span></div></div>
+      <div class="stat-card"><div class="icon">📦</div><div><strong id="stat-products">0</strong><span>Total Products</span></div></div>
+      <div class="stat-card"><div class="icon">💰</div><div><strong id="stat-revenue">Rs. 0</strong><span>Total Revenue</span></div></div>
+      <div class="stat-card"><div class="icon">⏳</div><div><strong id="stat-pending">0</strong><span>Pending Orders</span></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Recent Orders</h2>
+        <a href="/admin/orders.html" class="btn btn-outline btn-sm">View All →</a>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody id="recent-orders-body"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/admin/js/admin-api.js"></script>
+<script src="/admin/js/dashboard.js"></script>
+</body>
+</html>
