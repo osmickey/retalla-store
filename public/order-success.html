@@ -8,8 +8,8 @@
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-
-<nav class="navbar">
+<div class="auth-page-bg">
+<nav class="navbar navbar-transparent">
   <div class="container">
     <a href="/index.html" class="brand">Retalla</a>
   </div>
@@ -17,7 +17,7 @@
 
 <main class="container">
   <div class="auth-wrap" style="max-width:520px;text-align:center;">
-    <div style="font-size:4rem;margin-bottom:10px;">🎉</div>
+    <div class="icon-circle" style="width:72px;height:72px;margin:0 auto 14px;background:#dcfce7;color:var(--success);" data-icon="check" data-icon-size="34"></div>
     <h2>Order Placed Successfully!</h2>
     <p class="sub">Thank you for shopping with Retalla. We'll notify you once your order ships.</p>
     <div id="order-success-detail" style="text-align:left;background:var(--primary-light);padding:16px;border-radius:var(--radius-sm);margin-bottom:20px;"></div>
@@ -25,11 +25,13 @@
     <a href="/shop.html" class="btn btn-outline btn-block">Continue Shopping</a>
   </div>
 </main>
+</div>
 
 <script src="/js/config.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/cart.js"></script>
 <script src="/js/api.js"></script>
+<script src="/js/icons.js"></script>
 <script src="/js/order-success.js"></script>
 </body>
 </html>

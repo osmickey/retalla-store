@@ -14,11 +14,11 @@
 <div class="topbar">
   <div class="container">
     <div class="topbar-perks">
-      <span>↩️ 7 Days Easy Return</span>
-      <span>💳 Cash on Delivery</span>
-      <span>🚚 Free Shipping over Rs. 499</span>
+      <span>7 Days Easy Return</span>
+      <span>Cash on Delivery</span>
+      <span>Free Shipping over Rs. 499</span>
     </div>
-    <div class="topbar-perks"><span>🔥 Mega Sale — Up to 50% Off</span></div>
+    <div class="topbar-perks"><span>⚡ Mega Sale — Up to 50% Off</span></div>
   </div>
 </div>
 
@@ -27,14 +27,14 @@
     <a href="/index.html" class="brand">Retalla</a>
     <form class="search-form" action="/shop.html" method="get">
       <input type="text" name="search" placeholder="Search for gadgets, fashion, beauty & more..." />
-      <button type="submit">🔍</button>
+      <button type="submit"><span class="icon" data-icon="search" data-icon-size="18"></span></button>
     </form>
     <div class="nav-actions">
       <a id="nav-account" class="nav-icon-link" href="/login.html">
-        <span class="icon">👤</span><span>Login</span>
+        <span class="icon" data-icon="user"></span><span>Login</span>
       </a>
       <a class="nav-icon-link" href="/cart.html">
-        <span class="icon">🛒</span><span>Cart</span>
+        <span class="icon" data-icon="cart"></span><span>Cart</span>
         <span class="cart-badge" id="cart-count">0</span>
       </a>
     </div>
@@ -48,19 +48,35 @@
 
   <section class="hero">
     <div>
-      <span class="hero-badge">🔥 Mega Sale — Up to 50% Off</span>
-      <h1>Smart Gadgets &amp; Everyday Essentials</h1>
+      <span class="hero-badge"><span class="pulse-dot"></span>⚡ Mega Sale — Up to 50% Off</span>
+      <h1>Smart <span class="cycle-word">Gadgets</span><br />&amp; Everyday Essentials</h1>
       <p>Discover top-rated kitchen, fashion, beauty &amp; home products — trusted by 10,000+ happy customers across India.</p>
-      <a href="/shop.html" class="btn btn-accent">Shop Now →</a>
+      <div class="hero-actions">
+        <a href="/shop.html" class="btn btn-accent">Shop Now →</a>
+        <a href="/shop.html?category=Home%20%26%20Kitchen" class="btn btn-hero-outline">Explore Deals</a>
+      </div>
+      <div class="hero-stats">
+        <span><span data-icon="check" data-icon-size="16"></span> 4.8/5 Rating</span>
+        <span><span data-icon="check" data-icon-size="16"></span> 15,000+ Customers</span>
+        <span><span data-icon="check" data-icon-size="16"></span> Free Shipping</span>
+      </div>
     </div>
-    <div class="hero-art">🛍️</div>
+    <div class="hero-visual">
+      <div class="icon-tile main-tile"><span data-icon="bag" data-icon-size="72"></span></div>
+      <div class="float-chip chip-1"><span data-icon="kitchen" data-icon-size="26"></span></div>
+      <div class="float-chip chip-2"><span data-icon="sparkle" data-icon-size="24"></span></div>
+      <div class="float-chip chip-3"><span data-icon="gem" data-icon-size="22"></span></div>
+      <div class="float-chip chip-4"><span data-icon="shirt" data-icon-size="24"></span></div>
+      <div class="stat-chip stat-chip-1">⭐ 4.8 <small>rating</small></div>
+      <div class="stat-chip stat-chip-2">15K+ <small>customers</small></div>
+    </div>
   </section>
 
   <section class="perks">
-    <div class="perk-card"><span class="icon">↩️</span><div><strong>7 Days Return</strong><span>Easy &amp; free returns</span></div></div>
-    <div class="perk-card"><span class="icon">💳</span><div><strong>Cash on Delivery</strong><span>Pay when it arrives</span></div></div>
-    <div class="perk-card"><span class="icon">🚚</span><div><strong>Free Shipping</strong><span>On orders over Rs. 499</span></div></div>
-    <div class="perk-card"><span class="icon">🏷️</span><div><strong>Lowest Prices</strong><span>Best deals guaranteed</span></div></div>
+    <div class="perk-card"><span class="icon-circle" data-icon="return"></span><div><strong>7 Days Return</strong><span>Easy &amp; free returns</span></div></div>
+    <div class="perk-card"><span class="icon-circle" data-icon="wallet"></span><div><strong>Cash on Delivery</strong><span>Pay when it arrives</span></div></div>
+    <div class="perk-card"><span class="icon-circle" data-icon="truck"></span><div><strong>Free Shipping</strong><span>On orders over Rs. 499</span></div></div>
+    <div class="perk-card"><span class="icon-circle" data-icon="tag"></span><div><strong>Lowest Prices</strong><span>Best deals guaranteed</span></div></div>
   </section>
 
   <section class="section">
@@ -73,7 +89,7 @@
       <div><span class="eyebrow">Trending</span><h2>Best Sellers</h2></div>
       <a href="/shop.html">View all →</a>
     </div>
-    <div class="product-grid" id="best-sellers-grid"><div class="loading">Loading products...</div></div>
+    <div class="product-grid" id="best-sellers-grid"><div class="dot-loader"><span></span><span></span><span></span></div></div>
   </section>
 
   <section class="section">
@@ -90,26 +106,26 @@
       <div><span class="eyebrow">Handpicked</span><h2>Featured Products</h2></div>
       <a href="/shop.html">View all →</a>
     </div>
-    <div class="product-grid" id="featured-grid"><div class="loading">Loading products...</div></div>
+    <div class="product-grid" id="featured-grid"><div class="dot-loader"><span></span><span></span><span></span></div></div>
   </section>
 
   <section class="section">
     <div class="section-head"><h2>What our customers say</h2></div>
     <div class="testimonial-grid">
-      <div class="testimonial-card">
+      <div class="testimonial-card reveal">
         <div class="stars">★★★★★</div>
         <p>"Amazing quality and super-fast delivery. The vacuum cleaner works perfectly!"</p>
-        <div class="who">— Priya S., Mumbai</div>
+        <div class="who"><span class="avatar">PS</span> Priya S., Mumbai</div>
       </div>
-      <div class="testimonial-card">
+      <div class="testimonial-card reveal">
         <div class="stars">★★★★★</div>
         <p>"Great prices and genuine cash on delivery option. Will shop again."</p>
-        <div class="who">— Rahul K., Delhi</div>
+        <div class="who"><span class="avatar">RK</span> Rahul K., Delhi</div>
       </div>
-      <div class="testimonial-card">
+      <div class="testimonial-card reveal">
         <div class="stars">★★★★☆</div>
         <p>"Loved the kids toy collection, my daughter is obsessed with it!"</p>
-        <div class="who">— Anita M., Pune</div>
+        <div class="who"><span class="avatar">AM</span> Anita M., Pune</div>
       </div>
     </div>
   </section>
@@ -123,7 +139,7 @@
         <h4>Retalla</h4>
         <ul>
           <li>Rated 4.8/5 by 15,000+ customers</li>
-          <li>💳 Visa • MasterCard • UPI • PayPal</li>
+          <li>Visa • MasterCard • UPI • PayPal</li>
         </ul>
       </div>
       <div>
@@ -159,6 +175,8 @@
 <script src="/js/auth.js"></script>
 <script src="/js/cart.js"></script>
 <script src="/js/api.js"></script>
+<script src="/js/icons.js"></script>
+<script src="/js/animate.js"></script>
 <script src="/js/ui.js"></script>
 <script src="/js/main.js"></script>
 </body>

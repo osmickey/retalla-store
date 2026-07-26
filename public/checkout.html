@@ -13,8 +13,8 @@
   <div class="container">
     <a href="/index.html" class="brand">Retalla</a>
     <div class="nav-actions" style="margin-left:0;">
-      <a id="nav-account" class="nav-icon-link" href="/login.html"><span class="icon">👤</span><span>Login</span></a>
-      <a class="nav-icon-link" href="/cart.html"><span class="icon">🛒</span><span>Cart</span><span class="cart-badge" id="cart-count">0</span></a>
+      <a id="nav-account" class="nav-icon-link" href="/login.html"><span class="icon" data-icon="user"></span><span>Login</span></a>
+      <a class="nav-icon-link" href="/cart.html"><span class="icon" data-icon="cart"></span><span>Cart</span><span class="cart-badge" id="cart-count">0</span></a>
     </div>
   </div>
 </nav>
@@ -41,9 +41,9 @@
 
       <div class="checkout-card">
         <h3 style="margin-bottom:16px;">Payment Method</h3>
-        <div class="payment-option selected" onclick="selectPayment('COD', this)">💵 Cash on Delivery</div>
-        <div class="payment-option" onclick="selectPayment('UPI', this)">📱 UPI</div>
-        <div class="payment-option" onclick="selectPayment('Card', this)">💳 Credit / Debit Card</div>
+        <div class="payment-option selected" onclick="selectPayment('COD', this)"><span data-icon="wallet" data-icon-size="18"></span> Cash on Delivery</div>
+        <div class="payment-option" onclick="selectPayment('UPI', this)"><span data-icon="tag" data-icon-size="18"></span> UPI</div>
+        <div class="payment-option" onclick="selectPayment('Card', this)"><span data-icon="receipt" data-icon-size="18"></span> Credit / Debit Card</div>
       </div>
     </div>
 
@@ -70,6 +70,8 @@
 <script src="/js/auth.js"></script>
 <script src="/js/cart.js"></script>
 <script src="/js/api.js"></script>
+<script src="/js/icons.js"></script>
+<script src="/js/animate.js"></script>
 <script src="/js/ui.js"></script>
 <script src="/js/checkout.js"></script>
 </body>

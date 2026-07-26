@@ -65,4 +65,5 @@ function setActiveNav() {
 document.addEventListener('DOMContentLoaded', () => {
   renderAdminIdentity();
   setActiveNav();
+  if (typeof renderIcons === 'function') renderIcons();
 });

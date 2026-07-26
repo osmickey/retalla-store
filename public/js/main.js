@@ -14,14 +14,17 @@ async function loadHome() {
 function renderCategoryTiles() {
   const el = document.getElementById('category-tiles');
   if (!el) return;
-  el.innerHTML = CATEGORIES.map(
-    (cat) => `
-      <a class="category-tile" href="/shop.html?category=${encodeURIComponent(cat)}">
-        <div class="icon">${CATEGORY_ICONS[cat]}</div>
+  el.innerHTML = CATEGORIES.map((cat) => {
+    const [c1, c2] = CATEGORY_COLORS[cat] || ['#4f46e5', '#7c3aed'];
+    return `
+      <a class="category-tile reveal" href="/shop.html?category=${encodeURIComponent(cat)}" style="--cat-c1:${c1};--cat-c2:${c2};">
+        <div class="icon-circle" data-icon="${CATEGORY_ICONS[cat]}" data-icon-size="26"></div>
         ${cat}
       </a>
-    `
-  ).join('');
+    `;
+  }).join('');
+  renderIcons(el);
+  staggerChildren(el, '.category-tile', 40);
 }
 
 function renderCategoryNav() {
@@ -32,8 +35,24 @@ function renderCategoryNav() {
   });
 }
 
+function startCycleWords() {
+  const el = document.querySelector('.cycle-word');
+  if (!el) return;
+  const words = ['Gadgets', 'Fashion', 'Beauty', 'Home Decor', 'Jewellery'];
+  let i = 0;
+  setInterval(() => {
+    el.classList.add('swap');
+    setTimeout(() => {
+      i = (i + 1) % words.length;
+      el.textContent = words[i];
+      el.classList.remove('swap');
+    }, 300);
+  }, 2200);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderCategoryTiles();
   renderCategoryNav();
   loadHome();
+  startCycleWords();
 });

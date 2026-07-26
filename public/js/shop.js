@@ -29,7 +29,7 @@ async function loadShop() {
   if (search) query.set('search', search);
 
   const grid = document.getElementById('shop-grid');
-  if (grid) grid.innerHTML = '<div class="loading">Loading products...</div>';
+  if (grid) grid.innerHTML = loadingHTML();
 
   try {
     const products = await api.get(`/products?${query.toString()}`);

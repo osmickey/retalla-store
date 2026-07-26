@@ -14,14 +14,14 @@
     <a href="/index.html" class="brand">Retalla</a>
     <form class="search-form" action="/shop.html" method="get">
       <input id="shop-search-input" type="text" name="search" placeholder="Search for gadgets, fashion, beauty & more..." />
-      <button type="submit">🔍</button>
+      <button type="submit"><span class="icon" data-icon="search" data-icon-size="18"></span></button>
     </form>
     <div class="nav-actions">
       <a id="nav-account" class="nav-icon-link" href="/login.html">
-        <span class="icon">👤</span><span>Login</span>
+        <span class="icon" data-icon="user"></span><span>Login</span>
       </a>
       <a class="nav-icon-link" href="/cart.html">
-        <span class="icon">🛒</span><span>Cart</span>
+        <span class="icon" data-icon="cart"></span><span>Cart</span>
         <span class="cart-badge" id="cart-count">0</span>
       </a>
     </div>
@@ -39,7 +39,7 @@
   </div>
 
   <section class="section" style="margin-top:0;">
-    <div class="product-grid" id="shop-grid"><div class="loading">Loading products...</div></div>
+    <div class="product-grid" id="shop-grid"><div class="dot-loader"><span></span><span></span><span></span></div></div>
   </section>
 </main>
 
@@ -53,6 +53,8 @@
 <script src="/js/auth.js"></script>
 <script src="/js/cart.js"></script>
 <script src="/js/api.js"></script>
+<script src="/js/icons.js"></script>
+<script src="/js/animate.js"></script>
 <script src="/js/ui.js"></script>
 <script src="/js/main.js"></script>
 <script src="/js/shop.js"></script>

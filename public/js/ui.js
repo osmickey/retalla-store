@@ -1,8 +1,12 @@
+function loadingHTML() {
+  return `<div class="dot-loader"><span></span><span></span><span></span></div>`;
+}
+
 function productCardHTML(p) {
   const outOfStock = p.stock <= 0;
   const discount = p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
   return `
-    <a class="product-card" href="/product.html?id=${p._id}">
+    <a class="product-card reveal" href="/product.html?id=${p._id}">
       <div class="thumb">
         ${p.isBestSeller ? '<span class="badge">BESTSELLER</span>' : ''}
         <img src="${p.image}" alt="${escapeHTML(p.name)}" loading="lazy" />
@@ -48,8 +52,10 @@ function renderProductGrid(containerId, products) {
   const el = document.getElementById(containerId);
   if (!el) return;
   if (!products.length) {
-    el.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>No products found.</p></div>`;
+    el.innerHTML = `<div class="empty-state"><div class="icon-circle" data-icon="search" data-icon-size="26"></div><p>No products found.</p></div>`;
+    renderIcons(el);
     return;
   }
   el.innerHTML = products.map(productCardHTML).join('');
+  staggerChildren(el, '.product-card', 50);
 }

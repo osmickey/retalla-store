@@ -6,12 +6,13 @@ async function loadAccount() {
   document.getElementById('acc-email').textContent = user.email;
 
   const list = document.getElementById('orders-list');
-  list.innerHTML = '<div class="loading">Loading your orders...</div>';
+  list.innerHTML = loadingHTML();
 
   try {
     const orders = await api.get('/orders/myorders');
     if (!orders.length) {
-      list.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>You haven't placed any orders yet.</p><a class="btn btn-primary" href="/shop.html">Start Shopping</a></div>`;
+      list.innerHTML = `<div class="empty-state"><div class="icon-circle" data-icon="box" data-icon-size="26"></div><p>You haven't placed any orders yet.</p><a class="btn btn-primary" href="/shop.html">Start Shopping</a></div>`;
+      renderIcons(list);
       return;
     }
     list.innerHTML = orders.map(orderCardHTML).join('');

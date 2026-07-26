@@ -57,7 +57,15 @@ const cart = {
 
 function updateCartBadge() {
   const badge = document.getElementById('cart-count');
-  if (badge) badge.textContent = cart.count();
+  if (!badge) return;
+  const next = cart.count();
+  const prev = Number(badge.textContent) || 0;
+  badge.textContent = next;
+  if (next > prev) {
+    badge.classList.remove('bump');
+    void badge.offsetWidth;
+    badge.classList.add('bump');
+  }
 }
 
 function showToast(message) {

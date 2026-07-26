@@ -49,13 +49,14 @@ function renderProductsTable() {
         <td>${p.stock}</td>
         <td>${p.isBestSeller ? '⭐ ' : ''}${p.isFeatured ? '✨' : ''}</td>
         <td>
-          <button class="btn btn-outline btn-sm" onclick="openEditModal('${p._id}')">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p._id}')">Delete</button>
+          <button class="btn btn-outline btn-sm" onclick="openEditModal('${p._id}')"><span data-icon="edit" data-icon-size="14"></span> Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p._id}')"><span data-icon="trash" data-icon-size="14"></span> Delete</button>
         </td>
       </tr>
     `
     )
     .join('');
+  if (typeof renderIcons === 'function') renderIcons(tbody);
 }
 
 function escapeHtml(str) {

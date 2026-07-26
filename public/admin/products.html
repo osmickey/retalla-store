@@ -12,17 +12,17 @@
   <aside class="sidebar">
     <a href="/admin/index.html" class="brand">Retalla<span>.</span>Admin</a>
     <nav>
-      <a href="/admin/index.html">📊 Dashboard</a>
-      <a href="/admin/products.html">📦 Products</a>
-      <a href="/admin/orders.html">🧾 Orders</a>
+      <a href="/admin/index.html"><span data-icon="dashboard" data-icon-size="18"></span> Dashboard</a>
+      <a href="/admin/products.html"><span data-icon="box" data-icon-size="18"></span> Products</a>
+      <a href="/admin/orders.html"><span data-icon="receipt" data-icon-size="18"></span> Orders</a>
     </nav>
-    <button class="logout-btn" onclick="adminAuth.logout()">↩ Logout</button>
+    <button class="logout-btn" onclick="adminAuth.logout()"><span data-icon="logout" data-icon-size="16"></span> Logout</button>
   </aside>
 
   <main class="admin-main">
     <div class="admin-header">
       <h1>Products</h1>
-      <button class="btn btn-primary" onclick="openAddModal()">+ Add Product</button>
+      <button class="btn btn-primary" onclick="openAddModal()"><span data-icon="plus" data-icon-size="16"></span> Add Product</button>
     </div>
 
     <div class="panel">
@@ -46,7 +46,7 @@
   <div class="modal">
     <div class="modal-head">
       <h3 id="modal-title">Add Product</h3>
-      <button class="modal-close" onclick="closeProductModal()">✕</button>
+      <button class="modal-close" onclick="closeProductModal()"><span data-icon="close" data-icon-size="18"></span></button>
     </div>
     <div id="product-modal-message" class="form-message error" style="display:none;"></div>
     <form id="product-form" onsubmit="submitProductForm(event)">
@@ -70,6 +70,7 @@
   </div>
 </div>
 
+<script src="/js/icons.js"></script>
 <script src="/admin/js/admin-api.js"></script>
 <script src="/admin/js/products.js"></script>
 </body>
