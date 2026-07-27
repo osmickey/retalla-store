@@ -62,25 +62,6 @@ async function loadProduct() {
           <div id="delivery-check-result" class="delivery-check-result"></div>
         </div>
 
-        <div class="pd-badges">
-          <div class="pd-badge">
-            <span class="icon-circle" data-icon="truck" data-icon-size="16"></span>
-            <div><strong>${p.freeDelivery ? 'Free Delivery' : 'Paid Delivery'}</strong><span>${outOfStock ? 'Out of stock' : `${p.stock} in stock`}</span></div>
-          </div>
-          <div class="pd-badge">
-            <span class="icon-circle" data-icon="return" data-icon-size="16"></span>
-            <div><strong>${p.isReturnable ? '7 Days Return' : 'Non-Returnable'}</strong><span>${p.isReturnable ? 'Easy & free returns' : 'Final sale item'}</span></div>
-          </div>
-          <div class="pd-badge">
-            <span class="icon-circle" data-icon="wallet" data-icon-size="16"></span>
-            <div><strong>${p.codAvailable !== false ? 'COD Available' : 'Prepaid Only'}</strong><span>${p.codAvailable !== false ? 'Pay on delivery' : 'Online payment required'}</span></div>
-          </div>
-          <div class="pd-badge">
-            <span class="icon-circle" data-icon="check" data-icon-size="16"></span>
-            <div><strong>Secure Payment</strong><span>Safe &amp; encrypted checkout</span></div>
-          </div>
-        </div>
-
         <div class="qty-stepper">
           <button onclick="stepQty(-1)">−</button>
           <input id="pd-qty" type="number" value="1" min="1" max="${p.stock}" />
@@ -101,23 +82,31 @@ async function loadProduct() {
           </table>
         </div>
 
+        <div class="pd-badges">
+          <div class="pd-badge">
+            <span class="icon-circle" data-icon="truck" data-icon-size="16"></span>
+            <div><strong>${p.freeDelivery ? 'Free Delivery' : 'Paid Delivery'}</strong><span>${outOfStock ? 'Out of stock' : `${p.stock} in stock`}</span></div>
+          </div>
+          <div class="pd-badge">
+            <span class="icon-circle" data-icon="return" data-icon-size="16"></span>
+            <div><strong>${p.isReturnable ? '7 Days Return' : 'Non-Returnable'}</strong><span>${p.isReturnable ? 'Easy & free returns' : 'Final sale item'}</span></div>
+          </div>
+          <div class="pd-badge">
+            <span class="icon-circle" data-icon="wallet" data-icon-size="16"></span>
+            <div><strong>${p.codAvailable !== false ? 'COD Available' : 'Prepaid Only'}</strong><span>${p.codAvailable !== false ? 'Pay on delivery' : 'Online payment required'}</span></div>
+          </div>
+          <div class="pd-badge">
+            <span class="icon-circle" data-icon="check" data-icon-size="16"></span>
+            <div><strong>Secure Payment</strong><span>Safe &amp; encrypted checkout</span></div>
+          </div>
+        </div>
+
         <p class="pd-description">${escapeHTML(p.description || '')}</p>
         ${p.videoUrl ? `
         <div class="pd-video">
           <h3 class="pd-video-title">Product Video</h3>
           <video src="${p.videoUrl}" poster="${p.image}" controls muted playsinline preload="metadata"></video>
         </div>` : ''}
-      </div>
-
-      <div class="pd-sticky-bar">
-        <div class="pd-sticky-price">
-          <strong>Rs. ${p.price.toFixed(2)}</strong>
-          ${p.mrp > p.price ? `<span>Rs. ${p.mrp.toFixed(2)}</span>` : ''}
-        </div>
-        <div class="pd-sticky-actions">
-          <button class="btn btn-primary btn-sm" ${outOfStock ? 'disabled' : ''} onclick="addToCartFromDetail()">Add to Cart</button>
-          <button class="btn btn-accent btn-sm" ${outOfStock ? 'disabled' : ''} onclick="buyNow()">Buy Now</button>
-        </div>
       </div>
     `;
 
