@@ -108,6 +108,69 @@ async function stats(req, res) {
   });
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function dateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function monthKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+async function analytics(req, res) {
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 6 * DAY_MS);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+  const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+
+  const [dailyAgg, monthlyAgg] = await Promise.all([
+    Order.aggregate([
+      { $match: { createdAt: { $gte: sevenDaysAgo }, status: { $ne: 'Cancelled' } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          revenue: { $sum: '$totalPrice' },
+          orders: { $sum: 1 },
+        },
+      },
+    ]),
+    Order.aggregate([
+      { $match: { createdAt: { $gte: twelveMonthsAgo }, status: { $ne: 'Cancelled' } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+          revenue: { $sum: '$totalPrice' },
+          orders: { $sum: 1 },
+        },
+      },
+    ]),
+  ]);
+
+  const dailyMap = new Map(dailyAgg.map((d) => [d._id, d]));
+  const weekly = { labels: [], orders: [], revenue: [] };
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(sevenDaysAgo.getTime() + i * DAY_MS);
+    const entry = dailyMap.get(dateKey(d));
+    weekly.labels.push(WEEKDAY_LABELS[d.getDay()]);
+    weekly.orders.push(entry?.orders || 0);
+    weekly.revenue.push(entry?.revenue || 0);
+  }
+
+  const monthlyMap = new Map(monthlyAgg.map((d) => [d._id, d]));
+  const monthly = { labels: [], orders: [], revenue: [] };
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(twelveMonthsAgo.getFullYear(), twelveMonthsAgo.getMonth() + i, 1);
+    const entry = monthlyMap.get(monthKey(d));
+    monthly.labels.push(MONTH_LABELS[d.getMonth()]);
+    monthly.orders.push(entry?.orders || 0);
+    monthly.revenue.push(entry?.revenue || 0);
+  }
+
+  res.json({ weekly, monthly });
+}
+
 module.exports = {
   createOrder,
   myOrders,
@@ -115,4 +178,5 @@ module.exports = {
   listAllOrders,
   updateOrderStatus,
   stats,
+  analytics,
 };

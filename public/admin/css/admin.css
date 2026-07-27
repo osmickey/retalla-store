@@ -171,6 +171,39 @@ tr:hover td { background: #fafaff; }
 .form-message { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 16px; }
 .form-message.error { background: #fee2e2; color: #b91c1c; }
 
+.image-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px; }
+.image-slot { aspect-ratio: 1 / 1; border-radius: var(--radius-sm); position: relative; overflow: hidden; }
+.image-slot.filled { border: 1.5px solid var(--border); }
+.image-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.image-slot.add {
+  border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); cursor: pointer; background: var(--bg);
+  transition: border-color .15s ease, color .15s ease;
+}
+.image-slot.add:hover { border-color: var(--primary); color: var(--primary); }
+.image-slot.disabled { border: 1.5px dashed var(--border); opacity: .35; }
+.image-slot .slot-badge {
+  position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,.6); color: #fff;
+  font-size: .65rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+}
+.image-slot .slot-remove, .image-slot .slot-move {
+  position: absolute; width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(0,0,0,.6); color: #fff; border: none; display: flex;
+  align-items: center; justify-content: center; cursor: pointer; font-size: .75rem;
+}
+.image-slot .slot-remove { top: 4px; right: 4px; }
+.image-slot .slot-move.left { bottom: 4px; left: 4px; }
+.image-slot .slot-move.right { bottom: 4px; right: 4px; }
+.image-slot .slot-remove:hover, .image-slot .slot-move:hover { background: rgba(0,0,0,.8); }
+
+.chart-toggle { display: flex; gap: 6px; background: var(--bg); border-radius: 999px; padding: 4px; }
+.chart-toggle-btn {
+  border: none; background: transparent; padding: 7px 16px; border-radius: 999px;
+  font-size: 0.82rem; font-weight: 600; color: var(--text-muted); transition: background .15s ease, color .15s ease;
+}
+.chart-toggle-btn.active { background: linear-gradient(135deg, var(--primary), #7c3aed); color: #fff; }
+.chart-wrap { position: relative; height: 280px; }
+
 .filter-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .filter-row select { padding: 8px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); font-size: 0.85rem; }
 

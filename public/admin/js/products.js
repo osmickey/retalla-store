@@ -2,9 +2,11 @@ const ADMIN_CATEGORIES = [
   'Home Items', 'Women Western', 'Lingerie', 'Men', 'Kids & Toys',
   'Home & Kitchen', 'Beauty & Health', 'Jewellery', 'Bags & Foot',
 ];
+const MAX_IMAGES = 9;
 
 let allProducts = [];
 let editingProductId = null;
+let productImages = [];
 
 function populateCategorySelect() {
   const sel = document.getElementById('p-category');
@@ -65,11 +67,103 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+/* ===== Image slots ===== */
+
+function renderImageSlots() {
+  const wrap = document.getElementById('image-slots');
+  let html = '';
+  for (let i = 0; i < MAX_IMAGES; i++) {
+    if (i < productImages.length) {
+      html += `
+        <div class="image-slot filled">
+          ${i === 0 ? '<span class="slot-badge">MAIN</span>' : ''}
+          <img src="${productImages[i]}" alt="Image ${i + 1}" />
+          <button type="button" class="slot-remove" onclick="removeImage(${i})" title="Remove"><span data-icon="close" data-icon-size="12"></span></button>
+          ${i > 0 ? `<button type="button" class="slot-move left" onclick="moveImage(${i}, -1)" title="Move left">‹</button>` : ''}
+          ${i < productImages.length - 1 ? `<button type="button" class="slot-move right" onclick="moveImage(${i}, 1)" title="Move right">›</button>` : ''}
+        </div>`;
+    } else if (i === productImages.length) {
+      html += `
+        <div class="image-slot add" onclick="triggerImagePicker()" title="Add image">
+          <span data-icon="plus" data-icon-size="24"></span>
+        </div>`;
+    } else {
+      html += `<div class="image-slot disabled"></div>`;
+    }
+  }
+  wrap.innerHTML = html;
+  if (typeof renderIcons === 'function') renderIcons(wrap);
+}
+
+function triggerImagePicker() {
+  if (productImages.length >= MAX_IMAGES) return;
+  document.getElementById('image-file-input').click();
+}
+
+function resizeImageFile(file, maxDim, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round(height * (maxDim / width));
+            width = maxDim;
+          } else {
+            width = Math.round(width * (maxDim / height));
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => reject(new Error('Could not read image file'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Could not read image file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageFileChange(e) {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  try {
+    const dataUrl = await resizeImageFile(file, 1000, 0.82);
+    productImages.push(dataUrl);
+    renderImageSlots();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+function removeImage(index) {
+  productImages.splice(index, 1);
+  renderImageSlots();
+}
+
+function moveImage(index, direction) {
+  const target = index + direction;
+  if (target < 0 || target >= productImages.length) return;
+  [productImages[index], productImages[target]] = [productImages[target], productImages[index]];
+  renderImageSlots();
+}
+
+/* ===== Add / Edit modal ===== */
+
 function openAddModal() {
   editingProductId = null;
+  productImages = [];
   document.getElementById('modal-title').textContent = 'Add Product';
   document.getElementById('product-form').reset();
   document.getElementById('product-modal-message').style.display = 'none';
+  renderImageSlots();
   document.getElementById('product-modal').style.display = 'flex';
 }
 
@@ -77,17 +171,18 @@ function openEditModal(id) {
   const p = allProducts.find((x) => x._id === id);
   if (!p) return;
   editingProductId = id;
+  productImages = [p.image, ...(p.images || [])].filter(Boolean).slice(0, MAX_IMAGES);
   document.getElementById('modal-title').textContent = 'Edit Product';
   document.getElementById('p-name').value = p.name;
   document.getElementById('p-description').value = p.description || '';
   document.getElementById('p-category').value = p.category;
-  document.getElementById('p-image').value = p.image;
   document.getElementById('p-price').value = p.price;
   document.getElementById('p-mrp').value = p.mrp;
   document.getElementById('p-stock').value = p.stock;
   document.getElementById('p-featured').checked = p.isFeatured;
   document.getElementById('p-bestseller').checked = p.isBestSeller;
   document.getElementById('product-modal-message').style.display = 'none';
+  renderImageSlots();
   document.getElementById('product-modal').style.display = 'flex';
 }
 
@@ -99,13 +194,21 @@ async function submitProductForm(e) {
   e.preventDefault();
   const btn = document.getElementById('product-submit-btn');
   const msg = document.getElementById('product-modal-message');
+
+  if (!productImages.length) {
+    msg.textContent = 'Add at least one product image.';
+    msg.style.display = 'block';
+    return;
+  }
+
   btn.disabled = true;
 
   const payload = {
     name: document.getElementById('p-name').value.trim(),
     description: document.getElementById('p-description').value.trim(),
     category: document.getElementById('p-category').value,
-    image: document.getElementById('p-image').value.trim(),
+    image: productImages[0],
+    images: productImages.slice(1),
     price: Number(document.getElementById('p-price').value),
     mrp: Number(document.getElementById('p-mrp').value),
     stock: Number(document.getElementById('p-stock').value),
@@ -145,4 +248,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadProducts();
   document.getElementById('filter-category').addEventListener('change', renderProductsTable);
   document.getElementById('filter-search').addEventListener('input', renderProductsTable);
+  document.getElementById('image-file-input').addEventListener('change', handleImageFileChange);
 });

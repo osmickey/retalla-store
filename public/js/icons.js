@@ -27,6 +27,7 @@ const ICON_PATHS = {
   edit: '<path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/>',
   trash: '<path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/>',
   close: '<path d="M5 5l14 14M19 5 5 19"/>',
+  star: '<path d="M12 2 14.9 8.5 22 9.3 16.5 14 18 21 12 17.5 6 21 7.5 14 2 9.3 9.1 8.5Z" fill="currentColor" stroke="none"/>',
 };
 
 function iconSVG(name, size) {

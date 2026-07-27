@@ -6,6 +6,7 @@
 <title>Dashboard — Retalla Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/admin/css/admin.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="admin-shell">
@@ -15,6 +16,7 @@
       <a href="/admin/index.html"><span data-icon="dashboard" data-icon-size="18"></span> Dashboard</a>
       <a href="/admin/products.html"><span data-icon="box" data-icon-size="18"></span> Products</a>
       <a href="/admin/orders.html"><span data-icon="receipt" data-icon-size="18"></span> Orders</a>
+      <a href="/admin/customers.html"><span data-icon="user" data-icon-size="18"></span> Customers</a>
     </nav>
     <button class="logout-btn" onclick="adminAuth.logout()"><span data-icon="logout" data-icon-size="16"></span> Logout</button>
   </aside>
@@ -30,6 +32,17 @@
       <div class="stat-card tint-coral"><div class="icon" data-icon="box" data-icon-size="22"></div><div><strong id="stat-products">0</strong><span>Total Products</span></div></div>
       <div class="stat-card tint-green"><div class="icon" data-icon="revenue" data-icon-size="22"></div><div><strong id="stat-revenue">Rs. 0</strong><span>Total Revenue</span></div></div>
       <div class="stat-card tint-amber"><div class="icon" data-icon="clock" data-icon-size="22"></div><div><strong id="stat-pending">0</strong><span>Pending Orders</span></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Sales Analytics</h2>
+        <div class="chart-toggle">
+          <button class="chart-toggle-btn active" id="range-weekly" onclick="switchRange('weekly')">This Week</button>
+          <button class="chart-toggle-btn" id="range-monthly" onclick="switchRange('monthly')">This Year</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="sales-chart" height="90"></canvas></div>
     </div>
 
     <div class="panel">

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Orders — Retalla Admin</title>
+<title>Customers — Retalla Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/admin/css/admin.css" />
 </head>
@@ -21,25 +21,21 @@
   </aside>
 
   <main class="admin-main">
-    <div class="admin-header"><h1>Orders</h1></div>
+    <div class="admin-header">
+      <h1>Customers</h1>
+      <div class="who" id="customer-count"></div>
+    </div>
 
     <div class="panel">
       <div class="panel-head">
         <div class="filter-row">
-          <select id="filter-status">
-            <option value="">All Statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="Processing">Processing</option>
-            <option value="Shipped">Shipped</option>
-            <option value="Delivered">Delivered</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
+          <input id="filter-search" type="text" placeholder="Search by name or email..." style="padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);min-width:240px;" />
         </div>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody id="orders-body"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody>
+          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th></tr></thead>
+          <tbody id="customers-body"><tr><td colspan="4" class="loading">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -48,6 +44,6 @@
 
 <script src="/js/icons.js"></script>
 <script src="/admin/js/admin-api.js"></script>
-<script src="/admin/js/orders.js"></script>
+<script src="/admin/js/customers.js"></script>
 </body>
 </html>

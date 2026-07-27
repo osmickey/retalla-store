@@ -15,6 +15,7 @@
       <a href="/admin/index.html"><span data-icon="dashboard" data-icon-size="18"></span> Dashboard</a>
       <a href="/admin/products.html"><span data-icon="box" data-icon-size="18"></span> Products</a>
       <a href="/admin/orders.html"><span data-icon="receipt" data-icon-size="18"></span> Orders</a>
+      <a href="/admin/customers.html"><span data-icon="user" data-icon-size="18"></span> Customers</a>
     </nav>
     <button class="logout-btn" onclick="adminAuth.logout()"><span data-icon="logout" data-icon-size="16"></span> Logout</button>
   </aside>
@@ -52,18 +53,26 @@
     <form id="product-form" onsubmit="submitProductForm(event)">
       <div class="field"><label>Product Name</label><input id="p-name" required /></div>
       <div class="field"><label>Description</label><textarea id="p-description" rows="3"></textarea></div>
-      <div class="field-row">
-        <div class="field"><label>Category</label><select id="p-category"></select></div>
-        <div class="field"><label>Image URL</label><input id="p-image" required placeholder="https://..." /></div>
+      <div class="field">
+        <label>Category (product's section on the Shop page)</label>
+        <select id="p-category"></select>
+      </div>
+      <div class="field">
+        <label>Product Images — up to 9, first image is the main photo</label>
+        <div class="image-slots" id="image-slots"></div>
+        <input type="file" id="image-file-input" accept="image/*" style="display:none;" />
       </div>
       <div class="field-row">
         <div class="field"><label>Price (Rs.)</label><input id="p-price" type="number" min="0" step="0.01" required /></div>
         <div class="field"><label>MRP (Rs.)</label><input id="p-mrp" type="number" min="0" step="0.01" required /></div>
       </div>
       <div class="field"><label>Stock Quantity</label><input id="p-stock" type="number" min="0" required /></div>
-      <div class="checkbox-row" style="margin-bottom:18px;">
-        <label><input id="p-featured" type="checkbox" /> Featured</label>
-        <label><input id="p-bestseller" type="checkbox" /> Best Seller</label>
+      <div class="field">
+        <label>Home Page Placement (optional — product always appears under its category above regardless)</label>
+        <div class="checkbox-row" style="margin-bottom:18px;">
+          <label><input id="p-featured" type="checkbox" /> Show in "Featured"</label>
+          <label><input id="p-bestseller" type="checkbox" /> Show in "Best Seller"</label>
+        </div>
       </div>
       <button id="product-submit-btn" type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Save Product</button>
     </form>

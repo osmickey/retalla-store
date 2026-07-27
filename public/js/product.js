@@ -42,8 +42,9 @@ async function loadProduct() {
         <span class="cat">${p.category}</span>
         <h1>${escapeHTML(p.name)}</h1>
         <div class="rating-row">
-          <span class="rating-pill">${p.rating.toFixed(1)} ★</span>
-          <span>${p.numReviews} reviews</span>
+          ${starRowHTML(p.rating, 16)}
+          <span class="rating-pill">${p.rating.toFixed(1)}</span>
+          <span>(${p.numReviews} reviews)</span>
           ${p.isBestSeller ? '<span class="badge" style="position:static;">BESTSELLER</span>' : ''}
         </div>
         <div class="price-row">
@@ -67,8 +68,27 @@ async function loadProduct() {
         <p class="pd-description">${escapeHTML(p.description || '')}</p>
       </div>
     `;
+
+    loadRelatedProducts(p);
   } catch (err) {
     wrap.innerHTML = `<div class="empty-state">${err.message}</div>`;
+  }
+}
+
+async function loadRelatedProducts(product) {
+  const section = document.getElementById('related-section');
+  if (!section) return;
+  try {
+    const results = await api.get(`/products?category=${encodeURIComponent(product.category)}&limit=9`);
+    const related = results.filter((p) => p._id !== product._id).slice(0, 4);
+    if (!related.length) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = '';
+    renderProductGrid('related-grid', related);
+  } catch (err) {
+    section.style.display = 'none';
   }
 }
 

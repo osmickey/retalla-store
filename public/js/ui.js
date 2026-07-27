@@ -2,6 +2,15 @@ function loadingHTML() {
   return `<div class="dot-loader"><span></span><span></span><span></span></div>`;
 }
 
+function starRowHTML(rating, size) {
+  const rounded = Math.round(rating);
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    html += `<span class="star-ico ${i <= rounded ? 'filled' : 'muted'}">${iconSVG('star', size || 14)}</span>`;
+  }
+  return `<span class="star-row">${html}</span>`;
+}
+
 function productCardHTML(p) {
   const outOfStock = p.stock <= 0;
   const discount = p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
@@ -16,8 +25,9 @@ function productCardHTML(p) {
         <span class="cat">${p.category}</span>
         <h3>${escapeHTML(p.name)}</h3>
         <div class="rating-row">
-          <span class="rating-pill">${p.rating.toFixed(1)} ★</span>
-          <span>${p.numReviews} reviews</span>
+          ${starRowHTML(p.rating, 12)}
+          <span class="rating-pill">${p.rating.toFixed(1)}</span>
+          <span>(${p.numReviews})</span>
         </div>
         <div class="price-row">
           <span class="price">Rs. ${p.price.toFixed(2)}</span>
