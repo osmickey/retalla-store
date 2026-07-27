@@ -29,6 +29,7 @@ const ICON_PATHS = {
   close: '<path d="M5 5l14 14M19 5 5 19"/>',
   star: '<path d="M12 2 14.9 8.5 22 9.3 16.5 14 18 21 12 17.5 6 21 7.5 14 2 9.3 9.1 8.5Z" fill="currentColor" stroke="none"/>',
   support: '<path d="M4 12a8 8 0 1 1 3 6.2L4 20l1.3-3.7A7.96 7.96 0 0 1 4 12z"/><circle cx="9" cy="12" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="0.6" fill="currentColor" stroke="none"/>',
+  video: '<rect x="2.5" y="5" width="14" height="14" rx="2.5"/><path d="M16.5 10.5 21 8v8l-4.5-2.5z"/>',
 };
 
 function iconSVG(name, size) {

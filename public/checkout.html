@@ -29,7 +29,13 @@
         <h3 style="margin-bottom:16px;">Shipping Address</h3>
         <div class="field-row">
           <div class="field"><label>Full Name</label><input id="addr-name" required /></div>
-          <div class="field"><label>Phone Number</label><input id="addr-phone" required pattern="[0-9]{10}" title="10 digit phone number" /></div>
+          <div class="field">
+            <label>Phone Number</label>
+            <div class="phone-input-group">
+              <span class="phone-prefix">+91</span>
+              <input id="addr-phone" type="tel" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" title="Enter a valid 10-digit Indian mobile number" placeholder="98765 43210" />
+            </div>
+          </div>
         </div>
         <div class="field">
           <label>Address Line 1</label>
@@ -47,11 +53,11 @@
       <div class="checkout-card">
         <h3 style="margin-bottom:16px;">Payment Method</h3>
         <div class="payment-option selected" id="payment-cod" onclick="selectPayment('COD', this)">
-          <div class="payment-option-main"><span data-icon="wallet" data-icon-size="18"></span> Cash on Delivery</div>
+          <div class="payment-option-main"><span class="radio-dot"></span><span data-icon="wallet" data-icon-size="18"></span> Cash on Delivery</div>
           <div class="payment-note" id="payment-cod-note" style="display:none;">Not available for one or more items in your cart</div>
         </div>
         <div class="payment-option" onclick="selectPayment('UPI', this)">
-          <div class="payment-option-main"><span data-icon="tag" data-icon-size="18"></span> UPI</div>
+          <div class="payment-option-main"><span class="radio-dot"></span><span data-icon="tag" data-icon-size="18"></span> UPI</div>
           <div class="payment-brand-row">
             <span class="brand-chip gpay">G Pay</span>
             <span class="brand-chip phonepe">PhonePe</span>
@@ -60,7 +66,7 @@
           </div>
         </div>
         <div class="payment-option" onclick="selectPayment('Card', this)">
-          <div class="payment-option-main"><span data-icon="receipt" data-icon-size="18"></span> Credit / Debit Card</div>
+          <div class="payment-option-main"><span class="radio-dot"></span><span data-icon="receipt" data-icon-size="18"></span> Credit / Debit Card</div>
           <div class="payment-brand-row">
             <span class="brand-chip visa">VISA</span>
             <span class="brand-chip mastercard">Mastercard</span>

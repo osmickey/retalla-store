@@ -33,6 +33,7 @@ async function createOrder(req, res) {
     return {
       product: product._id,
       name: product.name,
+      sku: product.sku || '',
       image: product.image,
       price: product.price,
       qty: item.qty,

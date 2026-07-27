@@ -17,12 +17,12 @@ function populateCategorySelect() {
 
 async function loadProducts() {
   const tbody = document.getElementById('products-body');
-  tbody.innerHTML = `<tr><td colspan="7" class="loading">Loading products...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="8" class="loading">Loading products...</td></tr>`;
   try {
     allProducts = await adminApi.get('/products');
     renderProductsTable();
   } catch (err) {
-    if (err.message !== 'Session expired') tbody.innerHTML = `<tr><td colspan="7" class="empty-state">${err.message}</td></tr>`;
+    if (err.message !== 'Session expired') tbody.innerHTML = `<tr><td colspan="8" class="empty-state">${err.message}</td></tr>`;
   }
 }
 
@@ -33,10 +33,14 @@ function renderProductsTable() {
 
   let rows = allProducts;
   if (categoryFilter) rows = rows.filter((p) => p.category === categoryFilter);
-  if (search) rows = rows.filter((p) => p.name.toLowerCase().includes(search));
+  if (search) {
+    rows = rows.filter(
+      (p) => p.name.toLowerCase().includes(search) || (p.sku || '').toLowerCase().includes(search)
+    );
+  }
 
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No products found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">No products found.</td></tr>`;
     return;
   }
 
@@ -46,6 +50,7 @@ function renderProductsTable() {
       <tr>
         <td><img class="table-thumb" src="${p.image}" alt="" /></td>
         <td>${escapeHtml(p.name)}</td>
+        <td>${p.sku ? `<code class="sku-code">${escapeHtml(p.sku)}</code>` : '<span class="sku-missing">—</span>'}</td>
         <td>${p.category}</td>
         <td>Rs. ${p.price.toFixed(2)}</td>
         <td>${p.stock}</td>

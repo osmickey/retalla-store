@@ -16,6 +16,7 @@
       <a href="/admin/products.html"><span data-icon="box" data-icon-size="18"></span> Products</a>
       <a href="/admin/orders.html"><span data-icon="receipt" data-icon-size="18"></span> Orders</a>
       <a href="/admin/customers.html"><span data-icon="user" data-icon-size="18"></span> Customers</a>
+      <a href="/admin/live-videos.html"><span data-icon="video" data-icon-size="18"></span> Retalla Live</a>
     </nav>
     <button class="logout-btn" onclick="adminAuth.logout()"><span data-icon="logout" data-icon-size="16"></span> Logout</button>
   </aside>
@@ -30,13 +31,13 @@
       <div class="panel-head">
         <div class="filter-row">
           <select id="filter-category"></select>
-          <input id="filter-search" type="text" placeholder="Search products..." style="padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);" />
+          <input id="filter-search" type="text" placeholder="Search by name or product code..." style="padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);" />
         </div>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Tags</th><th>Actions</th></tr></thead>
-          <tbody id="products-body"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody>
+          <thead><tr><th>Image</th><th>Name</th><th>Product Code</th><th>Category</th><th>Price</th><th>Stock</th><th>Tags</th><th>Actions</th></tr></thead>
+          <tbody id="products-body"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -44,53 +45,66 @@
 </div>
 
 <div class="modal-overlay" id="product-modal" style="display:none;">
-  <div class="modal">
+  <div class="modal modal-lg">
     <div class="modal-head">
       <h3 id="modal-title">Add Product</h3>
       <button class="modal-close" onclick="closeProductModal()"><span data-icon="close" data-icon-size="18"></span></button>
     </div>
     <div id="product-modal-message" class="form-message error" style="display:none;"></div>
     <form id="product-form" onsubmit="submitProductForm(event)">
-      <div class="field"><label>Product Name</label><input id="p-name" required /></div>
-      <div class="field"><label>Description</label><textarea id="p-description" rows="3"></textarea></div>
-      <div class="field-row">
-        <div class="field"><label>Brand (optional)</label><input id="p-brand" placeholder="e.g. Retalla Basics" /></div>
-        <div class="field"><label>SKU / Product Code (optional)</label><input id="p-sku" placeholder="e.g. RTL-KIT-001" /></div>
+
+      <div class="form-section" style="--section-c:#4f46e5;">
+        <h4 class="form-section-title"><span data-icon="box" data-icon-size="15"></span> Basic Details</h4>
+        <div class="field"><label>Product Name</label><input id="p-name" required /></div>
+        <div class="field"><label>Description</label><textarea id="p-description" rows="3"></textarea></div>
+        <div class="field-row">
+          <div class="field"><label>Brand <span class="field-optional">(optional)</span></label><input id="p-brand" placeholder="e.g. Retalla Basics" /></div>
+          <div class="field"><label>Product Code / SKU <span class="field-optional">(optional)</span></label><input id="p-sku" placeholder="e.g. RTL-KIT-001" /></div>
+        </div>
+        <div class="field"><label>Category</label><select id="p-category"></select></div>
       </div>
-      <div class="field">
-        <label>Category (product's section on the Shop page)</label>
-        <select id="p-category"></select>
+
+      <div class="form-section" style="--section-c:#ff6b4a;">
+        <h4 class="form-section-title"><span data-icon="video" data-icon-size="15"></span> Media</h4>
+        <div class="field">
+          <label>Product Images — up to 9, first image is the main photo</label>
+          <div class="image-slots" id="image-slots"></div>
+          <input type="file" id="image-file-input" accept="image/*" style="display:none;" />
+        </div>
+        <div class="field">
+          <label>Video URL <span class="field-optional">(optional — direct .mp4/.webm link, not a YouTube page)</span></label>
+          <input id="p-video-url" type="url" placeholder="https://example.com/video.mp4" />
+        </div>
       </div>
-      <div class="field">
-        <label>Product Images — up to 9, first image is the main photo</label>
-        <div class="image-slots" id="image-slots"></div>
-        <input type="file" id="image-file-input" accept="image/*" style="display:none;" />
+
+      <div class="form-section" style="--section-c:#16a34a;">
+        <h4 class="form-section-title"><span data-icon="revenue" data-icon-size="15"></span> Pricing &amp; Inventory</h4>
+        <div class="field-row">
+          <div class="field"><label>Price (Rs.)</label><input id="p-price" type="number" min="0" step="0.01" required /></div>
+          <div class="field"><label>MRP (Rs.)</label><input id="p-mrp" type="number" min="0" step="0.01" required /></div>
+        </div>
+        <div class="field"><label>Stock Quantity</label><input id="p-stock" type="number" min="0" required /></div>
       </div>
-      <div class="field">
-        <label>Product Video URL (optional — direct link to an .mp4/.webm video file, not a YouTube page link)</label>
-        <input id="p-video-url" type="url" placeholder="https://example.com/video.mp4" />
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Price (Rs.)</label><input id="p-price" type="number" min="0" step="0.01" required /></div>
-        <div class="field"><label>MRP (Rs.)</label><input id="p-mrp" type="number" min="0" step="0.01" required /></div>
-      </div>
-      <div class="field"><label>Stock Quantity</label><input id="p-stock" type="number" min="0" required /></div>
-      <div class="field">
-        <label>Shipping &amp; Returns</label>
-        <div class="checkbox-row" style="margin-bottom:18px;">
+
+      <div class="form-section" style="--section-c:#0891b2;">
+        <h4 class="form-section-title"><span data-icon="truck" data-icon-size="15"></span> Shipping &amp; Returns</h4>
+        <div class="checkbox-row">
           <label><input id="p-free-delivery" type="checkbox" checked /> Free Delivery</label>
           <label><input id="p-returnable" type="checkbox" checked /> Returnable (7 days)</label>
           <label><input id="p-cod" type="checkbox" checked /> Cash on Delivery Available</label>
         </div>
       </div>
-      <div class="field">
-        <label>Home Page Placement (optional — product always appears under its category above regardless)</label>
-        <div class="checkbox-row" style="margin-bottom:18px;">
-          <label><input id="p-featured" type="checkbox" /> Show in "Featured"</label>
-          <label><input id="p-bestseller" type="checkbox" /> Show in "Best Seller"</label>
-          <label><input id="p-live-video" type="checkbox" /> Show in "Retalla Live" (requires a video URL above)</label>
+
+      <div class="form-section" style="--section-c:#eab308;">
+        <h4 class="form-section-title"><span data-icon="star" data-icon-size="15"></span> Home Page Placement</h4>
+        <p class="form-section-hint">The product always appears under its category on the Shop page — these just control extra homepage spots.</p>
+        <div class="checkbox-row">
+          <label><input id="p-featured" type="checkbox" /> Featured</label>
+          <label><input id="p-bestseller" type="checkbox" /> Best Seller</label>
+          <label><input id="p-live-video" type="checkbox" /> Retalla Live <span class="field-optional">(needs video URL above)</span></label>
         </div>
       </div>
+
       <button id="product-submit-btn" type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Save Product</button>
     </form>
   </div>

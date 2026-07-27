@@ -86,6 +86,13 @@ function selectPayment(method, el) {
 async function placeOrder(e) {
   e.preventDefault();
 
+  const phone = document.getElementById('addr-phone').value.trim();
+  if (!/^[6-9][0-9]{9}$/.test(phone)) {
+    showToast('Enter a valid 10-digit Indian mobile number.');
+    document.getElementById('addr-phone').focus();
+    return;
+  }
+
   const pincode = document.getElementById('addr-pincode').value.trim();
   if (!/^[0-9]{6}$/.test(pincode)) {
     showToast('Pincode must be exactly 6 digits.');
@@ -102,7 +109,7 @@ async function placeOrder(e) {
 
   const shippingAddress = {
     fullName: document.getElementById('addr-name').value.trim(),
-    phone: document.getElementById('addr-phone').value.trim(),
+    phone,
     address: line2 ? `${line1}, ${line2}` : line1,
     city: document.getElementById('addr-city').value.trim(),
     state: document.getElementById('addr-state').value.trim(),
@@ -130,4 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!auth.requireLogin('/checkout.html')) return;
   populateStateSelect();
   renderCheckoutSummary();
+
+  const phoneInput = document.getElementById('addr-phone');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', () => {
+      phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+    });
+  }
 });
