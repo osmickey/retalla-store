@@ -1,9 +1,10 @@
 let analyticsData = null;
 let salesChart = null;
 
+const CHART_RANGES = ['weekly', 'monthly', 'yearly'];
+
 function switchRange(range) {
-  document.getElementById('range-weekly').classList.toggle('active', range === 'weekly');
-  document.getElementById('range-monthly').classList.toggle('active', range === 'monthly');
+  CHART_RANGES.forEach((r) => document.getElementById(`range-${r}`).classList.toggle('active', r === range));
   renderChart(range);
 }
 
