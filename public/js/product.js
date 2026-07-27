@@ -52,11 +52,35 @@ async function loadProduct() {
           <span class="price">Rs. ${p.price.toFixed(2)}</span>
           ${p.mrp > p.price ? `<span class="mrp">Rs. ${p.mrp.toFixed(2)}</span><span class="discount">${discount}% off</span>` : ''}
         </div>
-        <div class="pd-meta">
-          <div class="item"><strong>${outOfStock ? 'Out of stock' : `${p.stock} in stock`}</strong>Availability</div>
-          <div class="item"><strong>${p.freeDelivery ? 'Free' : 'Paid'}</strong>Delivery</div>
-          <div class="item"><strong>${p.isReturnable ? '7 Days' : 'Non-Returnable'}</strong>${p.isReturnable ? 'Easy Return' : 'Final Sale'}</div>
+
+        <div class="delivery-check">
+          <div class="delivery-check-row">
+            <span data-icon="truck" data-icon-size="18"></span>
+            <input id="pd-pincode-check" type="text" maxlength="6" inputmode="numeric" placeholder="Enter pincode to check delivery" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" />
+            <button type="button" class="btn btn-outline btn-sm" onclick="checkDelivery()">Check</button>
+          </div>
+          <div id="delivery-check-result" class="delivery-check-result"></div>
         </div>
+
+        <div class="pd-badges">
+          <div class="pd-badge">
+            <span class="icon-circle" data-icon="truck" data-icon-size="16"></span>
+            <div><strong>${p.freeDelivery ? 'Free Delivery' : 'Paid Delivery'}</strong><span>${outOfStock ? 'Out of stock' : `${p.stock} in stock`}</span></div>
+          </div>
+          <div class="pd-badge">
+            <span class="icon-circle" data-icon="return" data-icon-size="16"></span>
+            <div><strong>${p.isReturnable ? '7 Days Return' : 'Non-Returnable'}</strong><span>${p.isReturnable ? 'Easy & free returns' : 'Final sale item'}</span></div>
+          </div>
+          <div class="pd-badge">
+            <span class="icon-circle" data-icon="wallet" data-icon-size="16"></span>
+            <div><strong>${p.codAvailable !== false ? 'COD Available' : 'Prepaid Only'}</strong><span>${p.codAvailable !== false ? 'Pay on delivery' : 'Online payment required'}</span></div>
+          </div>
+          <div class="pd-badge">
+            <span class="icon-circle" data-icon="check" data-icon-size="16"></span>
+            <div><strong>Secure Payment</strong><span>Safe &amp; encrypted checkout</span></div>
+          </div>
+        </div>
+
         <div class="qty-stepper">
           <button onclick="stepQty(-1)">−</button>
           <input id="pd-qty" type="number" value="1" min="1" max="${p.stock}" />
@@ -66,6 +90,17 @@ async function loadProduct() {
           <button class="btn btn-primary" ${outOfStock ? 'disabled' : ''} onclick="addToCartFromDetail()">Add to Cart</button>
           <button class="btn btn-accent" ${outOfStock ? 'disabled' : ''} onclick="buyNow()">Buy Now</button>
         </div>
+
+        <div class="pd-highlights">
+          <h3>Product Details</h3>
+          <table>
+            ${p.brand ? `<tr><td>Brand</td><td>${escapeHTML(p.brand)}</td></tr>` : ''}
+            <tr><td>Category</td><td>${escapeHTML(p.category)}</td></tr>
+            ${p.sku ? `<tr><td>Product Code</td><td>${escapeHTML(p.sku)}</td></tr>` : ''}
+            <tr><td>Availability</td><td>${outOfStock ? 'Out of stock' : `${p.stock} units in stock`}</td></tr>
+          </table>
+        </div>
+
         <p class="pd-description">${escapeHTML(p.description || '')}</p>
         ${p.videoUrl ? `
         <div class="pd-video">
@@ -73,8 +108,20 @@ async function loadProduct() {
           <video src="${p.videoUrl}" poster="${p.image}" controls muted playsinline preload="metadata"></video>
         </div>` : ''}
       </div>
+
+      <div class="pd-sticky-bar">
+        <div class="pd-sticky-price">
+          <strong>Rs. ${p.price.toFixed(2)}</strong>
+          ${p.mrp > p.price ? `<span>Rs. ${p.mrp.toFixed(2)}</span>` : ''}
+        </div>
+        <div class="pd-sticky-actions">
+          <button class="btn btn-primary btn-sm" ${outOfStock ? 'disabled' : ''} onclick="addToCartFromDetail()">Add to Cart</button>
+          <button class="btn btn-accent btn-sm" ${outOfStock ? 'disabled' : ''} onclick="buyNow()">Buy Now</button>
+        </div>
+      </div>
     `;
 
+    renderIcons(wrap);
     recentlyViewed.record(p._id);
     loadReviews(p._id);
     loadReviewForm(p._id);
@@ -253,6 +300,43 @@ async function loadRelatedProducts(product) {
     renderProductGrid('related-grid', related);
   } catch (err) {
     section.style.display = 'none';
+  }
+}
+
+async function checkDelivery() {
+  const input = document.getElementById('pd-pincode-check');
+  const resultEl = document.getElementById('delivery-check-result');
+  const pincode = input.value.trim();
+
+  if (!/^[0-9]{6}$/.test(pincode)) {
+    resultEl.innerHTML = `<span class="delivery-check-error">Enter a valid 6-digit pincode.</span>`;
+    return;
+  }
+
+  resultEl.innerHTML = `<span class="delivery-check-loading">Checking availability...</span>`;
+  try {
+    const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const data = await res.json();
+    const postOffice = data?.[0]?.PostOffice?.[0];
+    if (!postOffice) {
+      resultEl.innerHTML = `<span class="delivery-check-error">We couldn't find that pincode. Please check and try again.</span>`;
+      return;
+    }
+
+    const days = currentProduct.freeDelivery ? 5 : 7;
+    const deliveryDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+
+    resultEl.innerHTML = `
+      <div class="delivery-check-success">
+        <span data-icon="check" data-icon-size="16"></span>
+        <div>
+          <strong>Delivering to ${escapeHTML(postOffice.District)}, ${escapeHTML(postOffice.State)}</strong>
+          <span>Estimated delivery by ${deliveryDate}</span>
+        </div>
+      </div>`;
+    renderIcons(resultEl);
+  } catch (err) {
+    resultEl.innerHTML = `<span class="delivery-check-error">Couldn't check delivery right now. Please try again.</span>`;
   }
 }
 
