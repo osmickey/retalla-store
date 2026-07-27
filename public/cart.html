@@ -19,6 +19,9 @@
     </form>
     <div class="nav-actions">
       <button class="search-toggle-btn" id="search-toggle-btn" type="button" aria-label="Search"><span data-icon="search" data-icon-size="20"></span></button>
+      <a class="nav-icon-link nav-desktop-only" href="/customer-service.html">
+        <span class="icon" data-icon="support"></span><span>Support</span>
+      </a>
       <a id="nav-account" class="nav-icon-link" href="/login.html">
         <span class="icon" data-icon="user"></span><span>Login</span>
       </a>
@@ -33,6 +36,7 @@
     <a href="/login.html"><span data-icon="user" data-icon-size="18"></span> Login</a>
     <a href="/account.html"><span data-icon="box" data-icon-size="18"></span> My Orders</a>
     <a href="/shop.html"><span data-icon="bag" data-icon-size="18"></span> Shop</a>
+    <a href="/customer-service.html"><span data-icon="support" data-icon-size="18"></span> Customer Service</a>
     <div class="drawer-categories"></div>
   </div>
 </nav>
@@ -52,6 +56,7 @@
     <div class="summary-card">
       <h3>Order Summary</h3>
       <div class="summary-row"><span>Subtotal</span><span id="summary-subtotal">Rs. 0.00</span></div>
+      <div class="summary-row savings" id="summary-savings-row" style="display:none;"><span>Discount</span><span id="summary-savings">− Rs. 0.00</span></div>
       <div class="summary-row"><span>Shipping</span><span id="summary-shipping">FREE</span></div>
       <div class="summary-row total"><span>Total</span><span id="summary-total">Rs. 0.00</span></div>
       <button class="btn btn-primary btn-block" onclick="goToCheckout()">Proceed to Checkout</button>

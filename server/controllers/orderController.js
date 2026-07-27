@@ -12,6 +12,16 @@ async function createOrder(req, res) {
   const products = await Product.find({ _id: { $in: productIds } });
   const productMap = new Map(products.map((p) => [p._id.toString(), p]));
 
+  if (paymentMethod === 'COD') {
+    const codBlocked = items.some((item) => {
+      const product = productMap.get(item.product);
+      return product && product.codAvailable === false;
+    });
+    if (codBlocked) {
+      return res.status(400).json({ message: 'Cash on Delivery is not available for one or more items in your cart' });
+    }
+  }
+
   let itemsPrice = 0;
   const orderItems = items.map((item) => {
     const product = productMap.get(item.product);
@@ -83,6 +93,17 @@ async function updateOrderStatus(req, res) {
   const order = await Order.findByIdAndUpdate(
     req.params.id,
     { status, ...(status === 'Delivered' ? { isPaid: true, paidAt: new Date() } : {}) },
+    { new: true }
+  );
+  if (!order) return res.status(404).json({ message: 'Order not found' });
+  res.json(order);
+}
+
+async function updateTracking(req, res) {
+  const { trackingId, courierName } = req.body;
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    { trackingId: (trackingId || '').trim(), courierName: (courierName || '').trim() },
     { new: true }
   );
   if (!order) return res.status(404).json({ message: 'Order not found' });
@@ -177,6 +198,7 @@ module.exports = {
   getOrder,
   listAllOrders,
   updateOrderStatus,
+  updateTracking,
   stats,
   analytics,
 };

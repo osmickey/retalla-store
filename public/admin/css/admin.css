@@ -196,6 +196,17 @@ tr:hover td { background: #fafaff; }
 .image-slot .slot-move.right { bottom: 4px; right: 4px; }
 .image-slot .slot-remove:hover, .image-slot .slot-move:hover { background: rgba(0,0,0,.8); }
 
+.tracking-cell { display: flex; flex-direction: column; gap: 6px; min-width: 170px; }
+.tracking-cell input {
+  padding: 6px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.8rem;
+}
+.tracking-cell input:focus { border-color: var(--primary); outline: none; }
+.admin-toast {
+  position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #fff;
+  padding: 12px 18px; border-radius: var(--radius-sm); box-shadow: var(--shadow-lg);
+  font-size: 0.85rem; z-index: 200;
+}
+
 .chart-toggle { display: flex; gap: 6px; background: var(--bg); border-radius: 999px; padding: 4px; }
 .chart-toggle-btn {
   border: none; background: transparent; padding: 7px 16px; border-radius: 999px;

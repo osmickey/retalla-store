@@ -175,12 +175,19 @@ function openEditModal(id) {
   document.getElementById('modal-title').textContent = 'Edit Product';
   document.getElementById('p-name').value = p.name;
   document.getElementById('p-description').value = p.description || '';
+  document.getElementById('p-brand').value = p.brand || '';
+  document.getElementById('p-sku').value = p.sku || '';
   document.getElementById('p-category').value = p.category;
   document.getElementById('p-price').value = p.price;
   document.getElementById('p-mrp').value = p.mrp;
   document.getElementById('p-stock').value = p.stock;
   document.getElementById('p-featured').checked = p.isFeatured;
   document.getElementById('p-bestseller').checked = p.isBestSeller;
+  document.getElementById('p-free-delivery').checked = p.freeDelivery;
+  document.getElementById('p-returnable').checked = p.isReturnable;
+  document.getElementById('p-cod').checked = p.codAvailable;
+  document.getElementById('p-video-url').value = p.videoUrl || '';
+  document.getElementById('p-live-video').checked = p.isLiveVideo;
   document.getElementById('product-modal-message').style.display = 'none';
   renderImageSlots();
   document.getElementById('product-modal').style.display = 'flex';
@@ -201,19 +208,34 @@ async function submitProductForm(e) {
     return;
   }
 
+  const videoUrl = document.getElementById('p-video-url').value.trim();
+  const isLiveVideo = document.getElementById('p-live-video').checked;
+  if (isLiveVideo && !videoUrl) {
+    msg.textContent = 'Add a video URL to feature this product in "Retalla Live".';
+    msg.style.display = 'block';
+    return;
+  }
+
   btn.disabled = true;
 
   const payload = {
     name: document.getElementById('p-name').value.trim(),
     description: document.getElementById('p-description').value.trim(),
+    brand: document.getElementById('p-brand').value.trim(),
+    sku: document.getElementById('p-sku').value.trim(),
     category: document.getElementById('p-category').value,
     image: productImages[0],
     images: productImages.slice(1),
     price: Number(document.getElementById('p-price').value),
     mrp: Number(document.getElementById('p-mrp').value),
     stock: Number(document.getElementById('p-stock').value),
+    freeDelivery: document.getElementById('p-free-delivery').checked,
+    isReturnable: document.getElementById('p-returnable').checked,
+    codAvailable: document.getElementById('p-cod').checked,
     isFeatured: document.getElementById('p-featured').checked,
     isBestSeller: document.getElementById('p-bestseller').checked,
+    videoUrl,
+    isLiveVideo,
   };
 
   try {

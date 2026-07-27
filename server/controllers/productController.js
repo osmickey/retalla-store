@@ -1,12 +1,14 @@
 const Product = require('../models/Product');
 
 async function listProducts(req, res) {
-  const { category, search, featured, bestseller, limit } = req.query;
+  const { category, search, featured, bestseller, liveVideo, ids, limit } = req.query;
   const filter = {};
 
   if (category) filter.category = category;
   if (featured === 'true') filter.isFeatured = true;
   if (bestseller === 'true') filter.isBestSeller = true;
+  if (liveVideo === 'true') filter.isLiveVideo = true;
+  if (ids) filter._id = { $in: ids.split(',') };
   if (search) filter.$text = { $search: search };
 
   let query = Product.find(filter).sort({ createdAt: -1 });

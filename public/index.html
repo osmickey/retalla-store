@@ -21,6 +21,9 @@
     </form>
     <div class="nav-actions">
       <button class="search-toggle-btn" id="search-toggle-btn" type="button" aria-label="Search"><span data-icon="search" data-icon-size="20"></span></button>
+      <a class="nav-icon-link nav-desktop-only" href="/customer-service.html">
+        <span class="icon" data-icon="support"></span><span>Support</span>
+      </a>
       <a id="nav-account" class="nav-icon-link" href="/login.html">
         <span class="icon" data-icon="user"></span><span>Login</span>
       </a>
@@ -35,6 +38,7 @@
     <a href="/login.html"><span data-icon="user" data-icon-size="18"></span> Login</a>
     <a href="/account.html"><span data-icon="box" data-icon-size="18"></span> My Orders</a>
     <a href="/cart.html"><span data-icon="cart" data-icon-size="18"></span> Cart</a>
+    <a href="/customer-service.html"><span data-icon="support" data-icon-size="18"></span> Customer Service</a>
     <div class="drawer-categories"></div>
   </div>
 </nav>
@@ -72,16 +76,22 @@
 
 <main class="container">
 
+  <section class="section" id="recently-viewed-section" style="display:none;">
+    <div class="section-head"><h2>Recently Viewed</h2></div>
+    <div class="recent-shelf" id="recent-shelf"></div>
+  </section>
+
+  <section class="section" id="live-video-section" style="display:none;">
+    <div class="section-head">
+      <div><span class="eyebrow">Watch &amp; Shop</span><h2>Retalla Live</h2></div>
+      <a href="/shop.html">View all →</a>
+    </div>
+    <div class="video-grid" id="live-video-grid"></div>
+  </section>
+
   <section class="quote-strip">
     <span class="quote-mark">✦</span>
     <p class="quote-text" id="shopping-quote">Great style shouldn't cost a fortune.</p>
-  </section>
-
-  <section class="perks">
-    <div class="perk-card"><span class="icon-circle" data-icon="return"></span><div><strong>7 Days Return</strong><span>Easy &amp; free returns</span></div></div>
-    <div class="perk-card"><span class="icon-circle" data-icon="wallet"></span><div><strong>Cash on Delivery</strong><span>Pay when it arrives</span></div></div>
-    <div class="perk-card"><span class="icon-circle" data-icon="truck"></span><div><strong>Free Shipping</strong><span>On orders over Rs. 499</span></div></div>
-    <div class="perk-card"><span class="icon-circle" data-icon="tag"></span><div><strong>Lowest Prices</strong><span>Best deals guaranteed</span></div></div>
   </section>
 
   <section class="section category-section">
@@ -95,6 +105,28 @@
       <a href="/shop.html">View all →</a>
     </div>
     <div class="product-grid" id="trending-grid"><div class="dot-loader"><span></span><span></span><span></span></div></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><div><span class="eyebrow">Why Retalla</span><h2>Shopping Made Easy</h2></div></div>
+    <div class="perks">
+      <div class="perk-card" style="--perk-c1:#16a34a;--perk-c2:#4ade80;">
+        <span class="icon-circle" data-icon="return"></span>
+        <div><strong>7 Days Return</strong><span>Easy &amp; free returns</span></div>
+      </div>
+      <div class="perk-card" style="--perk-c1:#4f46e5;--perk-c2:#7c3aed;">
+        <span class="icon-circle" data-icon="wallet"></span>
+        <div><strong>Cash on Delivery</strong><span>Pay when it arrives</span></div>
+      </div>
+      <div class="perk-card" style="--perk-c1:#ff6b4a;--perk-c2:#ff3e6c;">
+        <span class="icon-circle" data-icon="truck"></span>
+        <div><strong>Free Shipping</strong><span>On orders over Rs. 499</span></div>
+      </div>
+      <div class="perk-card" style="--perk-c1:#eab308;--perk-c2:#f59e0b;">
+        <span class="icon-circle" data-icon="tag"></span>
+        <div><strong>Lowest Prices</strong><span>Best deals guaranteed</span></div>
+      </div>
+    </div>
   </section>
 
   <section class="section">
@@ -126,6 +158,25 @@
       </div>
     </div>
   </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Trusted &amp; Secure Shopping</h2></div>
+    <div class="partner-strip">
+      <div class="partner-badge"><span data-icon="wallet" data-icon-size="20"></span> Visa</div>
+      <div class="partner-badge"><span data-icon="wallet" data-icon-size="20"></span> Mastercard</div>
+      <div class="partner-badge"><span data-icon="tag" data-icon-size="20"></span> UPI</div>
+      <div class="partner-badge"><span data-icon="wallet" data-icon-size="20"></span> PayPal</div>
+      <div class="partner-badge"><span data-icon="truck" data-icon-size="20"></span> Fast Delivery</div>
+      <div class="partner-badge"><span data-icon="check" data-icon-size="20"></span> Verified Reviews</div>
+      <div class="partner-badge"><span data-icon="return" data-icon-size="20"></span> Easy Returns</div>
+    </div>
+  </section>
+
+  <div class="policy-links">
+    <a href="/privacy-policy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms &amp; Conditions</a>
+    <a href="/shipping-returns.html">Shipping &amp; Returns Policy</a>
+  </div>
 
 </main>
 
@@ -175,6 +226,7 @@
 <script src="/js/icons.js"></script>
 <script src="/js/animate.js"></script>
 <script src="/js/ui.js"></script>
+<script src="/js/recently-viewed.js"></script>
 <script src="/js/main.js"></script>
 <script src="/js/mobile-nav.js"></script>
 </body>

@@ -20,7 +20,6 @@ function renderCartPage() {
         <div>
           <h4>${escapeHTML(item.name)}</h4>
           <div>Rs. ${item.price.toFixed(2)}</div>
-          <a class="remove-link" href="#" onclick="event.preventDefault(); removeCartItem('${item.productId}')">Remove</a>
         </div>
         <div class="qty-stepper">
           <button onclick="changeCartQty('${item.productId}', ${item.qty - 1})">−</button>
@@ -28,14 +27,26 @@ function renderCartPage() {
           <button onclick="changeCartQty('${item.productId}', ${item.qty + 1})">+</button>
         </div>
         <strong>Rs. ${(item.price * item.qty).toFixed(2)}</strong>
+        <button class="remove-btn" onclick="removeCartItem('${item.productId}')" aria-label="Remove item" title="Remove item">
+          <span data-icon="trash" data-icon-size="16"></span>
+        </button>
       </div>
     `
     )
     .join('');
+  renderIcons(list);
 
   const subtotal = cart.subtotal();
+  const savings = cart.savings();
   const shipping = subtotal >= 499 || subtotal === 0 ? 0 : 49;
   document.getElementById('summary-subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
+  const savingsRow = document.getElementById('summary-savings-row');
+  if (savings > 0) {
+    savingsRow.style.display = '';
+    document.getElementById('summary-savings').textContent = `− Rs. ${savings.toFixed(2)}`;
+  } else {
+    savingsRow.style.display = 'none';
+  }
   document.getElementById('summary-shipping').textContent = shipping === 0 ? 'FREE' : `Rs. ${shipping.toFixed(2)}`;
   document.getElementById('summary-total').textContent = `Rs. ${(subtotal + shipping).toFixed(2)}`;
 }

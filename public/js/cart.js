@@ -22,7 +22,9 @@ const cart = {
         name: product.name,
         image: product.image,
         price: product.price,
+        mrp: product.mrp,
         stock: product.stock,
+        codAvailable: product.codAvailable !== false,
         qty,
       });
     }
@@ -52,6 +54,10 @@ const cart = {
 
   subtotal() {
     return this.getItems().reduce((sum, i) => sum + i.qty * i.price, 0);
+  },
+
+  savings() {
+    return this.getItems().reduce((sum, i) => sum + i.qty * Math.max(0, (i.mrp || i.price) - i.price), 0);
   },
 };
 

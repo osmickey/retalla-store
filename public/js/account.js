@@ -16,6 +16,7 @@ async function loadAccount() {
       return;
     }
     list.innerHTML = orders.map(orderCardHTML).join('');
+    renderIcons(list);
   } catch (err) {
     list.innerHTML = `<div class="empty-state">${err.message}</div>`;
   }
@@ -31,6 +32,14 @@ function orderCardHTML(order) {
         </div>
         <span class="status-pill status-${order.status}">${order.status}</span>
       </div>
+      ${order.trackingId ? `
+      <div class="tracking-info">
+        <span data-icon="truck" data-icon-size="16"></span>
+        <div>
+          <strong>${escapeHTML(order.courierName || 'Courier')} — ${escapeHTML(order.trackingId)}</strong>
+          <span>Tracking ID for this order</span>
+        </div>
+      </div>` : ''}
       ${order.items
         .map(
           (item) => `

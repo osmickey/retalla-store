@@ -34,6 +34,8 @@ const orderSchema = new mongoose.Schema(
     },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
+    trackingId: { type: String, default: '', trim: true },
+    courierName: { type: String, default: '', trim: true },
   },
   { timestamps: true }
 );

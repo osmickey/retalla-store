@@ -53,6 +53,10 @@
     <form id="product-form" onsubmit="submitProductForm(event)">
       <div class="field"><label>Product Name</label><input id="p-name" required /></div>
       <div class="field"><label>Description</label><textarea id="p-description" rows="3"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Brand (optional)</label><input id="p-brand" placeholder="e.g. Retalla Basics" /></div>
+        <div class="field"><label>SKU / Product Code (optional)</label><input id="p-sku" placeholder="e.g. RTL-KIT-001" /></div>
+      </div>
       <div class="field">
         <label>Category (product's section on the Shop page)</label>
         <select id="p-category"></select>
@@ -62,16 +66,29 @@
         <div class="image-slots" id="image-slots"></div>
         <input type="file" id="image-file-input" accept="image/*" style="display:none;" />
       </div>
+      <div class="field">
+        <label>Product Video URL (optional — direct link to an .mp4/.webm video file, not a YouTube page link)</label>
+        <input id="p-video-url" type="url" placeholder="https://example.com/video.mp4" />
+      </div>
       <div class="field-row">
         <div class="field"><label>Price (Rs.)</label><input id="p-price" type="number" min="0" step="0.01" required /></div>
         <div class="field"><label>MRP (Rs.)</label><input id="p-mrp" type="number" min="0" step="0.01" required /></div>
       </div>
       <div class="field"><label>Stock Quantity</label><input id="p-stock" type="number" min="0" required /></div>
       <div class="field">
+        <label>Shipping &amp; Returns</label>
+        <div class="checkbox-row" style="margin-bottom:18px;">
+          <label><input id="p-free-delivery" type="checkbox" checked /> Free Delivery</label>
+          <label><input id="p-returnable" type="checkbox" checked /> Returnable (7 days)</label>
+          <label><input id="p-cod" type="checkbox" checked /> Cash on Delivery Available</label>
+        </div>
+      </div>
+      <div class="field">
         <label>Home Page Placement (optional — product always appears under its category above regardless)</label>
         <div class="checkbox-row" style="margin-bottom:18px;">
           <label><input id="p-featured" type="checkbox" /> Show in "Featured"</label>
           <label><input id="p-bestseller" type="checkbox" /> Show in "Best Seller"</label>
+          <label><input id="p-live-video" type="checkbox" /> Show in "Retalla Live" (requires a video URL above)</label>
         </div>
       </div>
       <button id="product-submit-btn" type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Save Product</button>

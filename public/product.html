@@ -19,6 +19,9 @@
     </form>
     <div class="nav-actions">
       <button class="search-toggle-btn" id="search-toggle-btn" type="button" aria-label="Search"><span data-icon="search" data-icon-size="20"></span></button>
+      <a class="nav-icon-link nav-desktop-only" href="/customer-service.html">
+        <span class="icon" data-icon="support"></span><span>Support</span>
+      </a>
       <a id="nav-account" class="nav-icon-link" href="/login.html">
         <span class="icon" data-icon="user"></span><span>Login</span>
       </a>
@@ -33,6 +36,7 @@
     <a href="/login.html"><span data-icon="user" data-icon-size="18"></span> Login</a>
     <a href="/account.html"><span data-icon="box" data-icon-size="18"></span> My Orders</a>
     <a href="/cart.html"><span data-icon="cart" data-icon-size="18"></span> Cart</a>
+    <a href="/customer-service.html"><span data-icon="support" data-icon-size="18"></span> Customer Service</a>
     <div class="drawer-categories"></div>
   </div>
 </nav>
@@ -45,6 +49,13 @@
   <div class="product-detail" id="product-detail-wrap">
     <div class="dot-loader"><span></span><span></span><span></span></div>
   </div>
+
+  <section class="section" id="reviews-section">
+    <div class="section-head"><h2>Customer Reviews</h2></div>
+    <div id="review-summary-wrap"></div>
+    <div id="review-form-wrap"></div>
+    <div id="review-list-wrap"></div>
+  </section>
 
   <section class="section" id="related-section" style="display:none;">
     <div class="section-head"><h2>You May Also Like</h2></div>
@@ -67,6 +78,7 @@
 <script src="/js/ui.js"></script>
 <script src="/js/main.js"></script>
 <script src="/js/mobile-nav.js"></script>
+<script src="/js/recently-viewed.js"></script>
 <script src="/js/product.js"></script>
 </body>
 </html>

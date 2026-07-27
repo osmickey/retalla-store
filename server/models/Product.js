@@ -16,6 +16,8 @@ const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
+    brand: { type: String, default: '', trim: true },
+    sku: { type: String, default: '', trim: true },
     category: { type: String, required: true, enum: CATEGORIES },
     image: { type: String, required: true },
     images: { type: [String], default: [] },
@@ -27,6 +29,10 @@ const productSchema = new mongoose.Schema(
     isFeatured: { type: Boolean, default: false },
     isBestSeller: { type: Boolean, default: false },
     freeDelivery: { type: Boolean, default: true },
+    isReturnable: { type: Boolean, default: true },
+    codAvailable: { type: Boolean, default: true },
+    videoUrl: { type: String, default: '' },
+    isLiveVideo: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

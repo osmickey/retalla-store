@@ -6,6 +6,7 @@ const {
   getOrder,
   listAllOrders,
   updateOrderStatus,
+  updateTracking,
   stats,
   analytics,
 } = require('../controllers/orderController');
@@ -20,5 +21,6 @@ router.get('/stats/analytics', protect, admin, asyncHandler(analytics));
 router.get('/', protect, admin, asyncHandler(listAllOrders));
 router.get('/:id', protect, asyncHandler(getOrder));
 router.put('/:id/status', protect, admin, asyncHandler(updateOrderStatus));
+router.put('/:id/tracking', protect, admin, asyncHandler(updateTracking));
 
 module.exports = router;
