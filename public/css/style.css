@@ -634,7 +634,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .recent-shelf .product-card { min-width: 180px; max-width: 180px; flex-shrink: 0; scroll-snap-align: start; }
 
 /* ===== Retalla Live video showcase ===== */
-.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 20px; }
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px; }
 .video-card {
   background: var(--surface); border-radius: var(--radius); overflow: hidden;
   box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -902,10 +902,10 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .pd-highlights td:first-child { color: var(--text-muted); width: 40%; }
 .pd-highlights td:last-child { font-weight: 600; }
 
-.pd-video { margin-top: 22px; max-width: 420px; }
+.pd-video { margin-top: 22px; max-width: 480px; }
 .pd-video-title { font-size: 0.92rem; margin-bottom: 10px; }
 .pd-video video {
-  width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+  width: 100%; height: auto; max-height: 520px; min-height: 200px;
   border-radius: var(--radius); box-shadow: var(--shadow-sm); background: #14112a; display: block;
 }
 

@@ -162,6 +162,18 @@ function moveImage(index, direction) {
 
 /* ===== Add / Edit modal ===== */
 
+function updateVideoPreview() {
+  const url = document.getElementById('p-video-url').value.trim();
+  const preview = document.getElementById('p-video-preview');
+  if (url) {
+    preview.src = url;
+    preview.style.display = 'block';
+  } else {
+    preview.removeAttribute('src');
+    preview.style.display = 'none';
+  }
+}
+
 function openAddModal() {
   editingProductId = null;
   productImages = [];
@@ -169,6 +181,7 @@ function openAddModal() {
   document.getElementById('product-form').reset();
   document.getElementById('product-modal-message').style.display = 'none';
   renderImageSlots();
+  updateVideoPreview();
   document.getElementById('product-modal').style.display = 'flex';
 }
 
@@ -195,6 +208,7 @@ function openEditModal(id) {
   document.getElementById('p-live-video').checked = p.isLiveVideo;
   document.getElementById('product-modal-message').style.display = 'none';
   renderImageSlots();
+  updateVideoPreview();
   document.getElementById('product-modal').style.display = 'flex';
 }
 
