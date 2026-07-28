@@ -1,33 +1,41 @@
-const nodemailer = require('nodemailer');
-
-let transporter;
-
-function getTransporter() {
-  if (!transporter) {
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      throw new Error('SMTP is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS.');
-    }
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: Number(process.env.SMTP_PORT) === 465,
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    });
-  }
-  return transporter;
-}
-
+// Sends transactional email via Brevo's HTTPS API (not raw SMTP) so it isn't
+// blocked by hosts that restrict outbound SMTP ports (Render does).
 async function sendEmail({ to, subject, html }) {
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.log(`[email:dev-fallback] SMTP not configured, logging instead of sending.\nTo: ${to}\nSubject: ${subject}\n${html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`);
+  if (!process.env.BREVO_API_KEY || !process.env.BREVO_SENDER_EMAIL) {
+    console.log(`[email:dev-fallback] Brevo not configured, logging instead of sending.\nTo: ${to}\nSubject: ${subject}\n${html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`);
     return;
   }
-  await getTransporter().sendMail({
-    from: process.env.SMTP_FROM || `Retalla <${process.env.SMTP_USER}>`,
-    to,
-    subject,
-    html,
-  });
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+      },
+      body: JSON.stringify({
+        sender: {
+          name: process.env.BREVO_SENDER_NAME || 'Retalla',
+          email: process.env.BREVO_SENDER_EMAIL,
+        },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.message || `Email provider responded with ${res.status}`);
+    }
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 module.exports = sendEmail;
