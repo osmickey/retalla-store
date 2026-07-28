@@ -635,22 +635,25 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* ===== Retalla Live video showcase ===== */
 #live-video-section {
-  background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary-2) 55%, var(--pink) 100%);
+  background: var(--surface);
   border-radius: var(--radius-lg);
   padding: 32px 28px;
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  box-shadow: var(--shadow);
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--primary), var(--pink), var(--accent)) 1;
 }
 #live-video-section::before, #live-video-section::after {
-  content: ''; position: absolute; border-radius: 50%; filter: blur(60px); z-index: -1;
+  content: ''; position: absolute; border-radius: 50%; filter: blur(70px); z-index: -1; opacity: 0.6;
 }
-#live-video-section::before { width: 280px; height: 280px; background: rgba(255, 255, 255, 0.16); top: -110px; right: -60px; }
-#live-video-section::after { width: 220px; height: 220px; background: rgba(255, 159, 122, 0.35); bottom: -90px; left: -50px; }
-#live-video-section .eyebrow { color: #ffe27a; }
-#live-video-section .section-head h2 { color: #fff; }
-#live-video-section .section-head a { color: #fff; opacity: 0.85; transition: opacity 0.15s ease; }
-#live-video-section .section-head a:hover { opacity: 1; text-decoration: underline; }
+#live-video-section::before { width: 260px; height: 260px; background: var(--primary-light); top: -100px; right: -60px; }
+#live-video-section::after { width: 200px; height: 200px; background: #ffe4e0; bottom: -80px; left: -50px; }
+#live-video-section .section-head h2 {
+  background: linear-gradient(135deg, var(--primary), var(--pink));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
 .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px; }
 .video-card {
   background: var(--surface); border-radius: var(--radius); overflow: hidden;
