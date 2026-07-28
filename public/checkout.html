@@ -35,6 +35,7 @@
               <span class="phone-prefix">+91</span>
               <input id="addr-phone" type="tel" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" title="Enter a valid 10-digit Indian mobile number" placeholder="98765 43210" />
             </div>
+            <div id="phone-verify-status"></div>
           </div>
         </div>
         <div class="field">
@@ -84,7 +85,9 @@
         <div class="summary-row savings" id="co-savings-row" style="display:none;"><span>Discount</span><span id="co-savings">− Rs. 0.00</span></div>
         <div class="summary-row"><span>Shipping</span><span id="co-shipping">FREE</span></div>
         <div class="summary-row total"><span>Total</span><span id="co-total">Rs. 0.00</span></div>
-        <button id="place-order-btn" type="submit" class="btn btn-primary btn-block">Place Order</button>
+        <div id="place-order-hint" class="form-message error" style="display:none;">Verify your mobile number above to place your order.</div>
+        <button id="place-order-btn" type="submit" class="btn btn-primary btn-block" disabled>Place Order</button>
+        <div id="checkout-phone-recaptcha"></div>
       </div>
     </div>
   </form>
@@ -96,6 +99,9 @@
   </div>
 </footer>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+<script src="/js/firebase-config.js"></script>
 <script src="/js/config.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/cart.js"></script>
@@ -104,6 +110,7 @@
 <script src="/js/animate.js"></script>
 <script src="/js/ui.js"></script>
 <script src="/js/checkout-maps.js"></script>
+<script src="/js/verify-phone.js"></script>
 <script src="/js/checkout.js"></script>
 </body>
 </html>

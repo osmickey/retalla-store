@@ -30,6 +30,8 @@ const ICON_PATHS = {
   star: '<path d="M12 2 14.9 8.5 22 9.3 16.5 14 18 21 12 17.5 6 21 7.5 14 2 9.3 9.1 8.5Z" fill="currentColor" stroke="none"/>',
   support: '<path d="M4 12a8 8 0 1 1 3 6.2L4 20l1.3-3.7A7.96 7.96 0 0 1 4 12z"/><circle cx="9" cy="12" r="0.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="0.6" fill="currentColor" stroke="none"/>',
   video: '<rect x="2.5" y="5" width="14" height="14" rx="2.5"/><path d="M16.5 10.5 21 8v8l-4.5-2.5z"/>',
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  'eye-off': '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c6 0 10 7 10 7a17.7 17.7 0 0 1-3.2 4.1M6.5 6.6C3.6 8.4 2 12 2 12s4 7 10 7a9.8 9.8 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
 };
 
 function iconSVG(name, size) {

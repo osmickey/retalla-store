@@ -1,11 +1,19 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 
+function last10Digits(raw) {
+  return String(raw || '').replace(/\D/g, '').slice(-10);
+}
+
 async function createOrder(req, res) {
   const { items, shippingAddress, paymentMethod } = req.body;
 
   if (!items || items.length === 0) {
     return res.status(400).json({ message: 'No order items provided' });
+  }
+
+  if (!req.user.phoneVerified || last10Digits(req.user.phone) !== last10Digits(shippingAddress && shippingAddress.phone)) {
+    return res.status(403).json({ message: 'Please verify your mobile number before placing an order.' });
   }
 
   const productIds = items.map((i) => i.product);

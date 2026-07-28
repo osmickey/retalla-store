@@ -1,35 +1,82 @@
-let phoneConfirmationResult = null;
-let phoneRecaptchaVerifier = null;
+let checkoutConfirmationResult = null;
+let checkoutRecaptchaVerifier = null;
+let checkoutVerifiedNumber = null;
 
-function getPhoneRecaptcha() {
-  if (!phoneRecaptchaVerifier) {
-    phoneRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('phone-recaptcha', { size: 'invisible' });
+function getCheckoutRecaptcha() {
+  if (!checkoutRecaptchaVerifier) {
+    checkoutRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('checkout-phone-recaptcha', { size: 'invisible' });
   }
-  return phoneRecaptchaVerifier;
+  return checkoutRecaptchaVerifier;
 }
 
-function normalizeIndianPhone(raw) {
-  const digits = raw.replace(/\D/g, '');
-  if (digits.length === 10 && /^[6-9]/.test(digits)) return `+91${digits}`;
-  if (digits.length === 12 && digits.startsWith('91') && /^[6-9]/.test(digits.slice(2))) return `+${digits}`;
-  return null;
-}
-
-function showPhoneMessage(message, type = 'error') {
-  const el = document.getElementById('phone-verify-message');
+function showCheckoutPhoneMessage(message, type = 'error') {
+  const el = document.getElementById('checkout-phone-message');
   if (!el) return;
   el.textContent = message;
   el.className = `form-message ${type}`;
   el.style.display = 'block';
 }
 
-async function sendPhoneOtp() {
-  const input = document.getElementById('phone-input');
-  const btn = document.getElementById('send-otp-btn');
-  const phone = normalizeIndianPhone(input.value.trim());
+function updatePlaceOrderState() {
+  const btn = document.getElementById('place-order-btn');
+  const hint = document.getElementById('place-order-hint');
+  const input = document.getElementById('addr-phone');
+  if (!btn || !input) return;
 
-  if (!phone) {
-    showPhoneMessage('Enter a valid 10-digit Indian mobile number');
+  const phone = input.value.trim();
+  const verified = /^[6-9][0-9]{9}$/.test(phone) && phone === checkoutVerifiedNumber;
+  btn.disabled = !verified;
+  if (hint) hint.style.display = verified ? 'none' : 'block';
+}
+
+function renderPhoneVerifyStatus() {
+  const status = document.getElementById('phone-verify-status');
+  const input = document.getElementById('addr-phone');
+  if (!status || !input) return;
+
+  const phone = input.value.trim();
+  const valid = /^[6-9][0-9]{9}$/.test(phone);
+
+  if (!valid) {
+    status.innerHTML = '';
+    updatePlaceOrderState();
+    return;
+  }
+
+  if (phone === checkoutVerifiedNumber) {
+    status.innerHTML = `
+      <div class="phone-verify-box verified">
+        <span class="verify-badge verified">Verified</span>
+        <span>You'll get order updates on this number.</span>
+      </div>
+    `;
+    updatePlaceOrderState();
+    return;
+  }
+
+  status.innerHTML = `
+    <div class="phone-verify-box">
+      <p class="phone-verify-note">Verify this number to place your order</p>
+      <div id="checkout-phone-message" class="form-message" style="display:none;"></div>
+      <button type="button" id="checkout-send-otp-btn" class="btn btn-outline btn-sm" onclick="sendCheckoutOtp()">Send OTP</button>
+      <div id="checkout-otp-step" style="display:none;margin-top:10px;">
+        <div class="field">
+          <label>Enter OTP</label>
+          <input id="checkout-otp-input" class="otp-input" maxlength="6" placeholder="000000" />
+        </div>
+        <button type="button" id="checkout-verify-otp-btn" class="btn btn-primary btn-sm" onclick="confirmCheckoutOtp()">Verify OTP</button>
+      </div>
+    </div>
+  `;
+  updatePlaceOrderState();
+}
+
+async function sendCheckoutOtp() {
+  const phone = document.getElementById('addr-phone').value.trim();
+  const btn = document.getElementById('checkout-send-otp-btn');
+
+  if (!/^[6-9][0-9]{9}$/.test(phone)) {
+    showCheckoutPhoneMessage('Enter a valid 10-digit Indian mobile number first');
     return;
   }
 
@@ -37,74 +84,57 @@ async function sendPhoneOtp() {
   btn.textContent = 'Sending OTP...';
 
   try {
-    phoneConfirmationResult = await firebase.auth().signInWithPhoneNumber(phone, getPhoneRecaptcha());
-    document.getElementById('phone-otp-step').style.display = 'block';
+    checkoutConfirmationResult = await firebase.auth().signInWithPhoneNumber(`+91${phone}`, getCheckoutRecaptcha());
+    document.getElementById('checkout-otp-step').style.display = 'block';
     btn.textContent = 'Resend OTP';
-    showPhoneMessage('OTP sent to your mobile number.', 'success');
+    showCheckoutPhoneMessage('OTP sent to your mobile number.', 'success');
   } catch (err) {
-    showPhoneMessage(err.message || 'Failed to send OTP');
+    showCheckoutPhoneMessage(err.message || 'Failed to send OTP');
     btn.textContent = 'Send OTP';
   } finally {
     btn.disabled = false;
   }
 }
 
-async function confirmPhoneOtp() {
-  const otpInput = document.getElementById('phone-otp-input');
-  const btn = document.getElementById('verify-otp-btn');
-
-  if (!phoneConfirmationResult) return;
+async function confirmCheckoutOtp() {
+  const otpInput = document.getElementById('checkout-otp-input');
+  const btn = document.getElementById('checkout-verify-otp-btn');
+  if (!checkoutConfirmationResult) return;
 
   btn.disabled = true;
   btn.textContent = 'Verifying...';
 
   try {
-    const result = await phoneConfirmationResult.confirm(otpInput.value.trim());
+    const result = await checkoutConfirmationResult.confirm(otpInput.value.trim());
     const idToken = await result.user.getIdToken();
     const data = await api.post('/auth/verify-phone', { idToken });
     auth.setSession(data.user, auth.getToken());
-    renderPhoneVerifyUI();
+    checkoutVerifiedNumber = document.getElementById('addr-phone').value.trim();
+    renderPhoneVerifyStatus();
+    showToast('Mobile number verified.');
   } catch (err) {
-    showPhoneMessage(err.message || 'Incorrect OTP');
+    showCheckoutPhoneMessage(err.message || 'Incorrect OTP');
     btn.disabled = false;
     btn.textContent = 'Verify OTP';
   }
 }
 
-function renderPhoneVerifyUI() {
-  const section = document.getElementById('phone-verify-section');
-  const user = auth.getUser();
-  if (!section || !user) return;
+function initCheckoutPhoneVerification() {
+  const input = document.getElementById('addr-phone');
+  if (!input) return;
 
-  if (user.phoneVerified) {
-    section.innerHTML = `
-      <h3>Mobile Number</h3>
-      <p><span class="verify-badge verified">Verified</span> ${user.phone || ''}</p>
-    `;
-    return;
+  const user = auth.getUser();
+  if (user && user.phoneVerified && user.phone) {
+    const digits = user.phone.replace(/\D/g, '').slice(-10);
+    checkoutVerifiedNumber = digits;
+    if (!input.value) input.value = digits;
   }
 
-  section.innerHTML = `
-    <h3>Mobile Number</h3>
-    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:10px;">
-      <span class="verify-badge unverified">Not Verified</span>
-      ${user.phone ? ` ${user.phone}` : ' Add and verify your mobile number.'}
-    </p>
-    <div id="phone-verify-message" class="form-message" style="display:none;"></div>
-    <div class="field">
-      <label>Mobile Number</label>
-      <input id="phone-input" type="tel" placeholder="10-digit mobile number" value="${user.phone ? user.phone.replace('+91', '') : ''}" maxlength="10" />
-    </div>
-    <button id="send-otp-btn" type="button" class="btn btn-outline btn-sm" onclick="sendPhoneOtp()">Send OTP</button>
-    <div id="phone-otp-step" style="display:none;margin-top:12px;">
-      <div class="field">
-        <label>Enter OTP</label>
-        <input id="phone-otp-input" class="otp-input" maxlength="6" placeholder="000000" />
-      </div>
-      <button id="verify-otp-btn" type="button" class="btn btn-primary btn-sm" onclick="confirmPhoneOtp()">Verify OTP</button>
-    </div>
-    <div id="phone-recaptcha"></div>
-  `;
+  renderPhoneVerifyStatus();
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/\D/g, '').slice(0, 10);
+    renderPhoneVerifyStatus();
+  });
 }
 
-document.addEventListener('DOMContentLoaded', renderPhoneVerifyUI);
+document.addEventListener('DOMContentLoaded', initCheckoutPhoneVerification);

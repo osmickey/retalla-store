@@ -93,6 +93,11 @@ async function placeOrder(e) {
     return;
   }
 
+  if (phone !== checkoutVerifiedNumber) {
+    showToast('Please verify your mobile number before placing the order.');
+    return;
+  }
+
   const pincode = document.getElementById('addr-pincode').value.trim();
   if (!/^[0-9]{6}$/.test(pincode)) {
     showToast('Pincode must be exactly 6 digits.');
@@ -137,11 +142,4 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!auth.requireLogin('/checkout.html')) return;
   populateStateSelect();
   renderCheckoutSummary();
-
-  const phoneInput = document.getElementById('addr-phone');
-  if (phoneInput) {
-    phoneInput.addEventListener('input', () => {
-      phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
-    });
-  }
 });
