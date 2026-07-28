@@ -7,7 +7,15 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 6 },
     phone: { type: String, trim: true },
+    phoneVerified: { type: Boolean, default: false },
     isAdmin: { type: Boolean, default: false },
+
+    resetOtpHash: String,
+    resetOtpExpires: Date,
+    resetOtpAttempts: { type: Number, default: 0 },
+    resetOtpLastSentAt: Date,
+    resetTokenHash: String,
+    resetTokenExpires: Date,
   },
   { timestamps: true }
 );
@@ -25,6 +33,12 @@ userSchema.methods.comparePassword = function comparePassword(candidate) {
 userSchema.methods.toJSON = function toSafeJSON() {
   const obj = this.toObject();
   delete obj.password;
+  delete obj.resetOtpHash;
+  delete obj.resetOtpExpires;
+  delete obj.resetOtpAttempts;
+  delete obj.resetOtpLastSentAt;
+  delete obj.resetTokenHash;
+  delete obj.resetTokenExpires;
   return obj;
 };
 

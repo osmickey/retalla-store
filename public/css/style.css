@@ -1025,6 +1025,12 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .form-message { padding: 11px 15px; border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 16px; }
 .form-message.error { background: #fee2e2; color: #b91c1c; }
 .form-message.success { background: #dcfce7; color: #15803d; }
+.forgot-link { display: inline-block; margin-top: 6px; font-size: 0.82rem; color: var(--primary); font-weight: 600; }
+.otp-input { text-align: center; font-size: 1.4rem; font-weight: 700; letter-spacing: 10px; padding-left: 18px; }
+
+.verify-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; }
+.verify-badge.verified { background: #dcfce7; color: #15803d; }
+.verify-badge.unverified { background: #fef3c7; color: #92400e; }
 
 /* ===== Checkout ===== */
 .checkout-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; align-items: start; }

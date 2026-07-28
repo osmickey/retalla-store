@@ -22,7 +22,11 @@
     <div id="login-message" class="form-message" style="display:none;"></div>
     <form onsubmit="handleLogin(event)">
       <div class="field"><label>Email</label><input id="login-email" type="email" required /></div>
-      <div class="field"><label>Password</label><input id="login-password" type="password" required minlength="6" /></div>
+      <div class="field">
+        <label>Password</label>
+        <input id="login-password" type="password" required minlength="6" />
+        <a href="/forgot-password.html" class="forgot-link">Forgot password?</a>
+      </div>
       <button id="login-submit" type="submit" class="btn btn-primary btn-block">Login</button>
     </form>
     <div class="auth-switch">New to Retalla? <a href="/register.html">Create an account</a></div>
