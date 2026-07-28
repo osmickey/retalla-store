@@ -634,6 +634,23 @@ ul { margin: 0; padding: 0; list-style: none; }
 .recent-shelf .product-card { min-width: 180px; max-width: 180px; flex-shrink: 0; scroll-snap-align: start; }
 
 /* ===== Retalla Live video showcase ===== */
+#live-video-section {
+  background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary-2) 55%, var(--pink) 100%);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+#live-video-section::before, #live-video-section::after {
+  content: ''; position: absolute; border-radius: 50%; filter: blur(60px); z-index: -1;
+}
+#live-video-section::before { width: 280px; height: 280px; background: rgba(255, 255, 255, 0.16); top: -110px; right: -60px; }
+#live-video-section::after { width: 220px; height: 220px; background: rgba(255, 159, 122, 0.35); bottom: -90px; left: -50px; }
+#live-video-section .eyebrow { color: #ffe27a; }
+#live-video-section .section-head h2 { color: #fff; }
+#live-video-section .section-head a { color: #fff; opacity: 0.85; transition: opacity 0.15s ease; }
+#live-video-section .section-head a:hover { opacity: 1; text-decoration: underline; }
 .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px; }
 .video-card {
   background: var(--surface); border-radius: var(--radius); overflow: hidden;
@@ -1174,12 +1191,17 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 @media (max-width: 640px) {
   .quote-strip { padding: 12px 20px; }
   .quote-text { font-size: 0.88rem; }
-  .video-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .video-info { padding: 10px; }
-  .video-info h3 { font-size: 0.78rem; margin-bottom: 6px; -webkit-line-clamp: 1; }
-  .video-info .price { font-size: 0.85rem; }
-  .video-info .add-btn { padding: 7px 10px; font-size: 0.75rem; margin-top: 8px; }
-  .live-badge { font-size: 0.6rem; padding: 3px 8px; top: 6px; left: 6px; }
+  #live-video-section { padding: 22px 18px; border-radius: var(--radius); }
+  .video-grid {
+    display: flex; grid-template-columns: unset; overflow-x: auto;
+    gap: 14px; padding-bottom: 6px; scroll-snap-type: x proximity;
+  }
+  .video-card { min-width: 200px; max-width: 200px; flex-shrink: 0; scroll-snap-align: start; }
+  .video-info { padding: 12px; }
+  .video-info h3 { font-size: 0.84rem; margin-bottom: 8px; }
+  .video-info .price { font-size: 0.92rem; }
+  .video-info .add-btn { padding: 8px 12px; font-size: 0.78rem; margin-top: 8px; }
+  .live-badge { font-size: 0.62rem; padding: 3px 9px; top: 8px; left: 8px; }
   .navbar .container { flex-wrap: nowrap; gap: 8px; padding-top: 12px; padding-bottom: 12px; position: relative; }
   .hamburger-btn { display: flex; order: -1; }
   .brand { font-size: 1.3rem; }
