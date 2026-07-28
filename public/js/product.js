@@ -105,12 +105,14 @@ async function loadProduct() {
         ${p.videoUrl ? `
         <div class="pd-video">
           <h3 class="pd-video-title">Product Video</h3>
-          <video src="${p.videoUrl}" poster="${p.image}" controls muted playsinline preload="metadata"></video>
+          <video src="${p.videoUrl}" poster="${p.image}" autoplay muted loop playsinline preload="metadata" onclick="this.controls = true;"></video>
         </div>` : ''}
       </div>
     `;
 
     renderIcons(wrap);
+    const pdVideo = wrap.querySelector('.pd-video video');
+    if (pdVideo) pdVideo.play().catch(() => {});
     recentlyViewed.record(p._id);
     loadReviews(p._id);
     loadReviewForm(p._id);

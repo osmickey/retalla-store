@@ -51,7 +51,7 @@ async function loadLiveVideoSection() {
     const grid = document.getElementById('live-video-grid');
     grid.innerHTML = products.map(videoCardHTML).join('');
     renderIcons(grid);
-    staggerChildren(grid, '.video-card', 60);
+    grid.querySelectorAll('video').forEach((v) => v.play().catch(() => {}));
   } catch (err) {
     section.style.display = 'none';
   }
@@ -60,10 +60,10 @@ async function loadLiveVideoSection() {
 function videoCardHTML(p) {
   const discount = p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
   return `
-    <div class="video-card reveal">
+    <div class="video-card">
       <div class="video-thumb">
         <span class="live-badge"><span class="pulse-dot"></span> LIVE</span>
-        <video src="${p.videoUrl}" poster="${p.image}" controls muted playsinline preload="metadata"></video>
+        <video src="${p.videoUrl}" poster="${p.image}" autoplay muted loop playsinline preload="metadata" onclick="this.controls = true;"></video>
       </div>
       <div class="video-info">
         <h3>${escapeHTML(p.name)}</h3>
