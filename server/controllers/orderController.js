@@ -31,6 +31,7 @@ async function createOrder(req, res) {
   }
 
   let itemsPrice = 0;
+  let shippingPrice = 0;
   const orderItems = items.map((item) => {
     const product = productMap.get(item.product);
     if (!product) throw new Error(`Product not found: ${item.product}`);
@@ -38,6 +39,9 @@ async function createOrder(req, res) {
       throw new Error(`Insufficient stock for ${product.name}`);
     }
     itemsPrice += product.price * item.qty;
+    if (!product.freeDelivery) {
+      shippingPrice = Math.max(shippingPrice, product.deliveryCharge || 0);
+    }
     return {
       product: product._id,
       name: product.name,
@@ -48,7 +52,6 @@ async function createOrder(req, res) {
     };
   });
 
-  const shippingPrice = itemsPrice >= 499 ? 0 : 49;
   const totalPrice = itemsPrice + shippingPrice;
 
   const order = await Order.create({

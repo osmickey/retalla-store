@@ -29,6 +29,7 @@ const productSchema = new mongoose.Schema(
     isFeatured: { type: Boolean, default: false },
     isBestSeller: { type: Boolean, default: false },
     freeDelivery: { type: Boolean, default: true },
+    deliveryCharge: { type: Number, default: 0, min: 0 },
     isReturnable: { type: Boolean, default: true },
     codAvailable: { type: Boolean, default: true },
     videoUrl: { type: String, default: '' },

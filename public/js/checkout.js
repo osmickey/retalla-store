@@ -64,7 +64,7 @@ function renderCheckoutSummary() {
 
   const subtotal = cart.subtotal();
   const savings = cart.savings();
-  const shipping = subtotal >= 499 ? 0 : 49;
+  const shipping = cart.computeShipping();
   document.getElementById('co-subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
   const savingsRow = document.getElementById('co-savings-row');
   if (savings > 0) {

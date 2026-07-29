@@ -98,9 +98,13 @@
       <div class="form-section" style="--section-c:#0891b2;">
         <h4 class="form-section-title"><span data-icon="truck" data-icon-size="15"></span> Shipping &amp; Returns</h4>
         <div class="checkbox-row">
-          <label><input id="p-free-delivery" type="checkbox" checked /> Free Delivery</label>
+          <label><input id="p-free-delivery" type="checkbox" checked onchange="toggleDeliveryChargeField()" /> Free Delivery</label>
           <label><input id="p-returnable" type="checkbox" checked /> Returnable (7 days)</label>
           <label><input id="p-cod" type="checkbox" checked /> Cash on Delivery Available</label>
+        </div>
+        <div class="field" id="delivery-charge-field" style="max-width:220px;margin-top:10px;display:none;">
+          <label>Delivery Charge (Rs.)</label>
+          <input id="p-delivery-charge" type="number" min="0" step="1" value="0" />
         </div>
       </div>
 

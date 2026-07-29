@@ -162,6 +162,11 @@ function moveImage(index, direction) {
 
 /* ===== Add / Edit modal ===== */
 
+function toggleDeliveryChargeField() {
+  const free = document.getElementById('p-free-delivery').checked;
+  document.getElementById('delivery-charge-field').style.display = free ? 'none' : 'block';
+}
+
 function updateVideoPreview() {
   const url = document.getElementById('p-video-url').value.trim();
   const preview = document.getElementById('p-video-preview');
@@ -182,6 +187,7 @@ function openAddModal() {
   document.getElementById('product-modal-message').style.display = 'none';
   renderImageSlots();
   updateVideoPreview();
+  toggleDeliveryChargeField();
   document.getElementById('product-modal').style.display = 'flex';
 }
 
@@ -202,6 +208,7 @@ function openEditModal(id) {
   document.getElementById('p-featured').checked = p.isFeatured;
   document.getElementById('p-bestseller').checked = p.isBestSeller;
   document.getElementById('p-free-delivery').checked = p.freeDelivery;
+  document.getElementById('p-delivery-charge').value = p.deliveryCharge || 0;
   document.getElementById('p-returnable').checked = p.isReturnable;
   document.getElementById('p-cod').checked = p.codAvailable;
   document.getElementById('p-video-url').value = p.videoUrl || '';
@@ -209,6 +216,7 @@ function openEditModal(id) {
   document.getElementById('product-modal-message').style.display = 'none';
   renderImageSlots();
   updateVideoPreview();
+  toggleDeliveryChargeField();
   document.getElementById('product-modal').style.display = 'flex';
 }
 
@@ -249,6 +257,7 @@ async function submitProductForm(e) {
     mrp: Number(document.getElementById('p-mrp').value),
     stock: Number(document.getElementById('p-stock').value),
     freeDelivery: document.getElementById('p-free-delivery').checked,
+    deliveryCharge: Number(document.getElementById('p-delivery-charge').value) || 0,
     isReturnable: document.getElementById('p-returnable').checked,
     codAvailable: document.getElementById('p-cod').checked,
     isFeatured: document.getElementById('p-featured').checked,

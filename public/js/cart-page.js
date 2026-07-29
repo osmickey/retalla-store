@@ -38,7 +38,7 @@ function renderCartPage() {
 
   const subtotal = cart.subtotal();
   const savings = cart.savings();
-  const shipping = subtotal >= 499 || subtotal === 0 ? 0 : 49;
+  const shipping = subtotal === 0 ? 0 : cart.computeShipping();
   document.getElementById('summary-subtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
   const savingsRow = document.getElementById('summary-savings-row');
   if (savings > 0) {

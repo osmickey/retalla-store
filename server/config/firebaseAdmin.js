@@ -1,17 +1,18 @@
-const admin = require('firebase-admin');
+const { initializeApp, cert, getApps } = require('firebase-admin/app');
+const { getAuth } = require('firebase-admin/auth');
 
-let initialized = false;
+let authInstance = null;
 
-function getFirebaseAdmin() {
-  if (!initialized) {
+function getFirebaseAuth() {
+  if (!authInstance) {
     if (!process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
       throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON is not configured.');
     }
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    initialized = true;
+    const app = getApps()[0] || initializeApp({ credential: cert(serviceAccount) });
+    authInstance = getAuth(app);
   }
-  return admin;
+  return authInstance;
 }
 
-module.exports = getFirebaseAdmin;
+module.exports = getFirebaseAuth;

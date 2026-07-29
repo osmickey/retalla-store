@@ -25,6 +25,8 @@ const cart = {
         mrp: product.mrp,
         stock: product.stock,
         codAvailable: product.codAvailable !== false,
+        freeDelivery: product.freeDelivery !== false,
+        deliveryCharge: product.deliveryCharge || 0,
         qty,
       });
     }
@@ -58,6 +60,16 @@ const cart = {
 
   savings() {
     return this.getItems().reduce((sum, i) => sum + i.qty * Math.max(0, (i.mrp || i.price) - i.price), 0);
+  },
+
+  computeShipping() {
+    let shipping = 0;
+    this.getItems().forEach((i) => {
+      if (i.freeDelivery === false) {
+        shipping = Math.max(shipping, i.deliveryCharge || 0);
+      }
+    });
+    return shipping;
   },
 };
 

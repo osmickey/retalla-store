@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
 const { generateOtp, hashOtp, generateResetToken, hashToken } = require('../utils/otp');
-const getFirebaseAdmin = require('../config/firebaseAdmin');
+const getFirebaseAuth = require('../config/firebaseAdmin');
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const OTP_RESEND_COOLDOWN_MS = 60 * 1000;
@@ -10,9 +10,10 @@ const RESET_TOKEN_TTL_MS = 15 * 60 * 1000;
 const MAX_OTP_ATTEMPTS = 5;
 
 function signToken(user) {
-  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  });
+  const expiresIn = user.isAdmin
+    ? process.env.ADMIN_JWT_EXPIRES_IN || '30m'
+    : process.env.JWT_EXPIRES_IN || '7d';
+  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn });
 }
 
 async function register(req, res) {
@@ -145,10 +146,9 @@ async function verifyPhone(req, res) {
   const { idToken } = req.body;
   if (!idToken) return res.status(400).json({ message: 'idToken is required' });
 
-  const admin = getFirebaseAdmin();
   let decoded;
   try {
-    decoded = await admin.auth().verifyIdToken(idToken);
+    decoded = await getFirebaseAuth().verifyIdToken(idToken);
   } catch (err) {
     return res.status(400).json({ message: 'Invalid or expired verification, please try again' });
   }

@@ -36,6 +36,7 @@
               <input id="addr-phone" type="tel" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" title="Enter a valid 10-digit Indian mobile number" placeholder="98765 43210" />
             </div>
             <div id="phone-verify-status"></div>
+            <div id="checkout-phone-message" class="form-message" style="display:none;"></div>
           </div>
         </div>
         <div class="field">
@@ -85,7 +86,7 @@
         <div class="summary-row savings" id="co-savings-row" style="display:none;"><span>Discount</span><span id="co-savings">− Rs. 0.00</span></div>
         <div class="summary-row"><span>Shipping</span><span id="co-shipping">FREE</span></div>
         <div class="summary-row total"><span>Total</span><span id="co-total">Rs. 0.00</span></div>
-        <div id="place-order-hint" class="form-message error" style="display:none;">Verify your mobile number above to place your order.</div>
+        <div id="place-order-hint" class="form-message hint" style="display:none;">Verify your mobile number above to place your order.</div>
         <button id="place-order-btn" type="submit" class="btn btn-primary btn-block" disabled>Place Order</button>
         <div id="checkout-phone-recaptcha"></div>
       </div>
