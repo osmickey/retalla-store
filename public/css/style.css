@@ -25,7 +25,14 @@
   --shadow-lg: 0 24px 60px rgba(43, 32, 90, 0.18);
   --shadow-primary: 0 12px 24px rgba(79, 70, 229, 0.28);
   --shadow-accent: 0 12px 24px rgba(255, 107, 74, 0.30);
-  --container: 1240px;
+  --container: 1320px;
+}
+
+@media (min-width: 1600px) {
+  :root { --container: 1460px; }
+}
+@media (min-width: 1920px) {
+  :root { --container: 1560px; }
 }
 
 * { box-sizing: border-box; }
@@ -885,7 +892,7 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .pd-actions .btn { flex: 1; min-width: 160px; }
 .pd-actions .btn-primary:hover { box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.15), 0 14px 28px rgba(55, 47, 158, 0.4); }
 .pd-actions .btn-accent:hover { box-shadow: 0 0 0 6px rgba(255, 62, 108, 0.15), 0 14px 28px rgba(255, 62, 108, 0.42); }
-.pd-description { margin-top: 20px; color: var(--text-muted); font-size: 0.92rem; line-height: 1.7; }
+.pd-description { margin-top: 20px; color: var(--text-muted); font-size: 0.92rem; line-height: 1.7; max-width: 720px; }
 
 /* ===== Delivery check widget ===== */
 .delivery-check { margin: 20px 0; padding: 14px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); }
