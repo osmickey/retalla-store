@@ -8,6 +8,13 @@ const FIREBASE_CONFIG = {
   appId: '1:743391651770:web:dc44a26298c130ccb89f83',
 };
 
+// From google.com/recaptcha/admin (reCAPTCHA v3), registered in Firebase Console > App Check.
+// Also safe to expose client-side.
+const RECAPTCHA_V3_SITE_KEY = '6LcngWstAAAAABhNVUcdNy3iieVk7EtxIIUoXYJl';
+
 if (window.firebase && !firebase.apps.length) {
   firebase.initializeApp(FIREBASE_CONFIG);
+  if (firebase.appCheck && RECAPTCHA_V3_SITE_KEY !== 'YOUR_RECAPTCHA_V3_SITE_KEY') {
+    firebase.appCheck().activate(RECAPTCHA_V3_SITE_KEY, true);
+  }
 }
