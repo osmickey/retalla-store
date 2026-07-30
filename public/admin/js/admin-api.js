@@ -49,6 +49,46 @@ const adminApi = {
   del(path) { return this.request(path, { method: 'DELETE' }); },
 };
 
+function resizeImageFile(file, maxDim, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round(height * (maxDim / width));
+            width = maxDim;
+          } else {
+            width = Math.round(width * (maxDim / height));
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => reject(new Error('Could not read image file'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Could not read image file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function showAdminToast(message) {
+  const existing = document.querySelector('.admin-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'admin-toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2000);
+}
+
 function renderAdminIdentity() {
   const el = document.getElementById('admin-who');
   const user = adminAuth.getUser();

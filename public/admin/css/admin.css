@@ -284,6 +284,26 @@ tr:hover td { background: #fafaff; }
 .video-admin-info span { font-size: 0.8rem; color: var(--text-muted); }
 .video-admin-info .btn { margin-top: 4px; width: 100%; justify-content: center; }
 
+.banner-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.banner-admin-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+.banner-admin-thumb { position: relative; aspect-ratio: 21 / 9; background: #14112a; }
+.banner-admin-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.banner-admin-inactive {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.55); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.banner-admin-body { padding: 14px; }
+.banner-admin-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.banner-admin-actions .btn { flex: 1; justify-content: center; min-width: 0; padding-left: 8px; padding-right: 8px; }
+.banner-admin-card.add {
+  aspect-ratio: 21 / 9; border: 2px dashed var(--border); border-radius: var(--radius);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  color: var(--text-muted); cursor: pointer; background: var(--bg); font-size: 0.85rem; font-weight: 600;
+  transition: border-color .15s ease, color .15s ease;
+}
+.banner-admin-card.add:hover { border-color: var(--primary); color: var(--primary); }
+
 .chart-toggle { display: flex; gap: 6px; background: var(--bg); border-radius: 999px; padding: 4px; }
 .chart-toggle-btn {
   border: none; background: transparent; padding: 7px 16px; border-radius: 999px;

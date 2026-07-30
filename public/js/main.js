@@ -101,21 +101,6 @@ function renderCategoryNav() {
   });
 }
 
-function startCycleWords() {
-  const el = document.querySelector('.cycle-word');
-  if (!el) return;
-  const words = ['Gadgets', 'Fashion', 'Beauty', 'Home Decor', 'Jewellery'];
-  let i = 0;
-  setInterval(() => {
-    el.classList.add('swap');
-    setTimeout(() => {
-      i = (i + 1) % words.length;
-      el.textContent = words[i];
-      el.classList.remove('swap');
-    }, 300);
-  }, 2200);
-}
-
 function startShoppingQuotes() {
   const el = document.getElementById('shopping-quote');
   if (!el) return;
@@ -143,6 +128,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadHome();
   loadRecentlyViewedSection();
   loadLiveVideoSection();
-  startCycleWords();
   startShoppingQuotes();
 });

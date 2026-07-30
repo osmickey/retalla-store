@@ -188,16 +188,6 @@ async function saveTracking(orderId) {
   }
 }
 
-function showAdminToast(message) {
-  const existing = document.querySelector('.admin-toast');
-  if (existing) existing.remove();
-  const toast = document.createElement('div');
-  toast.className = 'admin-toast';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2000);
-}
-
 function escapeOrdersHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;

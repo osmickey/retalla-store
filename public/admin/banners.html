@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Customers — Retalla Admin</title>
+<title>Home Banners — Retalla Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/admin/css/admin.css" />
 </head>
@@ -17,35 +17,30 @@
       <a href="/admin/orders.html"><span data-icon="receipt" data-icon-size="18"></span> Orders</a>
       <a href="/admin/customers.html"><span data-icon="user" data-icon-size="18"></span> Customers</a>
       <a href="/admin/live-videos.html"><span data-icon="video" data-icon-size="18"></span> Retalla Live</a>
-      <a href="/admin/banners.html"><span data-icon="tag" data-icon-size="18"></span> Home Banners</a>
+      <a href="/admin/banners.html" class="active"><span data-icon="tag" data-icon-size="18"></span> Home Banners</a>
     </nav>
     <button class="logout-btn" onclick="adminAuth.logout()"><span data-icon="logout" data-icon-size="16"></span> Logout</button>
   </aside>
 
   <main class="admin-main">
     <div class="admin-header">
-      <h1>Customers</h1>
-      <div class="who" id="customer-count"></div>
+      <h1>Home Banners</h1>
+      <div class="who">Rotating banner carousel shown at the top of your home page — up to 6 slides, 1.5s each</div>
     </div>
 
     <div class="panel">
-      <div class="panel-head">
-        <div class="filter-row">
-          <input id="filter-search" type="text" placeholder="Search by name or email..." style="padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);min-width:240px;" />
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th></tr></thead>
-          <tbody id="customers-body"><tr><td colspan="4" class="loading">Loading...</td></tr></tbody>
-        </table>
+      <div class="panel-head"><h2>Banners (<span id="banner-count">0</span>/6)</h2></div>
+      <div class="banner-admin-grid" id="banner-grid">
+        <div class="loading">Loading...</div>
       </div>
     </div>
   </main>
 </div>
 
+<input type="file" id="banner-file-input" accept="image/*" style="display:none;" />
+
 <script src="/js/icons.js"></script>
 <script src="/admin/js/admin-api.js"></script>
-<script src="/admin/js/customers.js"></script>
+<script src="/admin/js/banners.js"></script>
 </body>
 </html>
