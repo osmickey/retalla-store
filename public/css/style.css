@@ -315,7 +315,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .banner-carousel::-webkit-scrollbar { display: none; }
 .banner-carousel-slide {
-  flex: 0 0 90%;
+  flex: 0 0 100%;
   aspect-ratio: 1.9 / 1;
   scroll-snap-align: start;
   border-radius: var(--radius-lg);
