@@ -24,7 +24,10 @@
       <div class="field"><label>Email</label><input id="login-email" type="email" required /></div>
       <div class="field">
         <label>Password</label>
-        <input id="login-password" type="password" required minlength="6" />
+        <div class="password-field">
+          <button type="button" class="password-toggle" onclick="togglePasswordVisibility('login-password', this)" aria-label="Show password"><span data-icon="eye" data-icon-size="18"></span></button>
+          <input id="login-password" type="password" required minlength="6" />
+        </div>
         <a href="/forgot-password.html" class="forgot-link">Forgot password?</a>
       </div>
       <button id="login-submit" type="submit" class="btn btn-primary btn-block">Login</button>

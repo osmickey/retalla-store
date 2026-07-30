@@ -49,4 +49,13 @@ function renderIcons(root) {
   });
 }
 
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const showing = input.type === 'text';
+  input.type = showing ? 'password' : 'text';
+  btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+  btn.innerHTML = `<span data-icon="${showing ? 'eye' : 'eye-off'}" data-icon-size="18"></span>`;
+  renderIcons(btn);
+}
+
 document.addEventListener('DOMContentLoaded', () => renderIcons());
