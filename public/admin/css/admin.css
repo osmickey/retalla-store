@@ -284,6 +284,16 @@ tr:hover td { background: #fafaff; }
 .video-admin-info span { font-size: 0.8rem; color: var(--text-muted); }
 .video-admin-info .btn { margin-top: 4px; width: 100%; justify-content: center; }
 
+.hero-image-row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.hero-image-preview {
+  width: 260px; aspect-ratio: 16 / 9; border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--border); background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 0.82rem; overflow: hidden; flex-shrink: 0;
+}
+.hero-image-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-image-actions { display: flex; flex-direction: column; gap: 8px; }
+
 .banner-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
 .banner-admin-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
 .banner-admin-thumb { position: relative; aspect-ratio: 21 / 9; background: #14112a; }

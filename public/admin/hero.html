@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hero Banner — Retalla Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="sidebar">
+    <a href="/admin/index.html" class="brand">Retalla<span>.</span>Admin</a>
+    <nav>
+      <a href="/admin/index.html"><span data-icon="dashboard" data-icon-size="18"></span> Dashboard</a>
+      <a href="/admin/products.html"><span data-icon="box" data-icon-size="18"></span> Products</a>
+      <a href="/admin/orders.html"><span data-icon="receipt" data-icon-size="18"></span> Orders</a>
+      <a href="/admin/customers.html"><span data-icon="user" data-icon-size="18"></span> Customers</a>
+      <a href="/admin/live-videos.html"><span data-icon="video" data-icon-size="18"></span> Retalla Live</a>
+      <a href="/admin/banners.html"><span data-icon="tag" data-icon-size="18"></span> Home Banners</a>
+      <a href="/admin/hero.html" class="active"><span data-icon="sparkle" data-icon-size="18"></span> Hero Banner</a>
+    </nav>
+    <button class="logout-btn" onclick="adminAuth.logout()"><span data-icon="logout" data-icon-size="16"></span> Logout</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1>Hero Banner</h1>
+      <div class="who">The large banner at the top of your home page — shown on desktop only</div>
+    </div>
+
+    <div class="panel">
+      <div id="hero-message" class="form-message" style="display:none;"></div>
+
+      <form id="hero-form" onsubmit="saveHero(event)">
+        <div class="form-section" style="--section-c:#4f46e5;">
+          <h4 class="form-section-title"><span data-icon="edit" data-icon-size="15"></span> Text</h4>
+          <div class="field">
+            <label>Badge <span class="field-optional">(small pill above the heading)</span></label>
+            <input id="h-badge" maxlength="60" placeholder="Mega Sale — Up to 50% Off" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Heading</label>
+              <input id="h-title" maxlength="80" placeholder="Smart Picks for" />
+            </div>
+            <div class="field">
+              <label>Highlighted words <span class="field-optional">(shown in gradient)</span></label>
+              <input id="h-highlight" maxlength="60" placeholder="Everyday Living" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Subtitle</label>
+            <textarea id="h-subtitle" rows="3" maxlength="220" placeholder="Short supporting line under the heading"></textarea>
+          </div>
+        </div>
+
+        <div class="form-section" style="--section-c:#ff6b4a;">
+          <h4 class="form-section-title"><span data-icon="tag" data-icon-size="15"></span> Buttons</h4>
+          <div class="field-row">
+            <div class="field"><label>Main button text</label><input id="h-cta-text" maxlength="30" placeholder="Shop Now" /></div>
+            <div class="field"><label>Main button link</label><input id="h-cta-link" placeholder="/shop.html" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Second button text <span class="field-optional">(optional)</span></label><input id="h-sec-text" maxlength="30" placeholder="Explore Deals" /></div>
+            <div class="field"><label>Second button link</label><input id="h-sec-link" placeholder="/shop.html" /></div>
+          </div>
+        </div>
+
+        <div class="form-section" style="--section-c:#eab308;">
+          <h4 class="form-section-title"><span data-icon="box" data-icon-size="15"></span> Image</h4>
+          <p class="form-section-hint">Optional. Leave empty to show the animated default artwork instead.</p>
+          <div class="hero-image-row">
+            <div class="hero-image-preview" id="hero-image-preview">No image</div>
+            <div class="hero-image-actions">
+              <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('hero-file-input').click()">Upload image</button>
+              <button type="button" class="btn btn-danger btn-sm" id="hero-remove-image" onclick="removeHeroImage()" style="display:none;">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section" style="--section-c:#16a34a;">
+          <h4 class="form-section-title"><span data-icon="check" data-icon-size="15"></span> Visibility</h4>
+          <div class="checkbox-row">
+            <label><input id="h-active" type="checkbox" checked /> Show hero banner on the home page</label>
+          </div>
+        </div>
+
+        <button id="hero-submit-btn" type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Save Hero Banner</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<input type="file" id="hero-file-input" accept="image/*" style="display:none;" />
+
+<script src="/js/icons.js"></script>
+<script src="/admin/js/admin-api.js"></script>
+<script src="/admin/js/hero.js"></script>
+</body>
+</html>

@@ -46,18 +46,32 @@
   <div class="container category-nav-list"></div>
 </div>
 
-<section class="banner-carousel-section">
-  <div class="container">
-    <div class="banner-carousel" id="banner-carousel"></div>
-    <div class="banner-carousel-dots" id="banner-dots"></div>
-  </div>
+<section class="hero" id="hero-section">
+  <span class="hero-orb hero-orb-1"></span>
+  <span class="hero-orb hero-orb-2"></span>
+  <div class="container hero-inner" id="hero-inner"></div>
 </section>
 
-<main class="container">
+<main class="container home-main">
+
+  <!-- DOM order is the mobile order (banner first), so mobile keeps its original
+       block layout untouched. Desktop reorders these with flex `order` below. -->
+  <section class="banner-carousel-section">
+    <div class="banner-carousel" id="banner-carousel"></div>
+    <div class="banner-carousel-dots" id="banner-dots"></div>
+  </section>
 
   <section class="section" id="recently-viewed-section" style="display:none;">
     <div class="section-head"><h2>Recently Viewed</h2></div>
     <div class="recent-shelf" id="recent-shelf"></div>
+  </section>
+
+  <section class="section category-section">
+    <div class="section-head">
+      <div><span class="eyebrow">Browse</span><h2>Shop by Category</h2></div>
+      <a href="/shop.html">View all →</a>
+    </div>
+    <div class="category-grid" id="category-tiles"></div>
   </section>
 
   <section class="section" id="live-video-section" style="display:none;">
@@ -71,11 +85,6 @@
   <section class="quote-strip">
     <span class="quote-mark">✦</span>
     <p class="quote-text" id="shopping-quote">Great style shouldn't cost a fortune.</p>
-  </section>
-
-  <section class="section category-section">
-    <div class="section-head"><h2>Shop by Category</h2></div>
-    <div class="category-grid" id="category-tiles"></div>
   </section>
 
   <section class="section">
@@ -220,6 +229,7 @@
 <script src="/js/ui.js"></script>
 <script src="/js/recently-viewed.js"></script>
 <script src="/js/banner-carousel.js"></script>
+<script src="/js/hero.js"></script>
 <script src="/js/main.js"></script>
 <script src="/js/mobile-nav.js"></script>
 </body>
