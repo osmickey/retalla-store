@@ -60,7 +60,19 @@ async function handleVerifyOtp(e) {
     fpResetToken = data.resetToken;
     showStep('fp-step-password');
   } catch (err) {
-    showFpMessage('fp-otp-message', err.message);
+    if (typeof showAlertModal === 'function') {
+      showAlertModal({
+        title: 'Incorrect OTP',
+        message: err.message || "That code doesn't match. Please check the 6 digits and try again.",
+        type: 'error',
+        onClose: () => {
+          const input = document.getElementById('fp-otp');
+          if (input) { input.value = ''; input.focus(); }
+        },
+      });
+    } else {
+      showFpMessage('fp-otp-message', err.message);
+    }
   } finally {
     btn.disabled = false;
     btn.textContent = 'Verify OTP';

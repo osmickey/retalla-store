@@ -1150,6 +1150,12 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .pv-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; }
 .pv-resend { background: none; border: none; padding: 4px; font-size: 0.8rem; color: var(--primary); font-weight: 600; cursor: pointer; }
 .pv-resend:disabled { color: var(--text-muted); cursor: default; font-weight: 500; }
+.pv-change {
+  background: none; border: none; padding: 0 0 0 2px;
+  font: inherit; font-weight: 700; color: var(--primary);
+  cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+}
+.pv-change:hover { color: var(--primary-dark); }
 
 .form-message.hint { background: #fef3c7; color: #92400e; }
 
@@ -1302,8 +1308,64 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   .mobile-tabbar { animation: none !important; }
 }
 
-/* ===== Sticky mobile tab bar (home page only) ===== */
+/* ===== Sticky mobile tab bar (injected by tabbar.js on every page but checkout) ===== */
 .mobile-tabbar { display: none; }
+
+/* ===== Alert modal ===== */
+/* Entry is a CSS animation rather than a JS-toggled class: if a rAF/class toggle
+   were ever missed the dialog would sit invisible but still block the page. */
+.app-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(26, 23, 48, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.app-modal-overlay.closing { animation: appModalFadeOut 0.18s ease forwards; }
+.app-modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px 22px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  /* Transform-only entrance on purpose: animating opacity from 0 would leave the
+     dialog invisible (but still blocking) anywhere the animation doesn't run. */
+  animation: appModalPopIn 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.app-modal-overlay.closing .app-modal { animation: appModalPopOut 0.18s ease forwards; }
+@keyframes appModalFadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes appModalPopIn {
+  from { transform: translateY(16px) scale(0.95); }
+  to { transform: none; }
+}
+@keyframes appModalPopOut {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: scale(0.97); }
+}
+.app-modal-icon {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.app-modal-icon.error { background: #fee2e2; color: #dc2626; }
+.app-modal-icon.success { background: #dcfce7; color: var(--success); }
+.app-modal-icon.info { background: var(--primary-light); color: var(--primary); }
+.app-modal h3 { font-size: 1.08rem; margin-bottom: 8px; }
+.app-modal p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+.app-modal .btn { width: 100%; justify-content: center; }
+
+.cart-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.cart-head .btn [data-icon] { display: inline-flex; }
 
 /* ===== Responsive ===== */
 @media (max-width: 960px) {
@@ -1336,35 +1398,29 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   .video-info .price { font-size: 0.92rem; }
   .video-info .add-btn { padding: 8px 12px; font-size: 0.78rem; margin-top: 8px; }
   .live-badge { font-size: 0.62rem; padding: 3px 9px; top: 8px; left: 8px; }
-  .navbar .container { flex-wrap: nowrap; gap: 8px; padding-top: 12px; padding-bottom: 12px; position: relative; }
+  .navbar .container { flex-wrap: nowrap; gap: 8px; padding-top: 10px; padding-bottom: 10px; position: relative; }
   .hamburger-btn { display: flex; order: -1; }
-  .brand { font-size: 1.3rem; }
+  .brand { font-size: 1.12rem; flex-shrink: 0; }
+
+  /* Account and Cart now live in the bottom tab bar, so the header trades those
+     icons for a permanently visible search field like desktop has. */
+  .navbar #nav-account,
+  .navbar .nav-actions a[href="/cart.html"],
+  .search-toggle-btn { display: none; }
   .search-form {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: 1px;
-    max-width: none;
-    border-radius: 0 0 var(--radius) var(--radius);
-    box-shadow: var(--shadow);
-    z-index: 60;
-  }
-  .search-form.open { display: flex; }
-  .search-toggle-btn {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: transparent;
-    border: none;
-    border-radius: var(--radius-sm);
-    color: var(--text-muted);
+    position: static;
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    border-radius: 999px;
+    box-shadow: none;
   }
-  .search-toggle-btn:hover, .search-toggle-btn.open { background: var(--primary-light); color: var(--primary); }
-  .nav-actions { margin-left: auto; gap: 0; }
+  .search-form input { min-width: 0; font-size: 0.85rem; padding: 9px 12px; }
+  .search-form button { padding: 0 14px; }
+  .nav-actions { margin-left: 0; gap: 0; }
+  .nav-actions:empty { display: none; }
   .nav-icon-link { padding: 6px 8px; }
   .nav-icon-link span:not(.icon) { display: none; }
   .nav-desktop-only { display: none; }
@@ -1492,6 +1548,10 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   /* Keep the footer and toasts clear of the fixed bar. */
   body.has-tabbar { padding-bottom: 58px; }
   body.has-tabbar .toast { bottom: 72px; }
+
+  /* Let all six OTP boxes share the row evenly instead of capping at 48px. */
+  .otp-box-row { gap: 7px; }
+  .otp-box { flex: 1 1 0; min-width: 0; max-width: none; font-size: 1.05rem; }
 }
 
 @media (max-width: 380px) {

@@ -43,12 +43,18 @@
 
 <main class="container">
   <div class="breadcrumb"><a href="/index.html">Home</a> / <span>Cart</span></div>
-  <h1 style="margin-bottom:20px;">Shopping Cart</h1>
+  <div class="cart-head">
+    <h1>Shopping Cart</h1>
+    <a href="/account.html" class="btn btn-outline btn-sm">
+      <span data-icon="box" data-icon-size="16"></span> My Orders
+    </a>
+  </div>
 
   <div id="cart-empty" class="empty-state" style="display:none;">
     <div class="icon-circle" data-icon="cart" data-icon-size="30"></div>
     <p>Your cart is empty.</p>
     <a class="btn btn-primary" href="/shop.html">Continue Shopping</a>
+    <a class="btn btn-outline" href="/account.html" style="margin-left:8px;">My Orders</a>
   </div>
 
   <div id="cart-layout" class="cart-layout">
@@ -75,6 +81,7 @@
 <script src="/js/cart.js"></script>
 <script src="/js/api.js"></script>
 <script src="/js/icons.js"></script>
+<script src="/js/tabbar.js"></script>
 <script src="/js/animate.js"></script>
 <script src="/js/ui.js"></script>
 <script src="/js/mobile-nav.js"></script>
