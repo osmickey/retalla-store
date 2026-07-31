@@ -1299,7 +1299,11 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   /* Kept separate: resetting transform here would undo .hero-tile-main's centering. */
   .hero, .hero-orb, .hero-copy > *, .hero-art, .hero-art img, .hero-tile { animation: none !important; }
   .hero-copy > * { opacity: 1 !important; transform: none !important; }
+  .mobile-tabbar { animation: none !important; }
 }
+
+/* ===== Sticky mobile tab bar (home page only) ===== */
+.mobile-tabbar { display: none; }
 
 /* ===== Responsive ===== */
 @media (max-width: 960px) {
@@ -1401,6 +1405,93 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   .pd-badge span { font-size: 0.66rem; }
   .delivery-check-row { flex-wrap: wrap; }
   .delivery-check-row input { min-width: 140px; }
+
+  /* --- Tighter mobile rhythm: the page read as oversized at this width --- */
+  .section { margin: 26px 0; }
+  .section-head { margin-bottom: 14px; }
+  .section-head h2 { font-size: 1.02rem; }
+  .section-head a { font-size: 0.8rem; }
+  .eyebrow { font-size: 0.68rem; }
+
+  /* Recently Viewed is a glanceable shelf, so drop the card chrome and shrink it. */
+  .recent-shelf { gap: 10px; }
+  .recent-shelf .product-card { min-width: 132px; max-width: 132px; }
+  .recent-shelf .product-card .cat,
+  .recent-shelf .product-card .rating-row,
+  .recent-shelf .product-card .free-delivery,
+  .recent-shelf .product-card .add-btn { display: none; }
+  .recent-shelf .product-info { padding: 9px 10px 11px; gap: 2px; }
+  .recent-shelf .product-info h3 { font-size: 0.78rem; line-height: 1.35; }
+  .recent-shelf .price { font-size: 0.86rem; }
+  .recent-shelf .mrp, .recent-shelf .discount { font-size: 0.7rem; }
+
+  #live-video-section { padding: 18px 14px; }
+  .video-card { min-width: 158px; max-width: 158px; }
+  .video-info { padding: 10px; }
+  .video-info h3 { font-size: 0.78rem; margin-bottom: 6px; }
+  .video-info .price { font-size: 0.86rem; }
+  .video-info .add-btn { padding: 7px 10px; font-size: 0.72rem; margin-top: 6px; }
+
+  .product-info h3 { font-size: 0.8rem; }
+  .price { font-size: 0.9rem; }
+  .product-info { padding: 10px; }
+  .trust-card { padding: 16px 12px; }
+  .trust-card strong { font-size: 0.84rem; }
+  .trust-card span { font-size: 0.72rem; }
+  .testimonial-card { padding: 16px; }
+  .testimonial-card p { font-size: 0.85rem; }
+  .trust-strip { padding: 16px; gap: 12px; }
+  .trust-strip .stat strong { font-size: 1.25rem; }
+  .trust-strip .stat span { font-size: 0.7rem; }
+  footer { margin-top: 44px; padding: 34px 0 22px; }
+  .footer-grid { gap: 16px; }
+  .policy-links { padding: 20px 0 4px; font-size: 0.76rem; }
+
+  /* --- Sticky bottom tab bar --- */
+  .mobile-tabbar {
+    display: flex;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 90;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 18px rgba(43, 32, 90, 0.10);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    animation: tabbarUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .mobile-tabbar a {
+    position: relative;
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px;
+    padding: 8px 4px 7px;
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 0.01em;
+    color: var(--text-muted);
+    transition: color 0.18s ease, transform 0.12s ease;
+  }
+  .mobile-tabbar a::before {
+    content: '';
+    position: absolute; top: 0; left: 50%;
+    width: 26px; height: 3px; border-radius: 0 0 3px 3px;
+    background: linear-gradient(90deg, var(--primary), var(--pink));
+    transform: translateX(-50%) scaleX(0);
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .mobile-tabbar a.active { color: var(--primary); }
+  .mobile-tabbar a.active::before { transform: translateX(-50%) scaleX(1); }
+  .mobile-tabbar a.active .tab-ico { transform: translateY(-1px); }
+  .mobile-tabbar a:active { transform: scale(0.93); }
+  .mobile-tabbar .tab-ico { display: flex; transition: transform 0.18s ease; }
+  .mobile-tabbar .tabbar-badge {
+    position: absolute; top: 3px; left: 50%; margin-left: 5px;
+    min-width: 16px; height: 16px; padding: 0 4px;
+    font-size: 0.62rem; line-height: 16px; text-align: center;
+  }
+  @keyframes tabbarUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  /* Keep the footer and toasts clear of the fixed bar. */
+  body.has-tabbar { padding-bottom: 58px; }
+  body.has-tabbar .toast { bottom: 72px; }
 }
 
 @media (max-width: 380px) {

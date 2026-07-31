@@ -74,16 +74,19 @@ const cart = {
 };
 
 function updateCartBadge() {
-  const badge = document.getElementById('cart-count');
-  if (!badge) return;
+  // Matches every badge on the page — the nav one and the mobile tab bar's.
+  const badges = document.querySelectorAll('.cart-badge');
+  if (!badges.length) return;
   const next = cart.count();
-  const prev = Number(badge.textContent) || 0;
-  badge.textContent = next;
-  if (next > prev) {
-    badge.classList.remove('bump');
-    void badge.offsetWidth;
-    badge.classList.add('bump');
-  }
+  badges.forEach((badge) => {
+    const prev = Number(badge.textContent) || 0;
+    badge.textContent = next;
+    if (next > prev) {
+      badge.classList.remove('bump');
+      void badge.offsetWidth;
+      badge.classList.add('bump');
+    }
+  });
 }
 
 function showToast(message) {

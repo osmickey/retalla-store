@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body>
+<body class="has-tabbar">
 
 <nav class="navbar">
   <div class="container">
@@ -219,6 +219,23 @@
     <div class="footer-bottom">© 2026 Retalla. All rights reserved.</div>
   </div>
 </footer>
+
+<!-- Sticky bottom navigation — mobile, home page only -->
+<nav class="mobile-tabbar" aria-label="Primary">
+  <a href="/index.html" class="active" aria-current="page">
+    <span class="tab-ico" data-icon="home" data-icon-size="21"></span><span>Home</span>
+  </a>
+  <a href="/shop.html">
+    <span class="tab-ico" data-icon="grid" data-icon-size="21"></span><span>Categories</span>
+  </a>
+  <a href="/account.html">
+    <span class="tab-ico" data-icon="user" data-icon-size="21"></span><span>Account</span>
+  </a>
+  <a href="/cart.html">
+    <span class="tab-ico" data-icon="cart" data-icon-size="21"></span><span>Cart</span>
+    <span class="cart-badge tabbar-badge">0</span>
+  </a>
+</nav>
 
 <script src="/js/config.js"></script>
 <script src="/js/auth.js"></script>
