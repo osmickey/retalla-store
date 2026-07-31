@@ -50,7 +50,13 @@
       "Bash(MONGO_URI=\"mongodb://127.0.0.1:27129/retalla\" JWT_SECRET=\"test_secret\" ADMIN_EMAIL=\"admin@retalla.in\" ADMIN_PASSWORD=\"Admin@12345\" ADMIN_NAME=\"Retalla Admin\" node seed/seed.js)",
       "Bash(MONGO_URI=\"mongodb://127.0.0.1:27129/retalla\" JWT_SECRET=\"test_secret\" JWT_EXPIRES_IN=\"7d\" NODE_ENV=\"development\" PORT=\"5059\" node server.js)",
       "Bash(MONGO_URI=\"mongodb://127.0.0.1:27130/retalla\" JWT_SECRET=\"test_secret\" ADMIN_EMAIL=\"admin@retalla.in\" ADMIN_PASSWORD=\"Admin@12345\" ADMIN_NAME=\"Retalla Admin\" node seed/seed.js)",
-      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27130/retalla\" JWT_SECRET=\"test_secret\" JWT_EXPIRES_IN=\"7d\" NODE_ENV=\"development\" PORT=\"5059\" node server.js)"
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27130/retalla\" JWT_SECRET=\"test_secret\" JWT_EXPIRES_IN=\"7d\" NODE_ENV=\"development\" PORT=\"5059\" node server.js)",
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27131/retalla\" JWT_SECRET=\"test_secret\" ADMIN_EMAIL=\"admin@retalla.in\" ADMIN_PASSWORD=\"Admin@12345\" ADMIN_NAME=\"Retalla Admin\" node seed/seed.js)",
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27131/retalla\" JWT_SECRET=\"test_secret\" JWT_EXPIRES_IN=\"7d\" NODE_ENV=\"development\" PORT=\"5059\" node server.js)",
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27132/retalla\" JWT_SECRET=\"test_secret\" ADMIN_EMAIL=\"admin@retalla.in\" ADMIN_PASSWORD=\"Admin@12345\" ADMIN_NAME=\"Retalla Admin\" node seed/seed.js)",
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27132/retalla\" JWT_SECRET=\"test_secret\" JWT_EXPIRES_IN=\"7d\" NODE_ENV=\"development\" PORT=\"5059\" node server.js)",
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27133/retalla\" JWT_SECRET=\"test_secret\" ADMIN_EMAIL=\"admin@retalla.in\" ADMIN_PASSWORD=\"Admin@12345\" ADMIN_NAME=\"Retalla Admin\" node seed/seed.js)",
+      "Bash(MONGO_URI=\"mongodb://127.0.0.1:27133/retalla\" JWT_SECRET=\"test_secret\" JWT_EXPIRES_IN=\"7d\" NODE_ENV=\"development\" PORT=\"5059\" node server.js)"
     ]
   }
 }

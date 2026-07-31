@@ -1,12 +1,14 @@
 const API_BASE = '/api';
 const CATEGORY_ICONS = {
-  'Home Items': 'home',
+  // A sofa reads as "home goods" more clearly than a house, which was easy to
+  // confuse with Home & Kitchen; a lipstick beats a generic sparkle for beauty.
+  'Home Items': 'sofa',
   'Women Western': 'dress',
   Lingerie: 'heart',
   Men: 'shirt',
   'Kids & Toys': 'toy',
   'Home & Kitchen': 'kitchen',
-  'Beauty & Health': 'sparkle',
+  'Beauty & Health': 'lipstick',
   Jewellery: 'gem',
   'Bags & Foot': 'shoe',
 };

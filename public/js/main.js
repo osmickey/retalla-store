@@ -91,6 +91,84 @@ function renderCategoryTiles() {
   }).join('');
   renderIcons(el);
   staggerChildren(el, '.category-tile', 40);
+  initCategoryRail();
+}
+
+function scrollCategoryRail(direction) {
+  const rail = document.getElementById('category-tiles');
+  if (!rail) return;
+  const tile = rail.querySelector('.category-tile');
+  const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
+  const step = tile ? (tile.getBoundingClientRect().width + gap) * 3 : rail.clientWidth * 0.8;
+  rail.scrollBy({ left: step * direction, behavior: 'smooth' });
+  // Don't rely solely on the scroll event — it isn't guaranteed to fire for
+  // programmatic smooth scrolling, which would leave the arrows out of sync.
+  setTimeout(updateCategoryArrows, 450);
+}
+
+function updateCategoryArrows() {
+  const rail = document.getElementById('category-tiles');
+  const prev = document.getElementById('cat-nav-prev');
+  const next = document.getElementById('cat-nav-next');
+  if (!rail || !prev || !next) return;
+  const maxScroll = rail.scrollWidth - rail.clientWidth;
+  prev.disabled = rail.scrollLeft <= 2;
+  next.disabled = rail.scrollLeft >= maxScroll - 2;
+}
+
+function initCategoryRail() {
+  const rail = document.getElementById('category-tiles');
+  if (!rail || rail.dataset.railReady) return;
+  rail.dataset.railReady = 'true';
+
+  // A hidden scrollbar leaves a plain mouse with no way to slide, so wire up drag.
+  let dragging = false;
+  let startX = 0;
+  let startScroll = 0;
+  let moved = 0;
+
+  rail.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    dragging = true;
+    moved = 0;
+    startX = e.clientX;
+    startScroll = rail.scrollLeft;
+    rail.classList.add('dragging');
+  });
+
+  document.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const delta = e.clientX - startX;
+    moved = Math.abs(delta);
+    rail.scrollLeft = startScroll - delta;
+  });
+
+  document.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
+    rail.classList.remove('dragging');
+    updateCategoryArrows();
+  });
+
+  // Suppress the click that follows a real drag so it doesn't open a category.
+  rail.addEventListener('click', (e) => {
+    if (moved > 6) {
+      e.preventDefault();
+      e.stopPropagation();
+      moved = 0;
+    }
+  }, true);
+
+  rail.addEventListener('scroll', updateCategoryArrows);
+  window.addEventListener('resize', updateCategoryArrows);
+
+  // Tile widths aren't final on the first pass (icons are injected just before), so
+  // recompute whenever the rail actually resizes instead of measuring once too early.
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(updateCategoryArrows).observe(rail);
+  }
+  setTimeout(updateCategoryArrows, 250);
+  updateCategoryArrows();
 }
 
 function renderCategoryNav() {

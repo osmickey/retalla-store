@@ -155,7 +155,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   flex: 1;
   display: flex;
   max-width: 560px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid #c9c6de;
   border-radius: 999px;
   overflow: hidden;
   background: #fff;
@@ -435,7 +435,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .banner-carousel.dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
 .banner-carousel-slide {
   flex: 0 0 100%;
-  aspect-ratio: 1.9 / 1;
+  aspect-ratio: 1.62 / 1;
   scroll-snap-align: start;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -563,23 +563,55 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 /* ===== Category grid ===== */
+/* One slidable row rather than a wrapping grid, so every category sits on a
+   single line and the rail hints there is more to scroll. */
+.category-rail { position: relative; }
 .category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 2px 8px;
+  cursor: grab;
 }
+.category-grid::-webkit-scrollbar { display: none; }
+.category-grid.dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+.cat-nav {
+  position: absolute;
+  top: 44%;
+  transform: translateY(-50%);
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; line-height: 1; padding-bottom: 3px;
+  cursor: pointer; z-index: 3;
+  transition: opacity 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+.cat-nav.prev { left: -15px; }
+.cat-nav.next { right: -15px; }
+.cat-nav:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+.cat-nav[disabled] { opacity: 0; pointer-events: none; }
 .category-tile {
   position: relative;
+  flex: 0 0 150px;
+  scroll-snap-align: start;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 26px 14px;
+  padding: 22px 12px 18px;
   text-align: center;
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
 }
 /* Soft brand wash that fades in behind the tile on hover. */
 .category-tile::before {
@@ -1131,21 +1163,27 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .phone-verify-card .pv-header { display: flex; align-items: center; gap: 14px; }
 
 .otp-box-row { display: flex; gap: 8px; margin: 16px 0 4px; }
-.otp-box {
-  width: 100%;
+/* Scoped tighter than `.field input`, which otherwise wins on specificity and applies
+   14px of side padding — enough to clip the digit inside these narrow boxes. */
+.otp-box-row input.otp-box {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  max-width: 52px;
   aspect-ratio: 1;
-  max-width: 48px;
+  padding: 0;
   text-align: center;
   font-size: 1.2rem;
   font-weight: 700;
+  line-height: 1;
   color: var(--text);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--bg);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-.otp-box:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); background: #fff; outline: none; }
-.otp-box.filled { border-color: var(--primary); background: #fff; }
+.otp-box-row input.otp-box:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); background: #fff; outline: none; }
+.otp-box-row input.otp-box.filled { border-color: var(--primary); background: #fff; }
 
 .pv-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; }
 .pv-resend { background: none; border: none; padding: 4px; font-size: 0.8rem; color: var(--primary); font-weight: 600; cursor: pointer; }
@@ -1549,9 +1587,10 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   body.has-tabbar { padding-bottom: 58px; }
   body.has-tabbar .toast { bottom: 72px; }
 
-  /* Let all six OTP boxes share the row evenly instead of capping at 48px. */
+  /* Tighter gap so all six fit; the 52px cap from the base rule stays, otherwise
+     the boxes stretch to fill whatever width the row happens to have. */
   .otp-box-row { gap: 7px; }
-  .otp-box { flex: 1 1 0; min-width: 0; max-width: none; font-size: 1.05rem; }
+  .otp-box-row input.otp-box { font-size: 1.1rem; }
 }
 
 @media (max-width: 380px) {

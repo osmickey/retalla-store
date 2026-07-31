@@ -30,24 +30,12 @@
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h2>Add a Banner</h2></div>
+      <div class="panel-head"><h2>Banners (<span id="banner-count">0</span>/6)</h2></div>
       <p class="form-section-hint">
-        Paste a direct image link (one that ends in .jpg, .png or .webp) or upload a file from your device.
-        A page link — like a Google Images or Pinterest page — will not work.
+        Upload banner images from your device — same as product images. Wide images work best
+        (around 1200&times;550). Drag order with the arrows; the first banner shows first.
       </p>
       <div id="banner-add-message" class="form-message error" style="display:none;"></div>
-      <div class="field">
-        <label>Image URL</label>
-        <input id="banner-url-input" type="url" placeholder="https://example.com/banner.jpg" />
-      </div>
-      <div class="banner-add-actions">
-        <button type="button" class="btn btn-primary" id="add-from-url-btn" onclick="addBannerFromUrl()">Add from URL</button>
-        <button type="button" class="btn btn-outline" id="upload-banner-btn" onclick="triggerBannerPicker()">Upload from device</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h2>Banners (<span id="banner-count">0</span>/6)</h2></div>
       <div class="banner-admin-grid" id="banner-grid">
         <div class="loading">Loading...</div>
       </div>

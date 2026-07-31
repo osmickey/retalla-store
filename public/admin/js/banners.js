@@ -1,6 +1,6 @@
 const MAX_BANNERS = 6;
 let allBanners = [];
-// Which banner an upload is destined for: null means "add a new one".
+// Which banner an upload replaces; null means "create a new banner".
 let pendingUploadBannerId = null;
 
 async function loadBanners() {
@@ -25,63 +25,23 @@ function atBannerLimit() {
   return allBanners.length >= MAX_BANNERS;
 }
 
-function syncAddControls() {
-  const urlInput = document.getElementById('banner-url-input');
-  const addBtn = document.getElementById('add-from-url-btn');
-  const uploadBtn = document.getElementById('upload-banner-btn');
-  const full = atBannerLimit();
-
-  urlInput.disabled = full;
-  addBtn.disabled = full;
-  uploadBtn.disabled = full;
-
-  // Say why the controls are off rather than silently hiding them.
-  if (full) {
-    showBannerAddMessage(`You already have ${MAX_BANNERS} banners. Delete one below to add another.`);
-  } else {
-    showBannerAddMessage('');
-  }
-}
-
-// Confirms the URL actually resolves to an image before we save it, which catches
-// the common mistake of pasting a web page link instead of a direct image link.
-function loadImageUrl(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const timer = setTimeout(() => reject(new Error('timeout')), 12000);
-    img.onload = () => { clearTimeout(timer); resolve(url); };
-    img.onerror = () => { clearTimeout(timer); reject(new Error('failed')); };
-    img.src = url;
-  });
-}
-
 function renderBannerGrid() {
   const grid = document.getElementById('banner-grid');
   document.getElementById('banner-count').textContent = allBanners.length;
 
-  if (!allBanners.length) {
-    grid.innerHTML = `<div class="empty-state">No banners yet. Add one above to start the home page carousel.</div>`;
-    syncAddControls();
-    return;
-  }
-
-  grid.innerHTML = allBanners
+  let html = allBanners
     .map(
       (b, i) => `
     <div class="banner-admin-card">
       <div class="banner-admin-thumb">
         <img src="${b.image}" alt="" />
+        <span class="banner-admin-pos">${i + 1}</span>
         ${!b.active ? '<div class="banner-admin-inactive">Inactive</div>' : ''}
       </div>
       <div class="banner-admin-body">
-        <div class="field">
-          <label>Replace image <span class="field-optional">(paste a direct image URL)</span></label>
-          <div class="banner-replace-row">
-            <input type="url" id="banner-image-${b._id}" placeholder="https://example.com/banner.jpg" />
-            <button type="button" class="btn btn-outline btn-sm" onclick="replaceBannerImage('${b._id}')">Apply</button>
-          </div>
-          <button type="button" class="pv-change" onclick="triggerBannerPicker('${b._id}')">or upload from device</button>
-        </div>
+        <button type="button" class="btn btn-outline btn-sm banner-replace-btn" onclick="triggerBannerPicker('${b._id}')">
+          <span data-icon="edit" data-icon-size="14"></span> Replace image
+        </button>
         <div class="field">
           <label>Click-through link <span class="field-optional">(where tapping the banner goes)</span></label>
           <input type="url" id="banner-link-${b._id}" value="${b.link || ''}" placeholder="/shop.html" />
@@ -99,66 +59,23 @@ function renderBannerGrid() {
     )
     .join('');
 
+  if (!atBannerLimit()) {
+    html += `
+      <div class="banner-admin-card add" onclick="triggerBannerPicker()" title="Upload a banner image">
+        <span data-icon="plus" data-icon-size="30"></span>
+        <span>Upload banner image</span>
+        <small>JPG, PNG or WEBP</small>
+      </div>
+    `;
+  }
+
+  grid.innerHTML = html || '';
   if (typeof renderIcons === 'function') renderIcons(grid);
-  syncAddControls();
-}
 
-async function addBannerFromUrl() {
-  const input = document.getElementById('banner-url-input');
-  const url = input.value.trim();
-  const btn = document.getElementById('add-from-url-btn');
-
-  if (!url) {
-    showBannerAddMessage('Paste an image URL first, or use "Upload from device".');
-    return;
-  }
-
-  btn.disabled = true;
-  const originalText = btn.textContent;
-  btn.textContent = 'Checking image...';
-
-  try {
-    await loadImageUrl(url);
-  } catch (err) {
-    btn.disabled = false;
-    btn.textContent = originalText;
-    showBannerAddMessage("That link didn't load as an image. Make sure it's a direct image URL ending in .jpg, .png or .webp.");
-    return;
-  }
-
-  try {
-    await adminApi.post('/banners', { image: url, link: '', active: true });
-    input.value = '';
-    showAdminToast('Banner added');
-    loadBanners();
-  } catch (err) {
-    showBannerAddMessage(err.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = originalText;
-  }
-}
-
-async function replaceBannerImage(id) {
-  const input = document.getElementById(`banner-image-${id}`);
-  const url = input.value.trim();
-  if (!url) {
-    alert('Paste an image URL first, or use "or upload from device".');
-    return;
-  }
-  try {
-    await loadImageUrl(url);
-  } catch (err) {
-    alert("That link didn't load as an image. Make sure it's a direct image URL ending in .jpg, .png or .webp.");
-    return;
-  }
-  try {
-    await adminApi.put(`/banners/${id}`, { image: url });
-    showAdminToast('Banner image updated');
-    loadBanners();
-  } catch (err) {
-    alert(err.message);
-  }
+  // Say why the add tile is gone rather than leaving it a mystery.
+  showBannerAddMessage(
+    atBannerLimit() ? `You already have ${MAX_BANNERS} banners. Delete one to add another.` : ''
+  );
 }
 
 function triggerBannerPicker(bannerId) {
@@ -171,14 +88,16 @@ async function handleBannerFileChange(e) {
   const file = e.target.files[0];
   e.target.value = '';
   if (!file) return;
+
   const targetId = pendingUploadBannerId;
   pendingUploadBannerId = null;
+  showBannerAddMessage('');
 
   try {
     const dataUrl = await resizeImageFile(file, 1600, 0.82);
     if (targetId) {
       await adminApi.put(`/banners/${targetId}`, { image: dataUrl });
-      showAdminToast('Banner image updated');
+      showAdminToast('Banner image replaced');
     } else {
       await adminApi.post('/banners', { image: dataUrl, link: '', active: true });
       showAdminToast('Banner added');

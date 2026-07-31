@@ -34,6 +34,8 @@ const ICON_PATHS = {
   'eye-off': '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c6 0 10 7 10 7a17.7 17.7 0 0 1-3.2 4.1M6.5 6.6C3.6 8.4 2 12 2 12s4 7 10 7a9.8 9.8 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
   phone: '<rect x="7" y="2" width="10" height="20" rx="2.4"/><path d="M11 18h2"/>',
   grid: '<rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/>',
+  sofa: '<path d="M5.5 10.5V7.8A2.3 2.3 0 0 1 7.8 5.5h8.4a2.3 2.3 0 0 1 2.3 2.3v2.7"/><path d="M3 12.8a2 2 0 0 1 4 0V15h10v-2.2a2 2 0 0 1 4 0V18.5H3z"/><path d="M6.5 18.5V20M17.5 18.5V20"/>',
+  lipstick: '<rect x="9" y="10" width="6" height="10.5" rx="1.4"/><path d="M10.2 10V6.2a1.8 1.8 0 0 1 3.6 0V10"/>',
 };
 
 function iconSVG(name, size) {
