@@ -1,38 +1,32 @@
 async function loadHome() {
   try {
-    const [bestSellers, featured] = await Promise.all([
-      api.get('/products?bestseller=true&limit=8'),
-      api.get('/products?featured=true&limit=8'),
-    ]);
-    const seen = new Set();
-    const trending = [...bestSellers, ...featured].filter((p) => {
-      if (seen.has(p._id)) return false;
-      seen.add(p._id);
-      return true;
-    });
-    renderProductGrid('trending-grid', trending.slice(0, 8));
+    // Bestsellers get their own shelf now, so "Just For You" sticks to featured
+    // picks only — otherwise the same products would show up twice on the page.
+    const featured = await api.get('/products?featured=true&limit=8');
+    renderProductGrid('trending-grid', featured);
   } catch (err) {
     showToast(err.message);
   }
 }
 
-async function loadRecentlyViewedSection() {
-  const section = document.getElementById('recently-viewed-section');
+async function loadBestSellingSection() {
+  const section = document.getElementById('bestseller-section');
   if (!section) return;
-  const ids = recentlyViewed.getIds();
-  if (!ids.length) {
-    section.style.display = 'none';
-    return;
-  }
   try {
-    const products = await api.get(`/products?ids=${ids.join(',')}`);
-    const ordered = ids.map((id) => products.find((p) => p._id === id)).filter(Boolean);
-    if (!ordered.length) {
+    const products = await api.get('/products?bestseller=true&limit=8');
+    if (!products.length) {
       section.style.display = 'none';
       return;
     }
     section.style.display = '';
-    renderProductGrid('recent-shelf', ordered);
+    renderProductGrid('bestseller-shelf', products);
+    initSlidableRail({
+      rail: document.getElementById('bestseller-shelf'),
+      prevBtn: document.getElementById('bestseller-nav-prev'),
+      nextBtn: document.getElementById('bestseller-nav-next'),
+      itemSelector: '.product-card',
+      visibleCount: 5,
+    });
   } catch (err) {
     section.style.display = 'none';
   }
@@ -91,37 +85,43 @@ function renderCategoryTiles() {
   }).join('');
   renderIcons(el);
   staggerChildren(el, '.category-tile', 40);
-  initCategoryRail();
+  initSlidableRail({
+    rail: el,
+    prevBtn: document.getElementById('cat-nav-prev'),
+    nextBtn: document.getElementById('cat-nav-next'),
+    itemSelector: '.category-tile',
+    visibleCount: 3,
+  });
 }
 
-function scrollCategoryRail(direction) {
-  const rail = document.getElementById('category-tiles');
-  if (!rail) return;
-  const tile = rail.querySelector('.category-tile');
-  const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
-  const step = tile ? (tile.getBoundingClientRect().width + gap) * 3 : rail.clientWidth * 0.8;
-  rail.scrollBy({ left: step * direction, behavior: 'smooth' });
-  // Don't rely solely on the scroll event — it isn't guaranteed to fire for
-  // programmatic smooth scrolling, which would leave the arrows out of sync.
-  setTimeout(updateCategoryArrows, 450);
-}
-
-function updateCategoryArrows() {
-  const rail = document.getElementById('category-tiles');
-  const prev = document.getElementById('cat-nav-prev');
-  const next = document.getElementById('cat-nav-next');
-  if (!rail || !prev || !next) return;
-  const maxScroll = rail.scrollWidth - rail.clientWidth;
-  prev.disabled = rail.scrollLeft <= 2;
-  next.disabled = rail.scrollLeft >= maxScroll - 2;
-}
-
-function initCategoryRail() {
-  const rail = document.getElementById('category-tiles');
+// Shared drag-to-scroll + prev/next-arrow behaviour for any horizontal shelf
+// (categories, best sellers, ...). A hidden scrollbar leaves a plain mouse with
+// no way to slide, so pointer events do the dragging; the arrows step by a
+// page's worth of cards and disable themselves at each end.
+function initSlidableRail({ rail, prevBtn, nextBtn, itemSelector, visibleCount }) {
   if (!rail || rail.dataset.railReady) return;
   rail.dataset.railReady = 'true';
 
-  // A hidden scrollbar leaves a plain mouse with no way to slide, so wire up drag.
+  function updateArrows() {
+    if (!prevBtn || !nextBtn) return;
+    const maxScroll = rail.scrollWidth - rail.clientWidth;
+    prevBtn.disabled = rail.scrollLeft <= 2;
+    nextBtn.disabled = rail.scrollLeft >= maxScroll - 2;
+  }
+
+  function scrollByPage(direction) {
+    const item = rail.querySelector(itemSelector);
+    const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
+    const step = item ? (item.getBoundingClientRect().width + gap) * visibleCount : rail.clientWidth * 0.8;
+    rail.scrollBy({ left: step * direction, behavior: 'smooth' });
+    // Don't rely solely on the scroll event — it isn't guaranteed to fire for
+    // programmatic smooth scrolling, which would leave the arrows out of sync.
+    setTimeout(updateArrows, 450);
+  }
+
+  if (prevBtn) prevBtn.addEventListener('click', () => scrollByPage(-1));
+  if (nextBtn) nextBtn.addEventListener('click', () => scrollByPage(1));
+
   let dragging = false;
   let startX = 0;
   let startScroll = 0;
@@ -147,10 +147,10 @@ function initCategoryRail() {
     if (!dragging) return;
     dragging = false;
     rail.classList.remove('dragging');
-    updateCategoryArrows();
+    updateArrows();
   });
 
-  // Suppress the click that follows a real drag so it doesn't open a category.
+  // Suppress the click that follows a real drag so it doesn't open the card/category.
   rail.addEventListener('click', (e) => {
     if (moved > 6) {
       e.preventDefault();
@@ -159,16 +159,16 @@ function initCategoryRail() {
     }
   }, true);
 
-  rail.addEventListener('scroll', updateCategoryArrows);
-  window.addEventListener('resize', updateCategoryArrows);
+  rail.addEventListener('scroll', updateArrows);
+  window.addEventListener('resize', updateArrows);
 
-  // Tile widths aren't final on the first pass (icons are injected just before), so
+  // Item widths aren't final on the first pass (icons/images load just after), so
   // recompute whenever the rail actually resizes instead of measuring once too early.
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(updateCategoryArrows).observe(rail);
+    new ResizeObserver(updateArrows).observe(rail);
   }
-  setTimeout(updateCategoryArrows, 250);
-  updateCategoryArrows();
+  setTimeout(updateArrows, 250);
+  updateArrows();
 }
 
 function renderCategoryNav() {
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCategoryTiles();
   renderCategoryNav();
   loadHome();
-  loadRecentlyViewedSection();
+  loadBestSellingSection();
   loadLiveVideoSection();
   startShoppingQuotes();
 });

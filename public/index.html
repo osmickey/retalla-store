@@ -61,9 +61,16 @@
     <div class="banner-carousel-dots" id="banner-dots"></div>
   </section>
 
-  <section class="section" id="recently-viewed-section" style="display:none;">
-    <div class="section-head"><h2>Recently Viewed</h2></div>
-    <div class="recent-shelf" id="recent-shelf"></div>
+  <section class="section" id="bestseller-section" style="display:none;">
+    <div class="section-head">
+      <div><span class="eyebrow">Top Picks</span><h2>Best Selling</h2></div>
+      <a href="/shop.html">View all →</a>
+    </div>
+    <div class="bestseller-rail">
+      <button type="button" class="shelf-nav prev" id="bestseller-nav-prev" aria-label="Previous best sellers">‹</button>
+      <div class="bestseller-shelf" id="bestseller-shelf"></div>
+      <button type="button" class="shelf-nav next" id="bestseller-nav-next" aria-label="More best sellers">›</button>
+    </div>
   </section>
 
   <section class="section category-section">
@@ -72,9 +79,9 @@
       <a href="/shop.html">View all →</a>
     </div>
     <div class="category-rail">
-      <button type="button" class="cat-nav prev" id="cat-nav-prev" aria-label="Previous categories" onclick="scrollCategoryRail(-1)">‹</button>
+      <button type="button" class="shelf-nav prev" id="cat-nav-prev" aria-label="Previous categories">‹</button>
       <div class="category-grid" id="category-tiles"></div>
-      <button type="button" class="cat-nav next" id="cat-nav-next" aria-label="More categories" onclick="scrollCategoryRail(1)">›</button>
+      <button type="button" class="shelf-nav next" id="cat-nav-next" aria-label="More categories">›</button>
     </div>
   </section>
 
@@ -232,7 +239,6 @@
 <script src="/js/tabbar.js"></script>
 <script src="/js/animate.js"></script>
 <script src="/js/ui.js"></script>
-<script src="/js/recently-viewed.js"></script>
 <script src="/js/banner-carousel.js"></script>
 <script src="/js/hero.js"></script>
 <script src="/js/main.js"></script>
