@@ -36,6 +36,7 @@ const ICON_PATHS = {
   grid: '<rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/>',
   sofa: '<path d="M5.5 10.5V7.8A2.3 2.3 0 0 1 7.8 5.5h8.4a2.3 2.3 0 0 1 2.3 2.3v2.7"/><path d="M3 12.8a2 2 0 0 1 4 0V15h10v-2.2a2 2 0 0 1 4 0V18.5H3z"/><path d="M6.5 18.5V20M17.5 18.5V20"/>',
   lipstick: '<rect x="9" y="10" width="6" height="10.5" rx="1.4"/><path d="M10.2 10V6.2a1.8 1.8 0 0 1 3.6 0V10"/>',
+  percent: '<circle cx="7" cy="7" r="2.4"/><circle cx="17" cy="17" r="2.4"/><path d="M18 6 6 18"/>',
 };
 
 function iconSVG(name, size) {

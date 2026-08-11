@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Retalla Live — Retalla Admin</title>
+<title>Deal Tiles — Retalla Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/admin/css/admin.css" />
 </head>
@@ -19,50 +19,36 @@
       <a href="/admin/live-videos.html"><span data-icon="video" data-icon-size="18"></span> Retalla Live</a>
       <a href="/admin/banners.html"><span data-icon="tag" data-icon-size="18"></span> Home Banners</a>
       <a href="/admin/hero.html"><span data-icon="sparkle" data-icon-size="18"></span> Hero Banner</a>
-      <a href="/admin/promo-tiles.html"><span data-icon="percent" data-icon-size="18"></span> Deal Tiles</a>
+      <a href="/admin/promo-tiles.html" class="active"><span data-icon="percent" data-icon-size="18"></span> Deal Tiles</a>
     </nav>
     <button class="logout-btn" onclick="adminAuth.logout()"><span data-icon="logout" data-icon-size="16"></span> Logout</button>
   </aside>
 
   <main class="admin-main">
     <div class="admin-header">
-      <h1>Retalla Live</h1>
-      <div class="who">Shoppable videos shown in the "Retalla Live" section on your home page</div>
+      <h1>Deal Tiles</h1>
+      <div class="who">The "Today's Deals" tiles shown on your home page — up to 8, each with its own image, heading and colour</div>
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h2>Add a Product to Retalla Live</h2></div>
-
-      <div class="field">
-        <label>1. Find the product</label>
-        <input id="video-product-search" type="text" placeholder="Search your products by name..." autocomplete="off" />
-        <div class="live-search-results" id="video-product-results"></div>
-      </div>
-
-      <div id="selected-product-preview" class="selected-product-preview" style="display:none;"></div>
-
-      <div class="field">
-        <label>2. Paste the video link (direct .mp4/.webm URL — not a YouTube page link)</label>
-        <input id="live-video-url-input" type="url" placeholder="https://example.com/video.mp4" disabled />
-      </div>
-
-      <button class="btn btn-primary" id="add-to-live-btn" onclick="addToLive()" disabled style="width:100%;justify-content:center;">
-        Add to Retalla Live
-      </button>
-      <div id="live-form-message" class="form-message error" style="display:none;margin-top:14px;"></div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h2>Currently Live (<span id="live-count">0</span>)</h2></div>
-      <div class="video-admin-grid" id="live-products-grid">
+      <div class="panel-head"><h2>Tiles (<span id="tile-count">0</span>/8)</h2></div>
+      <p class="form-section-hint">
+        Upload a tile image from your device — a product photo with a plain or transparent
+        background works best. Pick a background colour, add a short bold heading like
+        "Up to 40% off", and an optional badge like "Flash Deals".
+      </p>
+      <div id="tile-add-message" class="form-message error" style="display:none;"></div>
+      <div class="banner-admin-grid" id="tile-grid">
         <div class="loading">Loading...</div>
       </div>
     </div>
   </main>
 </div>
 
+<input type="file" id="tile-file-input" accept="image/*" style="display:none;" />
+
 <script src="/js/icons.js"></script>
 <script src="/admin/js/admin-api.js"></script>
-<script src="/admin/js/live-videos.js"></script>
+<script src="/admin/js/promo-tiles.js"></script>
 </body>
 </html>

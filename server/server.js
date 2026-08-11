@@ -11,6 +11,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const userRoutes = require('./routes/userRoutes');
 const bannerRoutes = require('./routes/bannerRoutes');
 const heroRoutes = require('./routes/heroRoutes');
+const promoTileRoutes = require('./routes/promoTileRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/hero', heroRoutes);
+app.use('/api/promo-tiles', promoTileRoutes);
 
 const publicDir = path.join(__dirname, '..', 'public');
 app.use(express.static(publicDir));

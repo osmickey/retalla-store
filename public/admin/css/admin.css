@@ -324,6 +324,18 @@ tr:hover td { background: #fafaff; }
 .banner-admin-card.add:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 .banner-admin-card.add small { font-size: 0.74rem; font-weight: 500; opacity: 0.8; }
 
+/* Deal tiles are product cutouts on a flat colour, not full-bleed photos, so contain-fit
+   them with breathing room instead of cropping to cover like the wide banner images. */
+.promo-tile-admin-thumb { aspect-ratio: 4 / 3; }
+.promo-tile-admin-thumb img { object-fit: contain; padding: 18px; box-sizing: border-box; }
+.tile-color-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.tile-color-row input[type="color"] {
+  width: 40px; height: 34px; padding: 2px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  cursor: pointer; background: none;
+}
+.tile-color-row span { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+
 .chart-toggle { display: flex; gap: 6px; background: var(--bg); border-radius: 999px; padding: 4px; }
 .chart-toggle-btn {
   border: none; background: transparent; padding: 7px 16px; border-radius: 999px;

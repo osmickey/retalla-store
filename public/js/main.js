@@ -9,6 +9,37 @@ async function loadHome() {
   }
 }
 
+async function loadPromoTilesSection() {
+  const section = document.getElementById('promo-tiles-section');
+  if (!section) return;
+  try {
+    const tiles = await api.get('/promo-tiles');
+    if (!tiles.length) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = '';
+    const grid = document.getElementById('promo-tiles-grid');
+    grid.innerHTML = tiles.map(promoTileHTML).join('');
+    staggerChildren(grid, '.promo-tile', 50);
+  } catch (err) {
+    section.style.display = 'none';
+  }
+}
+
+function promoTileHTML(t) {
+  return `
+    <a class="promo-tile reveal" href="${t.link || '/shop.html'}" style="background:${t.bgColor || '#f3f2fb'}">
+      ${t.badge ? `<span class="promo-tile-badge">${escapeHTML(t.badge)}</span>` : ''}
+      <div class="promo-tile-copy">
+        <h3>${escapeHTML(t.heading)}</h3>
+        <span class="promo-tile-cta">Shop now</span>
+      </div>
+      <img src="${t.image}" alt="" loading="lazy" />
+    </a>
+  `;
+}
+
 async function loadBestSellingSection() {
   const section = document.getElementById('bestseller-section');
   if (!section) return;
@@ -204,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCategoryTiles();
   renderCategoryNav();
   loadHome();
+  loadPromoTilesSection();
   loadBestSellingSection();
   loadLiveVideoSection();
   startShoppingQuotes();

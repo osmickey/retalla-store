@@ -306,13 +306,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 @media (min-width: 751px) {
   .hero.hero--ready { display: block; }
 
-  /* Desktop-only running order: Best Selling -> Categories -> Retalla Live -> banner
-     -> everything else. The banner sits first in the DOM for mobile, so negative orders
-     pull the three sections ahead of it without any markup duplication. */
+  /* Desktop-only running order: Best Selling -> Deal Tiles -> Categories -> Retalla Live
+     -> banner -> everything else. The banner sits first in the DOM for mobile (with Deal
+     Tiles right after it, per the mobile layout), so negative orders pull the other
+     sections ahead of it on desktop without any markup duplication. */
   main.home-main { display: flex; flex-direction: column; }
   main.home-main > * { margin-top: 0; margin-bottom: 48px; }
   main.home-main > *:last-child { margin-bottom: 0; }
-  main.home-main > #bestseller-section { order: -3; }
+  main.home-main > #bestseller-section { order: -4; }
+  main.home-main > #promo-tiles-section { order: -3; }
   main.home-main > .category-section { order: -2; }
   main.home-main > #live-video-section { order: -1; }
 }
@@ -620,6 +622,54 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 /* Every card here is already a best seller, so the ribbon badge would be pure clutter. */
 .bestseller-shelf .product-card .badge { display: none; }
+
+/* ===== Deal tiles ===== */
+.promo-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.promo-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 190px;
+  border-radius: var(--radius);
+  padding: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #1a1a2e;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.promo-tile:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.promo-tile-copy { position: relative; z-index: 2; max-width: 62%; }
+.promo-tile-copy h3 { font-size: 1.05rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+.promo-tile-cta { font-size: 0.85rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.promo-tile img {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 54%;
+  max-width: 168px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.18));
+}
+.promo-tile-badge {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 2;
+  background: var(--accent);
+  color: #1a1a2e;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 5px 11px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
 .category-tile {
   position: relative;
   flex: 0 0 150px;
@@ -774,9 +824,9 @@ ul { margin: 0; padding: 0; list-style: none; }
   background: linear-gradient(135deg, var(--primary), var(--pink));
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px; }
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
 .video-card {
-  background: var(--surface); border-radius: var(--radius); overflow: hidden;
+  background: var(--surface); border-radius: var(--radius-lg); overflow: hidden;
   box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .video-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
@@ -1441,12 +1491,12 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 
   .quote-strip { padding: 12px 20px; }
   .quote-text { font-size: 0.88rem; }
-  #live-video-section { padding: 22px 18px; border-radius: var(--radius); }
+  #live-video-section { padding: 22px 18px; border-radius: var(--radius-lg); }
   .video-grid {
     display: flex; grid-template-columns: unset; overflow-x: auto;
     gap: 14px; padding-bottom: 6px; scroll-snap-type: x proximity;
   }
-  .video-card { min-width: 200px; max-width: 200px; flex-shrink: 0; scroll-snap-align: start; }
+  .video-card { min-width: 224px; max-width: 224px; flex-shrink: 0; scroll-snap-align: start; }
   .video-info { padding: 12px; }
   .video-info h3 { font-size: 0.84rem; margin-bottom: 8px; }
   .video-info .price { font-size: 0.92rem; }
@@ -1530,8 +1580,14 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   .bestseller-shelf { gap: 10px; }
   .bestseller-shelf .product-card { flex: 0 0 46%; }
 
+  .promo-tiles-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .promo-tile { min-height: 150px; padding: 14px; border-radius: var(--radius-sm); }
+  .promo-tile-copy h3 { font-size: 0.86rem; }
+  .promo-tile-cta { font-size: 0.74rem; }
+  .promo-tile img { width: 58%; max-width: 112px; }
+  .promo-tile-badge { font-size: 0.62rem; padding: 4px 8px; left: 10px; bottom: 10px; }
+
   #live-video-section { padding: 18px 14px; }
-  .video-card { min-width: 158px; max-width: 158px; }
   .video-info { padding: 10px; }
   .video-info h3 { font-size: 0.78rem; margin-bottom: 6px; }
   .video-info .price { font-size: 0.86rem; }
