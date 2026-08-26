@@ -26,7 +26,19 @@ function StarRow({ rating, size = 16 }) {
 function ProductGallery({ product }) {
   const images = [product.image, ...(product.images || [])];
   const [mainSrc, setMainSrc] = useState(product.image);
+  const [zooming, setZooming] = useState(false);
+  const [origin, setOrigin] = useState({ x: 50, y: 50 });
   const reduceMotion = useReducedMotion();
+
+  // Desktop-only by nature -- touch devices don't fire continuous
+  // mousemove, so mobile just keeps tap-a-thumbnail with no zoom.
+  function handleMouseMove(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setOrigin({
+      x: Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)),
+      y: Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)),
+    });
+  }
 
   return (
     <div className="pd-gallery">
@@ -34,18 +46,57 @@ function ProductGallery({ product }) {
           rather than unmounting the outgoing one (AnimatePresence's exit),
           which depends on an animation-completion signal that isn't
           reliable when the tab is hidden/backgrounded. This also avoids
-          any flash-of-missing-image mid-swap as a side benefit. */}
-      <div className="main-image" style={{ position: 'relative' }}>
-        {images.map((src) => (
-          <motion.img
-            key={src}
-            src={src}
-            alt={product.name}
-            animate={{ opacity: src === mainSrc ? 1 : 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.2 }}
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: src === mainSrc ? 'auto' : 'none' }}
-          />
-        ))}
+          any flash-of-missing-image mid-swap as a side benefit.
+
+          Under reduced motion, opacity is driven by a plain style prop
+          instead of framer's `animate` -- verified directly (not assumed)
+          that `animate` + a duration:0 transition does not reliably commit
+          on *updates* in this framer-motion version once more than one
+          motion.img shares this animate shape (only surfaces with 2+
+          images; single-image products never exercised this path before).
+          Skipping framer's animate pathway entirely under reduced motion
+          sidesteps that rather than depending on its duration:0 handling --
+          same "skip the animated pathway" convention QtyStepper/CartBadge
+          already use elsewhere in this app, just applied at the value
+          level instead of the trigger level. This also means zoom's
+          `scale` (which only ever applies via `animate`) naturally never
+          activates under reduced motion, matching framer's own stance on
+          transform-family values -- not fought against.
+
+          Zoom's `scale` lives in the SAME `animate` object as `opacity`
+          (not a plain style.transform) -- framer-motion only recomputes
+          `transform` itself once a transform-family key is under its own
+          tracked values, so mixing a manual transform in alongside a
+          framer-tracked one would get silently clobbered. transformOrigin
+          stays a plain style prop -- framer never touches that. */}
+      <div
+        className="main-image"
+        style={{ position: 'relative' }}
+        onMouseEnter={() => setZooming(true)}
+        onMouseLeave={() => setZooming(false)}
+        onMouseMove={handleMouseMove}
+      >
+        {images.map((src) => {
+          const isActive = src === mainSrc;
+          return (
+            <motion.img
+              key={src}
+              src={src}
+              alt={product.name}
+              animate={reduceMotion ? undefined : { opacity: isActive ? 1 : 0, scale: zooming && isActive ? 1.8 : 1 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                pointerEvents: isActive ? 'auto' : 'none',
+                transformOrigin: `${origin.x}% ${origin.y}%`,
+                opacity: reduceMotion ? (isActive ? 1 : 0) : undefined,
+              }}
+            />
+          );
+        })}
       </div>
       <div className="pd-thumbs">
         {images.map((src) => (
@@ -487,35 +538,12 @@ export default function ProductPage() {
             </button>
           </div>
 
-          <div className="pd-highlights">
-            <h3>Product Details</h3>
-            <table>
-              <tbody>
-                {product.brand && (
-                  <tr>
-                    <td>Brand</td>
-                    <td>{product.brand}</td>
-                  </tr>
-                )}
-                <tr>
-                  <td>Category</td>
-                  <td>{product.category}</td>
-                </tr>
-                {product.sku && (
-                  <tr>
-                    <td>Product Code</td>
-                    <td>{product.sku}</td>
-                  </tr>
-                )}
-                <tr>
-                  <td>Availability</td>
-                  <td>{outOfStock ? 'Out of stock' : `${product.stock} units in stock`}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="pd-badges">
+          {/* Trimmed to the 3 that matter at the moment of buying -- the
+              full 4-card set lives in the Shipping & Returns section below,
+              a separate class rather than reusing .pd-badges at a different
+              item count (that grid is hard-coded to 2 columns; 3 items in
+              2 columns leaves an empty cell). */}
+          <div className="pd-trust-strip">
             <div className="pd-badge">
               <span className="icon-circle">
                 <Icon name="truck" size={16} />
@@ -536,15 +564,6 @@ export default function ProductPage() {
             </div>
             <div className="pd-badge">
               <span className="icon-circle">
-                <Icon name="wallet" size={16} />
-              </span>
-              <div>
-                <strong>{product.codAvailable !== false ? 'COD Available' : 'Prepaid Only'}</strong>
-                <span>{product.codAvailable !== false ? 'Pay on delivery' : 'Online payment required'}</span>
-              </div>
-            </div>
-            <div className="pd-badge">
-              <span className="icon-circle">
                 <Icon name="check" size={16} />
               </span>
               <div>
@@ -553,27 +572,113 @@ export default function ProductPage() {
               </div>
             </div>
           </div>
-
-          <p className="pd-description">{product.description || ''}</p>
-          {product.videoUrl && (
-            <div className="pd-video">
-              <h3 className="pd-video-title">Product Video</h3>
-              <video
-                src={product.videoUrl}
-                poster={product.image}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                onClick={(e) => {
-                  e.target.controls = true;
-                }}
-              />
-            </div>
-          )}
         </div>
       </div>
+
+      <section id="description-section" className="section">
+        <div className="section-head">
+          <h2>Description</h2>
+        </div>
+        <p className="pd-description">{product.description || 'No description available for this product.'}</p>
+      </section>
+
+      <section id="specifications-section" className="section">
+        <div className="section-head">
+          <h2>Specifications</h2>
+        </div>
+        <div className="pd-highlights">
+          <table>
+            <tbody>
+              {product.brand && (
+                <tr>
+                  <td>Brand</td>
+                  <td>{product.brand}</td>
+                </tr>
+              )}
+              <tr>
+                <td>Category</td>
+                <td>{product.category}</td>
+              </tr>
+              {product.sku && (
+                <tr>
+                  <td>Product Code</td>
+                  <td>{product.sku}</td>
+                </tr>
+              )}
+              <tr>
+                <td>Availability</td>
+                <td>{outOfStock ? 'Out of stock' : `${product.stock} units in stock`}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="shipping-section" className="section">
+        <div className="section-head">
+          <h2>Shipping &amp; Returns</h2>
+        </div>
+        <div className="pd-badges">
+          <div className="pd-badge">
+            <span className="icon-circle">
+              <Icon name="truck" size={16} />
+            </span>
+            <div>
+              <strong>{product.freeDelivery ? 'Free Delivery' : 'Paid Delivery'}</strong>
+              <span>{product.freeDelivery ? 'No delivery charge' : `Rs. ${(product.deliveryCharge || 0).toFixed(2)} delivery charge`}</span>
+            </div>
+          </div>
+          <div className="pd-badge">
+            <span className="icon-circle">
+              <Icon name="return" size={16} />
+            </span>
+            <div>
+              <strong>{product.isReturnable ? '7 Days Return' : 'Non-Returnable'}</strong>
+              <span>{product.isReturnable ? 'Easy & free returns' : 'Final sale item'}</span>
+            </div>
+          </div>
+          <div className="pd-badge">
+            <span className="icon-circle">
+              <Icon name="wallet" size={16} />
+            </span>
+            <div>
+              <strong>{product.codAvailable !== false ? 'COD Available' : 'Prepaid Only'}</strong>
+              <span>{product.codAvailable !== false ? 'Pay on delivery' : 'Online payment required'}</span>
+            </div>
+          </div>
+          <div className="pd-badge">
+            <span className="icon-circle">
+              <Icon name="check" size={16} />
+            </span>
+            <div>
+              <strong>Secure Payment</strong>
+              <span>Safe &amp; encrypted checkout</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {product.videoUrl && (
+        <section id="video-section" className="section">
+          <div className="section-head">
+            <h2>Product Video</h2>
+          </div>
+          <div className="pd-video">
+            <video
+              src={product.videoUrl}
+              poster={product.image}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              onClick={(e) => {
+                e.target.controls = true;
+              }}
+            />
+          </div>
+        </section>
+      )}
 
       <Reviews product={product} pathname={window.location.pathname} search={window.location.search} />
       <RelatedProducts product={product} />

@@ -112,9 +112,19 @@ export default function CartPage() {
                   key={item.productId}
                   className="cart-item"
                   layout={!reduceMotion}
-                  initial={{ opacity: 0, height: reduceMotion ? 'auto' : 0 }}
-                  animate={{ opacity: removing ? 0 : 1, height: removing ? 0 : 'auto' }}
-                  transition={{ duration: reduceMotion ? 0 : REMOVE_DURATION / 1000, ease: 'easeOut' }}
+                  // Under reduced motion, opacity/height are driven by a
+                  // plain style prop instead of framer's animate -- verified
+                  // directly that animate + a duration:0 transition does not
+                  // reliably commit on *updates* once multiple sibling rows
+                  // share this animate shape (only the row actually being
+                  // removed should change; without this, every row briefly
+                  // renders at the removed row's opacity/height, and the
+                  // remaining rows never recover). Same fix as
+                  // ProductPage.jsx's gallery crossfade, same root cause.
+                  initial={reduceMotion ? undefined : { opacity: 0, height: 0 }}
+                  animate={reduceMotion ? undefined : { opacity: removing ? 0 : 1, height: removing ? 0 : 'auto' }}
+                  transition={{ duration: REMOVE_DURATION / 1000, ease: 'easeOut' }}
+                  style={reduceMotion ? { opacity: removing ? 0 : 1, height: removing ? 0 : 'auto', overflow: 'hidden' } : undefined}
                 >
                   <img src={item.image} alt={item.name} />
                   <div>
