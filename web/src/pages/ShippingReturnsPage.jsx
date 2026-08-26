@@ -1,0 +1,77 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+
+export default function ShippingReturnsPage() {
+  useDocumentTitle('Shipping & Returns Policy — Retalla');
+
+  return (
+    <main className="container">
+      <div className="breadcrumb">
+        <a href="/index.html">Home</a> / <span>Shipping &amp; Returns Policy</span>
+      </div>
+
+      <div className="policy-page">
+        <h1>Shipping &amp; Returns Policy</h1>
+        <p className="updated">Last updated: July 2026</p>
+
+        <h2>Shipping</h2>
+        <p>We ship across India. Orders are typically processed within 1–2 business days of confirmation.</p>
+        <ul>
+          <li>
+            <strong>Free shipping</strong> on all orders over Rs. 499.
+          </li>
+          <li>
+            A flat shipping charge of <strong>Rs. 49</strong> applies to orders below Rs. 499.
+          </li>
+          <li>Estimated delivery: 3–7 business days depending on your location, after dispatch.</li>
+          <li>
+            You'll receive an order status update as your package moves from Processing → Shipped → Delivered — track it
+            anytime under <a href="/account.html">My Orders</a>.
+          </li>
+        </ul>
+
+        <h2>Cash on Delivery</h2>
+        <p>
+          Cash on Delivery (COD) is available on eligible orders. Please have the exact order amount ready for our delivery
+          partner at the time of delivery.
+        </p>
+
+        <h2>Returns</h2>
+        <p>
+          We want you to be happy with your purchase. Most items can be returned within <strong>7 days of delivery</strong>,
+          provided they are:
+        </p>
+        <ul>
+          <li>Unused, unwashed, and in their original packaging with tags intact.</li>
+          <li>Accompanied by proof of purchase (your order confirmation).</li>
+        </ul>
+        <p>
+          Certain items — such as innerwear/lingerie and personal care products — cannot be returned for hygiene reasons,
+          unless received damaged or defective.
+        </p>
+
+        <h2>How to Request a Return</h2>
+        <p>
+          Contact us at <a href="mailto:support@retalla.in">support@retalla.in</a> with your order number and reason for
+          return within 7 days of delivery. We'll confirm the pickup or drop-off process for your item.
+        </p>
+
+        <h2>Refunds</h2>
+        <p>
+          Once your returned item is received and inspected, we'll process your refund to the original payment method (or
+          as store credit for COD orders) within 5–7 business days.
+        </p>
+
+        <h2>Damaged or Incorrect Items</h2>
+        <p>
+          If your order arrives damaged or you received the wrong item, contact us within 48 hours of delivery with photos
+          of the item — we'll arrange a free replacement or full refund.
+        </p>
+
+        <h2>Contact Us</h2>
+        <p>
+          Questions about your order, shipping, or a return? Email us at <a href="mailto:support@retalla.in">support@retalla.in</a>.
+        </p>
+      </div>
+    </main>
+  );
+}
