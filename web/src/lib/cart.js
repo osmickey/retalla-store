@@ -94,12 +94,10 @@ export function useCartCount() {
   return count;
 }
 
+// Dispatches to <ToastHost> (mounted once at the app root), which animates the
+// message in and out with framer-motion — the old DOM-imperative version just
+// yanked the node out via setTimeout+remove() with no way to animate out.
+// Callers don't need to change at all.
 export function showToast(message) {
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2200);
+  window.dispatchEvent(new CustomEvent('retalla:toast', { detail: message }));
 }

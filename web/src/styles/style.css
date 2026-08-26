@@ -238,21 +238,37 @@ ul { margin: 0; padding: 0; list-style: none; }
 .hamburger-btn.open span:nth-child(2) { opacity: 0; }
 .hamburger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+/* Upgraded from the original inline accordion-panel drawer (display:none/flex,
+   pushes page content down) to a real fixed overlay with a backdrop -- what
+   makes a backdrop, Escape-to-close, and body-scroll-lock meaningful in the
+   first place. Framer Motion owns the enter/exit animation directly (see
+   Navbar.jsx), so no CSS animation/transition is declared here. */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 12, 30, 0.45);
+  z-index: 90;
+}
 .mobile-drawer {
-  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(300px, 84vw);
+  z-index: 91;
+  display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 10px 20px 18px;
-  border-top: 1px solid var(--border);
+  padding: 18px 16px 24px;
   background: var(--surface);
-  animation: fadeInUp 0.25s ease both;
+  box-shadow: var(--shadow-lg);
+  overflow-y: auto;
 }
-.mobile-drawer.open { display: flex; }
 .mobile-drawer a {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 11px 8px;
+  padding: 11px 10px;
   border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 0.9rem;
@@ -300,6 +316,31 @@ ul { margin: 0; padding: 0; list-style: none; }
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
   color: #fff;
 }
+
+/* Shop page filter pills: same look as .category-nav a.active, but the
+   gradient is a separate absolutely-positioned element with a shared
+   layoutId, so Framer Motion slides it between pills instead of the
+   background just cutting to the new active one. */
+.shop-pill {
+  position: relative;
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+.shop-pill:hover { color: var(--primary); }
+.shop-pill[data-active='true'] { color: #fff; }
+.shop-pill-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  z-index: -1;
+}
+.shop-pill-label { position: relative; }
 
 /* ===== Desktop hero banner (hidden on mobile) ===== */
 .hero { display: none; }

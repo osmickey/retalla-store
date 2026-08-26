@@ -50,6 +50,9 @@ const REACT_ROUTES = [
   '/shipping-returns.html',
   '/privacy-policy.html',
   '/terms.html',
+  '/shop.html',
+  '/product.html',
+  '/cart.html',
 ];
 
 const webDistDir = path.join(__dirname, '..', 'web', 'dist');
