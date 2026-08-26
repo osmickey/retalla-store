@@ -1,30 +1,53 @@
 /* ===== Retalla storefront design system — Bold Vibrant v2 ===== */
 
 :root {
-  --primary: #4f46e5;
-  --primary-2: #7c3aed;
-  --primary-dark: #372f9e;
-  --primary-light: #eef0ff;
-  --accent: #ff6b4a;
-  --accent-dark: #e14e2c;
-  --pink: #ff3e6c;
-  --success: #16a34a;
-  --star: #ffb800;
+  /* ===== Premium identity (Phase 4) =====
+     Warm ink + a single muted gold accent, replacing the old indigo/pink
+     dual-gradient system. --gold is for large fills, borders, and
+     decorative marks only -- it fails 4.5:1 as text on --paper (3.6:1) and
+     as white-on-fill (3.8:1). --gold-deep is the only shade ever used as
+     text or as a filled-button ground (4.9:1 on paper; comfortably higher
+     for white text since it's the darker of the two). */
+  --ink: #17151c;
+  --paper: #faf9f6;
+  --text: #1b1826;
+  --text-soft: #5c5868;
+  --line: #e6e1d6;
+  --gold: #a67c2e;
+  --gold-deep: #8c6725;
+  --success: #3f6e4c;
 
-  --bg: #f6f6fb;
+  /* Old token names kept and repointed (not deleted) -- every shipped page
+     still references --primary/--pink/--accent/--border/--text-muted
+     directly across dozens of selectors. Repointing them into the new
+     ink/gold family means those selectors (and gradients between two of
+     these, now both gold shades) update automatically with no per-selector
+     rewrite, and the still-unmigrated homepage/checkout CSS keeps working
+     unchanged. */
+  --primary: var(--gold-deep);
+  --primary-2: var(--gold);
+  --primary-dark: var(--ink);
+  --primary-light: color-mix(in srgb, var(--gold) 12%, var(--paper));
+  --accent: var(--gold-deep);
+  --accent-dark: var(--ink);
+  --pink: var(--gold-deep);
+  --bg: var(--paper);
+  --text-muted: var(--text-soft);
+  --border: var(--line);
+  --star: var(--gold-deep);
+
   --surface: #ffffff;
-  --text: #1a1730;
-  --text-muted: #6b7280;
-  --border: #e9e8f3;
 
-  --radius-sm: 10px;
-  --radius: 16px;
-  --radius-lg: 24px;
-  --shadow-sm: 0 2px 8px rgba(30, 27, 60, 0.06);
-  --shadow: 0 10px 30px rgba(43, 32, 90, 0.10);
-  --shadow-lg: 0 24px 60px rgba(43, 32, 90, 0.18);
-  --shadow-primary: 0 12px 24px rgba(79, 70, 229, 0.28);
-  --shadow-accent: 0 12px 24px rgba(255, 107, 74, 0.30);
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 2px 8px rgba(23, 21, 28, 0.06);
+  --shadow: 0 10px 30px rgba(23, 21, 28, 0.10);
+  --shadow-lg: 0 24px 60px rgba(23, 21, 28, 0.18);
+  --shadow-primary: 0 12px 24px rgba(140, 103, 37, 0.28);
+  --shadow-accent: 0 12px 24px rgba(140, 103, 37, 0.28);
   --container: 1320px;
 }
 
@@ -47,9 +70,10 @@ body {
 }
 
 h1, h2, h3, h4 {
-  font-family: 'Poppins', 'Inter', sans-serif;
+  font-family: var(--font-display);
+  font-weight: 600;
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
@@ -72,34 +96,39 @@ ul { margin: 0; padding: 0; list-style: none; }
   justify-content: center;
   gap: 8px;
   padding: 12px 24px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   border: none;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), filter 0.15s ease;
   white-space: nowrap;
 }
 .btn:active { transform: scale(0.97); }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  /* Both gradient stops stay at/darker than --gold-deep on purpose -- white
+     text needs it (--gold alone is 3.8:1, under the 4.5:1 text minimum). */
+  background: linear-gradient(135deg, var(--gold-deep), var(--ink));
   color: #fff;
   box-shadow: var(--shadow-primary);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-  box-shadow: 0 14px 28px rgba(55, 47, 158, 0.4);
+  background: linear-gradient(135deg, var(--ink), var(--gold-deep));
+  box-shadow: 0 14px 28px rgba(23, 21, 28, 0.35);
   transform: translateY(-2px);
 }
 
 .btn-accent {
-  background: linear-gradient(135deg, var(--accent), var(--pink));
+  /* Solid ink (vs. --btn-primary's gold gradient) so the two CTAs stay
+     visually distinct where they sit side by side, e.g. Add to Cart /
+     Buy Now on the product page. */
+  background: var(--ink);
   color: #fff;
   box-shadow: var(--shadow-accent);
 }
 .btn-accent:hover {
-  background: linear-gradient(135deg, var(--pink), var(--accent-dark));
-  box-shadow: 0 14px 28px rgba(255, 62, 108, 0.42);
+  background: var(--gold-deep);
+  box-shadow: 0 14px 28px rgba(140, 103, 37, 0.35);
   transform: translateY(-2px);
 }
 
@@ -132,7 +161,12 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: sticky;
   top: 0;
   z-index: 50;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid transparent;
+  transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+.navbar.is-scrolled {
+  border-bottom-color: var(--line);
+  box-shadow: 0 8px 24px rgba(23, 21, 28, 0.06);
 }
 .navbar .container {
   display: flex;
@@ -142,21 +176,19 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding-bottom: 14px;
 }
 .brand {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 1.6rem;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  letter-spacing: -0.01em;
+  color: var(--ink);
   flex-shrink: 0;
 }
 .search-form {
   flex: 1;
   display: flex;
   max-width: 560px;
-  border: 1.5px solid #c9c6de;
-  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
   overflow: hidden;
   background: #fff;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -285,7 +317,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .drawer-categories a {
   padding: 7px 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--primary-light);
   color: var(--primary);
   font-size: 0.8rem;
@@ -304,7 +336,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .category-nav .container { display: flex; gap: 6px; padding-top: 10px; padding-bottom: 10px; }
 .category-nav a {
   padding: 7px 15px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-muted);
@@ -316,6 +348,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
   color: #fff;
 }
+.category-nav-divider {
+  width: 1px;
+  align-self: stretch;
+  margin: 4px 4px;
+  background: var(--line);
+  flex-shrink: 0;
+}
 
 /* Shop page filter pills: same look as .category-nav a.active, but the
    gradient is a separate absolutely-positioned element with a shared
@@ -324,7 +363,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .shop-pill {
   position: relative;
   padding: 7px 15px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-muted);
@@ -336,11 +375,104 @@ ul { margin: 0; padding: 0; list-style: none; }
 .shop-pill-bg {
   position: absolute;
   inset: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
   z-index: -1;
 }
 .shop-pill-label { position: relative; }
+
+/* ===== Shop page: sidebar layout, filters, toolbar, sort menu ===== */
+.shop-layout { display: grid; grid-template-columns: 260px 1fr; gap: 32px; align-items: start; }
+.shop-filters {
+  position: sticky;
+  top: 90px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+.shop-filters-inner { display: flex; flex-direction: column; }
+.shop-filters-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.shop-filters-head h3 { font-size: 1.02rem; }
+.filter-clear { background: none; border: none; padding: 0; font-size: 0.78rem; font-weight: 700; color: var(--gold-deep); cursor: pointer; }
+.filter-clear:hover { text-decoration: underline; }
+.filter-group { padding: 16px 0; border-top: 1px solid var(--line); }
+.filter-group:first-of-type { border-top: none; padding-top: 10px; }
+.filter-group h4 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-soft); margin-bottom: 11px; }
+.filter-options { display: flex; flex-direction: column; gap: 10px; }
+.filter-option { display: flex; align-items: center; gap: 9px; font-size: 0.88rem; color: var(--text); cursor: pointer; }
+.filter-option input { width: 15px; height: 15px; flex-shrink: 0; accent-color: var(--gold-deep); cursor: pointer; }
+.filter-apply-btn { margin-top: 18px; }
+
+.shop-main { min-width: 0; }
+.shop-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+.shop-count { font-size: 0.88rem; color: var(--text-soft); }
+.shop-toolbar-actions { display: flex; align-items: center; gap: 10px; }
+.shop-filter-btn {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sort-menu { position: relative; }
+.sort-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease;
+}
+.sort-menu-trigger:hover { border-color: var(--gold); }
+.sort-menu-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 210px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 6px;
+  list-style: none;
+  margin: 0;
+  z-index: 20;
+}
+.sort-menu-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: pointer;
+}
+.sort-menu-list button:hover { background: var(--primary-light); }
+.sort-menu-list button.active { color: var(--gold-deep); font-weight: 700; background: var(--primary-light); }
+
+@media (max-width: 960px) {
+  .shop-layout { display: block; }
+  .shop-filters { display: none; }
+  .shop-filter-btn { display: inline-flex; }
+}
 
 /* ===== Desktop hero banner (hidden on mobile) ===== */
 .hero { display: none; }
@@ -768,15 +900,14 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   position: relative;
 }
 .product-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
-  box-shadow: 0 20px 40px -12px rgba(79, 70, 229, 0.25), 0 8px 16px -6px rgba(255, 62, 108, 0.18);
+  box-shadow: 0 20px 40px -12px rgba(23, 21, 28, 0.16), 0 8px 16px -6px rgba(140, 103, 37, 0.16);
 }
 .product-card .thumb {
   aspect-ratio: 1 / 1;
@@ -803,13 +934,73 @@ ul { margin: 0; padding: 0; list-style: none; }
 .badge-outofstock {
   position: absolute;
   inset: 0;
-  background: rgba(26,23,48,0.6);
+  background: rgba(23,21,28,0.6);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   letter-spacing: 0.05em;
+}
+
+/* Corner mark + quick-add bar: hover affordances on the product thumb,
+   revealed via a plain CSS transform (nothing unmounts, so this sits
+   outside the AnimatePresence-exit class of bug entirely -- see
+   useDelayedUnmount.js). :focus-within gets keyboard users the same
+   affordance for free. Below tablet width there's no hover, so the bar
+   stays permanently visible at reduced opacity instead of hiding. */
+.product-card .corner-mark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.product-card .corner-mark::before,
+.product-card .corner-mark::after {
+  content: '';
+  position: absolute;
+  background: var(--gold);
+}
+.product-card .corner-mark::before { top: 0; left: 0; width: 100%; height: 1.5px; }
+.product-card .corner-mark::after { top: 0; left: 0; width: 1.5px; height: 100%; }
+.product-card:hover .corner-mark,
+.product-card:focus-within .corner-mark { opacity: 1; }
+
+.quick-add {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateY(100%);
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 10px;
+  font-family: var(--font-body, inherit);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+.product-card:hover .quick-add,
+.product-card:focus-within .quick-add { transform: translateY(0); }
+.quick-add:disabled { cursor: not-allowed; opacity: 0.7; }
+
+/* Hover-only affordance: below tablet width there's no hover, and the
+   existing persistent "Add to Cart" button in .product-info already
+   covers touch users -- showing both would just be visual duplication. */
+@media (max-width: 900px) {
+  .quick-add,
+  .product-card .corner-mark { display: none; }
 }
 .product-info { padding: 15px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .product-info .cat { font-size: 0.7rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -823,7 +1014,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   min-height: 2.4em;
 }
 .price-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.price { font-weight: 700; font-size: 1.05rem; color: var(--text); }
+.price { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; color: var(--text); }
 .mrp { font-size: 0.82rem; color: var(--text-muted); text-decoration: line-through; }
 .discount { font-size: 0.8rem; color: var(--success); font-weight: 700; }
 .rating-row { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; }
@@ -908,7 +1099,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .avatar {
   width: 36px; height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
+  background: var(--ink);
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.8rem;
@@ -1004,9 +1195,8 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   box-shadow: var(--shadow-sm); margin-bottom: 20px;
 }
 .review-summary-score {
-  font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 2.4rem;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-family: var(--font-display); font-weight: 600; font-size: 2.4rem;
+  color: var(--ink);
   line-height: 1;
 }
 .review-summary-count { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; }
@@ -1080,22 +1270,21 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .pd-sku { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; }
 .pd-info .price-row { font-size: 1.3rem; margin: 16px 0; }
 .pd-info .price {
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: clamp(1.5rem, 3vw + 0.8rem, 2rem);
-  background: linear-gradient(135deg, var(--primary), var(--pink));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--ink);
 }
 .pd-meta { display: flex; gap: 24px; margin: 18px 0; flex-wrap: wrap; }
 .pd-meta .item { font-size: 0.85rem; color: var(--text-muted); }
 .pd-meta .item strong { display: block; color: var(--text); }
-.qty-stepper { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 999px; overflow: hidden; width: fit-content; }
+.qty-stepper { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; width: fit-content; }
 .qty-stepper button { background: var(--primary-light); color: var(--primary); border: none; width: 38px; height: 38px; font-size: 1.15rem; font-weight: 700; }
 .qty-stepper input { width: 46px; text-align: center; border: none; font-size: 1rem; }
 .pd-actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
 .pd-actions .btn { flex: 1; min-width: 160px; }
-.pd-actions .btn-primary:hover { box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.15), 0 14px 28px rgba(55, 47, 158, 0.4); }
-.pd-actions .btn-accent:hover { box-shadow: 0 0 0 6px rgba(255, 62, 108, 0.15), 0 14px 28px rgba(255, 62, 108, 0.42); }
+.pd-actions .btn-primary:hover { box-shadow: 0 0 0 6px rgba(140, 103, 37, 0.15), 0 14px 28px rgba(23, 21, 28, 0.35); }
+.pd-actions .btn-accent:hover { box-shadow: 0 0 0 6px rgba(23, 21, 28, 0.12), 0 14px 28px rgba(140, 103, 37, 0.35); }
 .pd-description { margin-top: 20px; color: var(--text-muted); font-size: 0.92rem; line-height: 1.7; max-width: 720px; }
 
 /* ===== Delivery check widget ===== */
@@ -1427,7 +1616,7 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .dot-loader { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 40px; }
 .dot-loader span {
   width: 10px; height: 10px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
+  background: var(--gold-deep);
   animation: dotBounce 1.2s ease-in-out infinite;
 }
 .dot-loader span:nth-child(2) { animation-delay: 0.15s; }
@@ -1675,7 +1864,7 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
     content: '';
     position: absolute; top: 0; left: 50%;
     width: 26px; height: 3px; border-radius: 0 0 3px 3px;
-    background: linear-gradient(90deg, var(--primary), var(--pink));
+    background: var(--gold-deep);
     transform: translateX(-50%) scaleX(0);
     transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   }

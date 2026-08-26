@@ -48,12 +48,18 @@ function ProductCard({ product: p, delay = 0 }) {
       initial={reduceMotion ? false : { opacity: 0, y: 22 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.12, margin: '0px 0px -40px 0px' }}
-      transition={{ duration: 0.6, ease: 'easeOut', delay }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
     >
       <div className="thumb">
         {p.isBestSeller && <span className="badge">BESTSELLER</span>}
         <img src={p.image} alt={p.name} loading="lazy" />
         {outOfStock && <div className="badge-outofstock">Out of Stock</div>}
+        <span className="corner-mark" aria-hidden="true"></span>
+        {!outOfStock && (
+          <button className="quick-add" onClick={(e) => quickAdd(e, p._id)}>
+            Quick Add
+          </button>
+        )}
       </div>
       <div className="product-info">
         <span className="cat">{p.category}</span>

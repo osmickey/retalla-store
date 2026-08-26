@@ -10,6 +10,7 @@ const products = [
   {
     name: 'BD Vacuum Suction Cleaner - Portable Air Duster Wireless',
     description: 'Powerful cordless mini vacuum cleaner for keyboards, cars and desks.',
+    brand: 'BD',
     category: 'Home & Kitchen',
     image: img('vacuum1'),
     price: 849,
@@ -35,6 +36,7 @@ const products = [
   {
     name: 'KolorFish Electric Mini Garlic Chopper 250ml',
     description: 'Compact electric chopper for garlic, onion, ginger and vegetables.',
+    brand: 'KolorFish',
     category: 'Home & Kitchen',
     image: img('chopper1'),
     price: 650,
@@ -83,6 +85,7 @@ const products = [
   {
     name: "Men's Slim Fit Casual Shirt",
     description: 'Premium cotton-blend slim fit shirt, ideal for office and casual wear.',
+    brand: 'Urban Threads',
     category: 'Men',
     image: img('shirt1'),
     price: 749,
@@ -95,6 +98,7 @@ const products = [
   {
     name: "Men's Sports Sneakers",
     description: 'Lightweight breathable sneakers with cushioned sole for all-day comfort.',
+    brand: 'StrideFit',
     category: 'Bags & Foot',
     image: img('shoes1'),
     price: 1299,
@@ -130,6 +134,7 @@ const products = [
   {
     name: 'Vitamin C Brightening Face Serum',
     description: 'Lightweight face serum for glowing, even-toned skin.',
+    brand: 'GlowLab',
     category: 'Beauty & Health',
     image: img('beauty1'),
     price: 449,
@@ -143,6 +148,7 @@ const products = [
   {
     name: 'Herbal Hair Growth Oil',
     description: 'Ayurvedic hair oil blend to reduce hair fall and boost growth.',
+    brand: 'GlowLab',
     category: 'Beauty & Health',
     image: img('beauty2'),
     price: 349,
@@ -154,6 +160,7 @@ const products = [
   {
     name: 'Rose Gold Layered Necklace Set',
     description: 'Elegant rose gold plated layered necklace with matching earrings.',
+    brand: 'Aurelia',
     category: 'Jewellery',
     image: img('jewel1'),
     price: 599,
@@ -166,6 +173,7 @@ const products = [
   {
     name: 'American Diamond Stud Earrings',
     description: 'Sparkling AD stud earrings, hypoallergenic and lightweight.',
+    brand: 'Aurelia',
     category: 'Jewellery',
     image: img('jewel2'),
     price: 299,

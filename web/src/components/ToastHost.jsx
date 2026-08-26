@@ -35,7 +35,7 @@ export default function ToastHost() {
     <motion.div
       className="toast"
       animate={{ opacity: visible ? 1 : 0, y: reduceMotion ? 0 : visible ? 0 : 10 }}
-      transition={{ duration: reduceMotion ? 0 : 0.25 }}
+      transition={{ duration: reduceMotion ? 0 : 0.25, ease: [0.16, 1, 0.3, 1] }}
     >
       {message}
     </motion.div>

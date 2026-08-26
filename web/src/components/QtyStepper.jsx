@@ -15,7 +15,7 @@ export default function QtyStepper({ value, onDecrement, onIncrement, onInputCha
   useEffect(() => {
     if (value !== prevValue.current) {
       prevValue.current = value;
-      if (!reduceMotion) controls.start({ scale: [1, 1.08, 1], transition: { duration: 0.25 } });
+      if (!reduceMotion) controls.start({ scale: [1, 1.08, 1], transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } });
     }
   }, [value, controls, reduceMotion]);
 

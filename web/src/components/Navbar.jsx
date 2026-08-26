@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import Icon from '../icons/Icon';
 import { useCartCount } from '../lib/cart';
 import { useAuth } from '../lib/auth';
 import { CATEGORIES } from '../lib/config';
-import { useDelayedUnmount } from '../hooks/useDelayedUnmount';
+import SidePanel from './SidePanel';
 
 // Links to pages outside this app's route table (/index.html, /account.html,
 // /customer-service.html, etc.) stay plain <a href> on purpose. Links to pages
@@ -66,39 +66,47 @@ function CartBadge({ count }) {
   return (
     <motion.span
       className="cart-badge"
-      animate={bumped && !reduceMotion ? { scale: [1, 1.45, 0.9, 1] } : {}}
-      transition={{ duration: 0.4, ease: 'easeInOut' }}
+      animate={bumped && !reduceMotion ? { scale: [1, 1.18, 1] } : {}}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
       {count}
     </motion.span>
   );
 }
 
+// Reuse existing, already-seeded product data instead of new backend routes:
+// bestseller passes straight through to GET /products?bestseller=true
+// (already supported), new and offers are computed client-side by ShopPage
+// from fields every product already has (createdAt, mrp vs price).
+const SORT_LINKS = [
+  { label: 'New Arrivals', sort: 'new' },
+  { label: 'Best Sellers', sort: 'bestseller' },
+  { label: 'Offers', sort: 'offers' },
+];
+
 function FullNavbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const cartCount = useCartCount();
   const user = useAuth();
   const navigate = useNavigate();
-  const reduceMotion = useReducedMotion();
+  const location = useLocation();
 
   const closeDrawer = () => setDrawerOpen(false);
 
-  // Escape-to-close + body scroll lock while the drawer is open. Neither
-  // exists in the original inline accordion-panel drawer -- both only make
-  // sense now that it's a real fixed overlay.
+  // Subtle elevation once the page scrolls -- these pages don't sit under a
+  // hero image (that's homepage-only, not built yet), so this is a modest
+  // shadow/border pickup rather than a transparent-to-solid swap.
   useEffect(() => {
-    if (!drawerOpen) return undefined;
-    const onKeyDown = (e) => {
-      if (e.key === 'Escape') closeDrawer();
-    };
-    document.addEventListener('keydown', onKeyDown);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [drawerOpen]);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const params = new URLSearchParams(location.search);
+  const activeCategory = location.pathname === '/shop.html' ? params.get('category') : null;
+  const activeSort = location.pathname === '/shop.html' ? params.get('sort') : null;
 
   function handleSearchSubmit(e) {
     e.preventDefault();
@@ -107,14 +115,9 @@ function FullNavbar() {
     navigate(value ? `/shop.html?search=${encodeURIComponent(value)}` : '/shop.html');
   }
 
-  const drawerVariants = reduceMotion
-    ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
-    : { hidden: { x: '-100%' }, visible: { x: 0 } };
-  const renderDrawer = useDelayedUnmount(drawerOpen, 250);
-
   return (
     <>
-      <nav className="navbar">
+      <nav className={`navbar${scrolled ? ' is-scrolled' : ''}`}>
         <div className="container">
           <button
             className={`hamburger-btn${drawerOpen ? ' open' : ''}`}
@@ -172,56 +175,60 @@ function FullNavbar() {
       </nav>
       <div className="category-nav">
         <div className="container category-nav-list">
+          {SORT_LINKS.map((s) => (
+            <Link
+              key={s.sort}
+              className={activeSort === s.sort ? 'active' : undefined}
+              to={`/shop.html?sort=${s.sort}`}
+            >
+              {s.label}
+            </Link>
+          ))}
+          <span className="category-nav-divider" aria-hidden="true"></span>
           {CATEGORIES.map((cat) => (
-            <Link key={cat} to={`/shop.html?category=${encodeURIComponent(cat)}`}>
+            <Link
+              key={cat}
+              className={activeCategory === cat ? 'active' : undefined}
+              to={`/shop.html?category=${encodeURIComponent(cat)}`}
+            >
               {cat}
             </Link>
           ))}
         </div>
       </div>
 
-      {renderDrawer && (
-        <motion.div
-          className="drawer-backdrop"
-          onClick={closeDrawer}
-          animate={{ opacity: drawerOpen ? 1 : 0 }}
-          transition={{ duration: reduceMotion ? 0 : 0.2 }}
-        />
-      )}
-      {renderDrawer && (
-        <motion.div
-          className="mobile-drawer open"
-          variants={drawerVariants}
-          animate={drawerOpen ? 'visible' : 'hidden'}
-          transition={{ duration: reduceMotion ? 0 : 0.25, ease: 'easeOut' }}
-        >
-          <a href="/index.html">
-            <Icon name="home" size={18} /> Home
+      <SidePanel open={drawerOpen} onClose={closeDrawer}>
+        <a href="/index.html">
+          <Icon name="home" size={18} /> Home
+        </a>
+        {user ? (
+          <a href="/account.html">
+            <Icon name="box" size={18} /> My Orders
           </a>
-          {user ? (
-            <a href="/account.html">
-              <Icon name="box" size={18} /> My Orders
-            </a>
-          ) : (
-            <Link to="/login.html" onClick={closeDrawer}>
-              <Icon name="user" size={18} /> Login
-            </Link>
-          )}
-          <Link to="/cart.html" onClick={closeDrawer}>
-            <Icon name="cart" size={18} /> Cart
+        ) : (
+          <Link to="/login.html" onClick={closeDrawer}>
+            <Icon name="user" size={18} /> Login
           </Link>
-          <a href="/customer-service.html">
-            <Icon name="support" size={18} /> Customer Service
-          </a>
-          <div className="drawer-categories">
-            {CATEGORIES.map((cat) => (
-              <Link key={cat} to={`/shop.html?category=${encodeURIComponent(cat)}`} onClick={closeDrawer}>
-                {cat}
-              </Link>
-            ))}
-          </div>
-        </motion.div>
-      )}
+        )}
+        <Link to="/cart.html" onClick={closeDrawer}>
+          <Icon name="cart" size={18} /> Cart
+        </Link>
+        <a href="/customer-service.html">
+          <Icon name="support" size={18} /> Customer Service
+        </a>
+        <div className="drawer-categories">
+          {SORT_LINKS.map((s) => (
+            <Link key={s.sort} to={`/shop.html?sort=${s.sort}`} onClick={closeDrawer}>
+              {s.label}
+            </Link>
+          ))}
+          {CATEGORIES.map((cat) => (
+            <Link key={cat} to={`/shop.html?category=${encodeURIComponent(cat)}`} onClick={closeDrawer}>
+              {cat}
+            </Link>
+          ))}
+        </div>
+      </SidePanel>
     </>
   );
 }

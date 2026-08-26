@@ -38,4 +38,6 @@ export const ICON_PATHS = {
   sofa: '<path d="M5.5 10.5V7.8A2.3 2.3 0 0 1 7.8 5.5h8.4a2.3 2.3 0 0 1 2.3 2.3v2.7"/><path d="M3 12.8a2 2 0 0 1 4 0V15h10v-2.2a2 2 0 0 1 4 0V18.5H3z"/><path d="M6.5 18.5V20M17.5 18.5V20"/>',
   lipstick: '<rect x="9" y="10" width="6" height="10.5" rx="1.4"/><path d="M10.2 10V6.2a1.8 1.8 0 0 1 3.6 0V10"/>',
   percent: '<circle cx="7" cy="7" r="2.4"/><circle cx="17" cy="17" r="2.4"/><path d="M18 6 6 18"/>',
+  'chevron-down': '<path d="M6 9l6 6 6-6"/>',
+  filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
 };
