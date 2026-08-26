@@ -30,6 +30,41 @@ app.use('/api/banners', bannerRoutes);
 app.use('/api/hero', heroRoutes);
 app.use('/api/promo-tiles', promoTileRoutes);
 
+// --- React SPA (web/) -- incremental page migration -------------------------
+// Allowlist of URL paths served by the Vite-built React app in web/dist
+// instead of the matching static file in public/. Every path here must also
+// exist as a <Route> in web/src/App.jsx. To migrate another page: add it to
+// both places, rebuild, redeploy. Do not remove express.static(publicDir)
+// below -- every path NOT in this list still needs to come from public/.
+//
+// ORDERING IS LOAD-BEARING: this block must stay above
+// app.use(express.static(publicDir)). Express serves the first matching
+// handler it finds in registration order; if this block is ever moved below
+// the public/ static mount, these paths will silently start serving the old
+// public/*.html files again instead of the React app -- no error, no crash,
+// just wrong content.
+const REACT_ROUTES = [
+  '/login.html',
+  '/register.html',
+  '/customer-service.html',
+  '/shipping-returns.html',
+  '/privacy-policy.html',
+  '/terms.html',
+];
+
+const webDistDir = path.join(__dirname, '..', 'web', 'dist');
+
+// Scoped to the assets/ subdirectory only, not all of web/dist -- public/ has
+// no assets/ folder of its own today, so this can't collide with anything.
+// Mounting the WHOLE dist dir at "/" would let web/dist/index.html intercept
+// requests for /index.html -- the live homepage -- before public/ ever sees
+// them. Scoping to assets/ makes that failure mode impossible.
+app.use('/assets', express.static(path.join(webDistDir, 'assets')));
+
+app.get(REACT_ROUTES, (req, res) => {
+  res.sendFile(path.join(webDistDir, 'index.html'));
+});
+
 const publicDir = path.join(__dirname, '..', 'public');
 app.use(express.static(publicDir));
 
