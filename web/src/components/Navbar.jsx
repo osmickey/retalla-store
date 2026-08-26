@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import Icon from '../icons/Icon';
 import { useCartCount } from '../lib/cart';
 import { useAuth } from '../lib/auth';
 import { CATEGORIES } from '../lib/config';
 import SidePanel from './SidePanel';
+import SearchPanel from './SearchPanel';
 
 // Links to pages outside this app's route table (/index.html, /account.html,
 // /customer-service.html, etc.) stay plain <a href> on purpose. Links to pages
@@ -89,7 +90,6 @@ function FullNavbar() {
   const [scrolled, setScrolled] = useState(false);
   const cartCount = useCartCount();
   const user = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
 
   const closeDrawer = () => setDrawerOpen(false);
@@ -107,13 +107,6 @@ function FullNavbar() {
   const params = new URLSearchParams(location.search);
   const activeCategory = location.pathname === '/shop.html' ? params.get('category') : null;
   const activeSort = location.pathname === '/shop.html' ? params.get('sort') : null;
-
-  function handleSearchSubmit(e) {
-    e.preventDefault();
-    const value = new FormData(e.target).get('search')?.toString().trim();
-    closeDrawer();
-    navigate(value ? `/shop.html?search=${encodeURIComponent(value)}` : '/shop.html');
-  }
 
   return (
     <>
@@ -133,14 +126,7 @@ function FullNavbar() {
           <a href="/index.html" className="brand">
             Retalla
           </a>
-          <form className="search-form" onSubmit={handleSearchSubmit}>
-            <input type="text" name="search" placeholder="Search for gadgets, fashion, beauty & more..." />
-            <button type="submit">
-              <span className="icon">
-                <Icon name="search" size={18} />
-              </span>
-            </button>
-          </form>
+          <SearchPanel />
           <div className="nav-actions">
             <a className="nav-icon-link nav-desktop-only" href="/customer-service.html">
               <span className="icon">

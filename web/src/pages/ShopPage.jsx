@@ -183,7 +183,10 @@ export default function ShopPage() {
             </div>
           ) : (
             <motion.div key={signature} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}>
-              <ProductGrid products={visibleProducts} emptyMessage="No products match these filters." />
+              <ProductGrid
+                products={visibleProducts}
+                emptyMessage={search ? `No products found for "${search}".` : 'No products match these filters.'}
+              />
             </motion.div>
           )}
         </div>

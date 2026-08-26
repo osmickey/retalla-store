@@ -13,6 +13,17 @@ export const CATEGORY_ICONS = {
 };
 export const CATEGORIES = Object.keys(CATEGORY_ICONS);
 
+// Curated, not computed -- there's no search-analytics anywhere in the
+// backend to derive real "popular" terms from. Kept short and honest.
+export const POPULAR_SEARCHES = [
+  'Sneakers',
+  'Face Serum',
+  'Necklace Set',
+  'Casual Shirt',
+  'Night Light',
+  'Wrap Dress',
+];
+
 export const CATEGORY_COLORS = {
   'Home Items': ['#4f46e5', '#7c3aed'],
   'Women Western': ['#ff3e6c', '#ff6b4a'],
