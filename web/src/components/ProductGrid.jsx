@@ -3,6 +3,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Icon from '../icons/Icon';
 import { api } from '../lib/api';
 import { cart, showToast } from '../lib/cart';
+import { auth } from '../lib/auth';
+import { wishlist, useWishlistIds } from '../lib/wishlist';
 
 // motion(Link) makes the Link itself the animated element (no extra wrapper
 // div), so it stays a direct .product-grid child -- required for the CSS
@@ -34,9 +36,26 @@ async function quickAdd(e, productId) {
   }
 }
 
+async function toggleWishlist(e, productId, isWishlisted) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!auth.requireLogin(window.location.pathname + window.location.search)) return;
+  try {
+    if (isWishlisted) {
+      await wishlist.remove(productId);
+      showToast('Removed from wishlist');
+    } else {
+      await wishlist.add(productId);
+      showToast('Added to wishlist');
+    }
+  } catch (err) {
+    showToast(err.message);
+  }
+}
+
 // Re-fetches the product by id (rather than trusting the grid's possibly
 // stale price/stock) before adding -- same as the original quickAdd().
-function ProductCard({ product: p, delay = 0 }) {
+function ProductCard({ product: p, delay = 0, isWishlisted }) {
   const reduceMotion = useReducedMotion();
   const outOfStock = p.stock <= 0;
   const discount = p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
@@ -54,7 +73,16 @@ function ProductCard({ product: p, delay = 0 }) {
         {p.isBestSeller && <span className="badge">BESTSELLER</span>}
         <img src={p.image} alt={p.name} loading="lazy" />
         {outOfStock && <div className="badge-outofstock">Out of Stock</div>}
-        <span className="corner-mark" aria-hidden="true"></span>
+        <motion.button
+          type="button"
+          className={`wishlist-heart${isWishlisted ? ' active' : ''}`}
+          aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-pressed={isWishlisted}
+          onClick={(e) => toggleWishlist(e, p._id, isWishlisted)}
+          whileTap={{ scale: 0.78 }}
+        >
+          <Icon name={isWishlisted ? 'heart-filled' : 'heart'} size={16} />
+        </motion.button>
         {!outOfStock && (
           <button className="quick-add" onClick={(e) => quickAdd(e, p._id)}>
             Quick Add
@@ -99,6 +127,9 @@ function ProductCard({ product: p, delay = 0 }) {
 // own -- no extra remount/key trick needed).
 export default function ProductGrid({ products, emptyMessage = 'No products found.' }) {
   const reduceMotion = useReducedMotion();
+  // Called once here, not once per card, so N cards don't fire N duplicate
+  // /wishlist/ids fetches.
+  const wishlistIds = useWishlistIds();
 
   if (!products.length) {
     return (
@@ -114,7 +145,12 @@ export default function ProductGrid({ products, emptyMessage = 'No products foun
   return (
     <div className="product-grid">
       {products.map((p, i) => (
-        <ProductCard key={p._id} product={p} delay={reduceMotion ? 0 : Math.min(i, 8) * 0.05} />
+        <ProductCard
+          key={p._id}
+          product={p}
+          delay={reduceMotion ? 0 : Math.min(i, 8) * 0.05}
+          isWishlisted={wishlistIds.has(p._id)}
+        />
       ))}
     </div>
   );

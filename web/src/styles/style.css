@@ -1034,33 +1034,36 @@ ul { margin: 0; padding: 0; list-style: none; }
   letter-spacing: 0.05em;
 }
 
-/* Corner mark + quick-add bar: hover affordances on the product thumb,
-   revealed via a plain CSS transform (nothing unmounts, so this sits
-   outside the AnimatePresence-exit class of bug entirely -- see
-   useDelayedUnmount.js). :focus-within gets keyboard users the same
-   affordance for free. Below tablet width there's no hover, so the bar
-   stays permanently visible at reduced opacity instead of hiding. */
-.product-card .corner-mark {
+/* Quick-add bar: a hover affordance on the product thumb, revealed via a
+   plain CSS transform (nothing unmounts, so this sits outside the
+   AnimatePresence-exit class of bug entirely -- see useDelayedUnmount.js).
+   :focus-within gets keyboard users the same affordance for free. Below
+   tablet width there's no hover, so the bar stays permanently visible at
+   reduced opacity instead of hiding.
+   The wishlist heart used to share this top-right corner with a purely
+   decorative corner-mark bracket -- dropped the bracket rather than stack
+   two elements in the same spot, since the heart is functional and the
+   bracket wasn't. */
+.wishlist-heart {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 14px;
-  height: 14px;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: none;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   z-index: 2;
+  box-shadow: var(--shadow-sm);
+  transition: color 0.15s ease, background 0.15s ease;
 }
-.product-card .corner-mark::before,
-.product-card .corner-mark::after {
-  content: '';
-  position: absolute;
-  background: var(--gold);
-}
-.product-card .corner-mark::before { top: 0; left: 0; width: 100%; height: 1.5px; }
-.product-card .corner-mark::after { top: 0; left: 0; width: 1.5px; height: 100%; }
-.product-card:hover .corner-mark,
-.product-card:focus-within .corner-mark { opacity: 1; }
+.wishlist-heart:hover { color: var(--gold-deep); background: #fff; }
+.wishlist-heart.active { color: var(--gold-deep); }
 
 .quick-add {
   position: absolute;
@@ -1090,8 +1093,7 @@ ul { margin: 0; padding: 0; list-style: none; }
    existing persistent "Add to Cart" button in .product-info already
    covers touch users -- showing both would just be visual duplication. */
 @media (max-width: 900px) {
-  .quick-add,
-  .product-card .corner-mark { display: none; }
+  .quick-add { display: none; }
 }
 .product-info { padding: 15px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .product-info .cat { font-size: 0.7rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -1376,6 +1378,22 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .pd-actions .btn { flex: 1; min-width: 160px; }
 .pd-actions .btn-primary:hover { box-shadow: 0 0 0 6px rgba(140, 103, 37, 0.15), 0 14px 28px rgba(23, 21, 28, 0.35); }
 .pd-actions .btn-accent:hover { box-shadow: 0 0 0 6px rgba(23, 21, 28, 0.12), 0 14px 28px rgba(140, 103, 37, 0.35); }
+.pd-wishlist-btn {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.pd-wishlist-btn:hover { color: var(--gold-deep); border-color: var(--gold); }
+.pd-wishlist-btn.active { color: var(--gold-deep); border-color: var(--gold); }
 .pd-description { margin-top: 20px; color: var(--text-muted); font-size: 0.92rem; line-height: 1.7; max-width: 720px; }
 
 /* ===== Delivery check widget ===== */
@@ -1433,6 +1451,25 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 }
 .cart-item img { width: 90px; height: 90px; object-fit: cover; border-radius: var(--radius-sm); }
 .cart-item h4 { font-size: 0.92rem; margin-bottom: 4px; }
+
+.wishlist-item {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  background: var(--surface);
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+}
+.wishlist-item img { width: 90px; height: 90px; object-fit: cover; border-radius: var(--radius-sm); }
+.wishlist-item h4 { font-size: 0.92rem; margin-bottom: 4px; font-family: var(--font-display); font-weight: 500; }
+.wishlist-item-availability { font-size: 0.78rem; font-weight: 600; }
+.wishlist-item-availability.in-stock { color: var(--success); }
+.wishlist-item-availability.out-of-stock { color: #dc2626; }
+.wishlist-item-actions { display: flex; align-items: center; gap: 12px; }
+.wishlist-item-actions .price { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; white-space: nowrap; }
 .remove-btn {
   width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--border);
   background: transparent; color: var(--text-muted); display: flex; align-items: center; justify-content: center;
@@ -1874,6 +1911,14 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   .cart-item .qty-stepper { grid-column: 2; }
   .cart-item > strong { grid-column: 2; justify-self: start; margin-top: -6px; }
   .cart-item .remove-btn { grid-column: 2; justify-self: end; margin-top: -44px; }
+  .wishlist-item {
+    grid-template-columns: 64px 1fr;
+    grid-template-areas: "img info" "actions actions";
+    gap: 10px;
+  }
+  .wishlist-item img { grid-area: img; width: 64px; height: 64px; }
+  .wishlist-item-info { grid-area: info; }
+  .wishlist-item-actions { grid-area: actions; margin-top: 4px; flex-wrap: wrap; }
   .product-detail { padding: 18px; }
   .pd-thumbs { overflow-x: auto; padding-bottom: 4px; }
   .pd-actions .btn { min-width: 0; }

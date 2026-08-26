@@ -6,6 +6,7 @@ import { api } from '../lib/api';
 import { auth } from '../lib/auth';
 import { cart, showToast } from '../lib/cart';
 import { recentlyViewed } from '../lib/recentlyViewed';
+import { wishlist, useWishlistIds } from '../lib/wishlist';
 import Icon from '../icons/Icon';
 import QtyStepper from '../components/QtyStepper';
 import ProductGrid from '../components/ProductGrid';
@@ -415,6 +416,7 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [error, setError] = useState('');
   const [qty, setQty] = useState(1);
+  const wishlistIds = useWishlistIds();
 
   useDocumentTitle(product ? `${product.name} — Retalla` : 'Product — Retalla');
 
@@ -455,6 +457,21 @@ export default function ProductPage() {
     window.location.href = '/cart.html';
   }
 
+  async function toggleWishlist() {
+    if (!auth.requireLogin(window.location.pathname + window.location.search)) return;
+    try {
+      if (isWishlisted) {
+        await wishlist.remove(product._id);
+        showToast('Removed from wishlist');
+      } else {
+        await wishlist.add(product._id);
+        showToast('Added to wishlist');
+      }
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
   if (error) {
     return (
       <main className="container">
@@ -479,6 +496,7 @@ export default function ProductPage() {
 
   const discount = product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
   const outOfStock = product.stock <= 0;
+  const isWishlisted = wishlistIds.has(product._id);
 
   return (
     <main className="container">
@@ -536,6 +554,16 @@ export default function ProductPage() {
             <button className="btn btn-accent" disabled={outOfStock} onClick={buyNow}>
               Buy Now
             </button>
+            <motion.button
+              type="button"
+              className={`pd-wishlist-btn${isWishlisted ? ' active' : ''}`}
+              aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              aria-pressed={isWishlisted}
+              onClick={toggleWishlist}
+              whileTap={{ scale: 0.85 }}
+            >
+              <Icon name={isWishlisted ? 'heart-filled' : 'heart'} size={20} />
+            </motion.button>
           </div>
 
           {/* Trimmed to the 3 that matter at the moment of buying -- the

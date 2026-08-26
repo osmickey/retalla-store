@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import Icon from '../icons/Icon';
 import { useCartCount } from '../lib/cart';
+import { useWishlistIds } from '../lib/wishlist';
 import { useAuth } from '../lib/auth';
 import { CATEGORIES } from '../lib/config';
 import SidePanel from './SidePanel';
@@ -56,7 +57,8 @@ export default function Navbar({ variant = 'simple' }) {
   );
 }
 
-function CartBadge({ count }) {
+// Shared by Cart and Wishlist counts -- same pulse-on-increase treatment.
+function CountBadge({ count }) {
   const prevCount = useRef(count);
   const bumped = count > prevCount.current;
   const reduceMotion = useReducedMotion();
@@ -89,6 +91,7 @@ function FullNavbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const cartCount = useCartCount();
+  const wishlistIds = useWishlistIds();
   const user = useAuth();
   const location = useLocation();
 
@@ -149,12 +152,19 @@ function FullNavbar() {
                 <span>Login</span>
               </Link>
             )}
+            <Link className="nav-icon-link" to="/wishlist.html">
+              <span className="icon">
+                <Icon name="heart" />
+              </span>
+              <span>Wishlist</span>
+              {wishlistIds.size > 0 && <CountBadge count={wishlistIds.size} />}
+            </Link>
             <Link className="nav-icon-link" to="/cart.html">
               <span className="icon">
                 <Icon name="cart" />
               </span>
               <span>Cart</span>
-              <CartBadge count={cartCount} />
+              <CountBadge count={cartCount} />
             </Link>
           </div>
         </div>
@@ -196,6 +206,9 @@ function FullNavbar() {
             <Icon name="user" size={18} /> Login
           </Link>
         )}
+        <Link to="/wishlist.html" onClick={closeDrawer}>
+          <Icon name="heart" size={18} /> Wishlist
+        </Link>
         <Link to="/cart.html" onClick={closeDrawer}>
           <Icon name="cart" size={18} /> Cart
         </Link>

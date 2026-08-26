@@ -9,6 +9,7 @@ export const ICON_PATHS = {
   tag: '<path d="M12.6 3H4a1 1 0 0 0-1 1v8.6a1 1 0 0 0 .3.7l9.4 9.4a1 1 0 0 0 1.4 0l8-8a1 1 0 0 0 0-1.4l-9.4-9.4a1 1 0 0 0-.1-.1z"/><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"/>',
   bag: '<path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
   heart: '<path d="M12 20s-7-4.4-9.3-9A5 5 0 0 1 12 6a5 5 0 0 1 9.3 5c-2.3 4.6-9.3 9-9.3 9z"/>',
+  'heart-filled': '<path d="M12 20s-7-4.4-9.3-9A5 5 0 0 1 12 6a5 5 0 0 1 9.3 5c-2.3 4.6-9.3 9-9.3 9z" fill="currentColor" stroke="none"/>',
   home: '<path d="M3 11 12 4l9 7"/><path d="M5 10v9h14v-9"/><path d="M9.5 19v-5h5v5"/>',
   dress: '<path d="M9 3h6l1 3-2 2 2 3-2 10H8L6 11l2-3-2-2z"/>',
   shirt: '<path d="M8 4 4 7l2 3 2-1v11h8V9l2 1 2-3-4-3-2 2h-4z"/>',

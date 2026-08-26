@@ -12,6 +12,7 @@ const userRoutes = require('./routes/userRoutes');
 const bannerRoutes = require('./routes/bannerRoutes');
 const heroRoutes = require('./routes/heroRoutes');
 const promoTileRoutes = require('./routes/promoTileRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/hero', heroRoutes);
 app.use('/api/promo-tiles', promoTileRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 // --- React SPA (web/) -- incremental page migration -------------------------
 // Allowlist of URL paths served by the Vite-built React app in web/dist
@@ -53,6 +55,7 @@ const REACT_ROUTES = [
   '/shop.html',
   '/product.html',
   '/cart.html',
+  '/wishlist.html',
 ];
 
 const webDistDir = path.join(__dirname, '..', 'web', 'dist');
