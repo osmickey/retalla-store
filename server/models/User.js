@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, trim: true },
     phoneVerified: { type: Boolean, default: false },
     isAdmin: { type: Boolean, default: false },
+    preferredPaymentMethod: { type: String, enum: ['COD', 'UPI', 'Card'], default: 'COD' },
 
     resetOtpHash: String,
     resetOtpExpires: Date,

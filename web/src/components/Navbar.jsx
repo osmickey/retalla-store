@@ -138,12 +138,12 @@ function FullNavbar() {
               <span>Support</span>
             </a>
             {user ? (
-              <a className="nav-icon-link" href="/account.html">
+              <Link className="nav-icon-link" to="/account.html">
                 <span className="icon">
                   <Icon name="user" />
                 </span>
                 <span>{user.name.split(' ')[0]}</span>
-              </a>
+              </Link>
             ) : (
               <Link className="nav-icon-link" to="/login.html">
                 <span className="icon">
@@ -198,9 +198,9 @@ function FullNavbar() {
           <Icon name="home" size={18} /> Home
         </a>
         {user ? (
-          <a href="/account.html">
+          <Link to="/account.html" onClick={closeDrawer}>
             <Icon name="box" size={18} /> My Orders
-          </a>
+          </Link>
         ) : (
           <Link to="/login.html" onClick={closeDrawer}>
             <Icon name="user" size={18} /> Login
