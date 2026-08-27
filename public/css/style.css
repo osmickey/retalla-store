@@ -1,30 +1,43 @@
-/* ===== Retalla storefront design system — Bold Vibrant v2 ===== */
+/* ===== Retalla storefront design system — Premium ink/gold (matches web/src/styles/style.css) ===== */
 
 :root {
-  --primary: #4f46e5;
-  --primary-2: #7c3aed;
-  --primary-dark: #372f9e;
-  --primary-light: #eef0ff;
-  --accent: #ff6b4a;
-  --accent-dark: #e14e2c;
-  --pink: #ff3e6c;
-  --success: #16a34a;
-  --star: #ffb800;
+  --ink: #17151c;
+  --paper: #faf9f6;
+  --text: #1b1826;
+  --text-soft: #5c5868;
+  --line: #e6e1d6;
+  --gold: #a67c2e;
+  --gold-deep: #8c6725;
+  --success: #3f6e4c;
 
-  --bg: #f6f6fb;
+  /* Old token names kept and repointed -- every selector below still
+     references --primary/--pink/--accent/--border/--text-muted directly,
+     so repointing them into the new ink/gold family updates the whole
+     page with no per-selector rewrite. */
+  --primary: var(--gold-deep);
+  --primary-2: var(--gold);
+  --primary-dark: var(--ink);
+  --primary-light: color-mix(in srgb, var(--gold) 12%, var(--paper));
+  --accent: var(--gold-deep);
+  --accent-dark: var(--ink);
+  --pink: var(--gold-deep);
+  --bg: var(--paper);
+  --text-muted: var(--text-soft);
+  --border: var(--line);
+  --star: var(--gold-deep);
+
   --surface: #ffffff;
-  --text: #1a1730;
-  --text-muted: #6b7280;
-  --border: #e9e8f3;
 
-  --radius-sm: 10px;
-  --radius: 16px;
-  --radius-lg: 24px;
-  --shadow-sm: 0 2px 8px rgba(30, 27, 60, 0.06);
-  --shadow: 0 10px 30px rgba(43, 32, 90, 0.10);
-  --shadow-lg: 0 24px 60px rgba(43, 32, 90, 0.18);
-  --shadow-primary: 0 12px 24px rgba(79, 70, 229, 0.28);
-  --shadow-accent: 0 12px 24px rgba(255, 107, 74, 0.30);
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 2px 8px rgba(23, 21, 28, 0.06);
+  --shadow: 0 10px 30px rgba(23, 21, 28, 0.10);
+  --shadow-lg: 0 24px 60px rgba(23, 21, 28, 0.18);
+  --shadow-primary: 0 12px 24px rgba(140, 103, 37, 0.28);
+  --shadow-accent: 0 12px 24px rgba(140, 103, 37, 0.28);
   --container: 1320px;
 }
 
@@ -47,9 +60,10 @@ body {
 }
 
 h1, h2, h3, h4 {
-  font-family: 'Poppins', 'Inter', sans-serif;
+  font-family: var(--font-display);
+  font-weight: 600;
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
@@ -142,20 +156,18 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding-bottom: 14px;
 }
 .brand {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 1.6rem;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  letter-spacing: -0.01em;
+  color: var(--ink);
   flex-shrink: 0;
 }
 .search-form {
   flex: 1;
   display: flex;
   max-width: 560px;
-  border: 1.5px solid #c9c6de;
+  border: 1.5px solid var(--line);
   border-radius: 999px;
   overflow: hidden;
   background: #fff;
@@ -734,8 +746,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .product-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
-  box-shadow: 0 20px 40px -12px rgba(79, 70, 229, 0.25), 0 8px 16px -6px rgba(255, 62, 108, 0.18);
+  box-shadow: 0 20px 40px -12px rgba(23, 21, 28, 0.16), 0 8px 16px -6px rgba(140, 103, 37, 0.16);
 }
 .product-card .thumb {
   aspect-ratio: 1 / 1;
@@ -963,9 +974,8 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   box-shadow: var(--shadow-sm); margin-bottom: 20px;
 }
 .review-summary-score {
-  font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 2.4rem;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-family: var(--font-display); font-weight: 600; font-size: 2.4rem;
+  color: var(--ink);
   line-height: 1;
 }
 .review-summary-count { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; }
@@ -1039,11 +1049,10 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .pd-sku { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; }
 .pd-info .price-row { font-size: 1.3rem; margin: 16px 0; }
 .pd-info .price {
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: clamp(1.5rem, 3vw + 0.8rem, 2rem);
-  background: linear-gradient(135deg, var(--primary), var(--pink));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--ink);
 }
 .pd-meta { display: flex; gap: 24px; margin: 18px 0; flex-wrap: wrap; }
 .pd-meta .item { font-size: 0.85rem; color: var(--text-muted); }
