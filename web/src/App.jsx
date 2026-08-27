@@ -13,6 +13,7 @@ import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
 import WishlistPage from './pages/WishlistPage';
 import AccountPage from './pages/AccountPage';
+import HomePage from './pages/HomePage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -31,6 +32,8 @@ export default function App() {
           <Route path="/register.html" element={<RegisterPage />} />
         </Route>
         <Route element={<StorefrontLayout navbarVariant="full" />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/index.html" element={<HomePage />} />
           <Route path="/shop.html" element={<ShopPage />} />
           <Route path="/product.html" element={<ProductPage />} />
           <Route path="/cart.html" element={<CartPage />} />

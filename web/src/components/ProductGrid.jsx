@@ -55,7 +55,7 @@ async function toggleWishlist(e, productId, isWishlisted) {
 
 // Re-fetches the product by id (rather than trusting the grid's possibly
 // stale price/stock) before adding -- same as the original quickAdd().
-function ProductCard({ product: p, delay = 0, isWishlisted }) {
+export function ProductCard({ product: p, delay = 0, isWishlisted }) {
   const reduceMotion = useReducedMotion();
   const outOfStock = p.stock <= 0;
   const discount = p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;

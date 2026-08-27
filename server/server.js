@@ -48,6 +48,8 @@ app.use('/api/addresses', addressRoutes);
 // public/*.html files again instead of the React app -- no error, no crash,
 // just wrong content.
 const REACT_ROUTES = [
+  '/',
+  '/index.html',
   '/login.html',
   '/register.html',
   '/customer-service.html',
@@ -66,8 +68,10 @@ const webDistDir = path.join(__dirname, '..', 'web', 'dist');
 // Scoped to the assets/ subdirectory only, not all of web/dist -- public/ has
 // no assets/ folder of its own today, so this can't collide with anything.
 // Mounting the WHOLE dist dir at "/" would let web/dist/index.html intercept
-// requests for /index.html -- the live homepage -- before public/ ever sees
-// them. Scoping to assets/ makes that failure mode impossible.
+// every request before public/ ever saw them -- which is exactly what the
+// explicit REACT_ROUTES allowlist above does deliberately for "/" and
+// "/index.html" (the live homepage). Scoping to assets/ guards against ever
+// doing that as an uncontrolled blanket mount.
 app.use('/assets', express.static(path.join(webDistDir, 'assets')));
 
 app.get(REACT_ROUTES, (req, res) => {
