@@ -95,12 +95,14 @@ export default function CartPage() {
             <Icon name="cart" size={30} />
           </div>
           <p>Your cart is empty.</p>
-          <a className="btn btn-primary" href="/shop.html">
-            Continue Shopping
-          </a>
-          <a className="btn btn-outline" href="/account.html" style={{ marginLeft: '8px' }}>
-            My Orders
-          </a>
+          <div className="empty-state-actions">
+            <a className="btn btn-primary" href="/shop.html">
+              Continue Shopping
+            </a>
+            <a className="btn btn-outline" href="/account.html">
+              My Orders
+            </a>
+          </div>
         </div>
       ) : (
         <div className="cart-layout">

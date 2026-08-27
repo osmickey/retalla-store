@@ -7,7 +7,16 @@ export const api = {
     const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+    let res;
+    try {
+      res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+    } catch {
+      // fetch() itself rejects on network-level failures (server unreachable,
+      // DNS/CORS) with a raw browser TypeError ("Failed to fetch"). Catch it
+      // here so callers always get a friendly, consistent message instead of
+      // that raw string reaching the UI.
+      throw new Error('Unable to connect. Check your connection and try again.');
+    }
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {

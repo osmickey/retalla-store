@@ -36,14 +36,18 @@ export default function LoginPage() {
       <div className="auth-wrap">
         <h2>Welcome Back</h2>
         <p className="sub">Login to continue shopping</p>
-        {error && <div className="form-message error">{error}</div>}
+        {error && (
+          <div id="login-form-error" role="alert" className="form-message error">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label>Email</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <label htmlFor="login-email">Email</label>
+            <input id="login-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="field">
-            <label>Password</label>
+            <label htmlFor="login-password">Password</label>
             <div className="password-field">
               <button
                 type="button"
@@ -54,6 +58,7 @@ export default function LoginPage() {
                 <Icon name={showPassword ? 'eye-off' : 'eye'} size={18} />
               </button>
               <input
+                id="login-password"
                 type={showPassword ? 'text' : 'password'}
                 required
                 minLength={6}
@@ -65,7 +70,12 @@ export default function LoginPage() {
               Forgot password?
             </a>
           </div>
-          <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn btn-primary btn-block"
+            disabled={submitting}
+            aria-describedby={error ? 'login-form-error' : undefined}
+          >
             {submitting ? 'Logging in...' : 'Login'}
           </button>
         </form>

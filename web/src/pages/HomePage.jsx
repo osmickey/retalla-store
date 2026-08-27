@@ -5,12 +5,13 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { api } from '../lib/api';
 import { CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS } from '../lib/config';
 import { useWishlistIds } from '../lib/wishlist';
-import { showToast } from '../lib/cart';
 import Icon from '../icons/Icon';
 import ProductGrid, { ProductCard } from '../components/ProductGrid';
 import BannerCarousel from '../components/BannerCarousel';
 import SlidableRail from '../components/SlidableRail';
 import LiveVideoSection from '../components/LiveVideoSection';
+import ErrorState from '../components/ErrorState';
+import { ProductGridSkeleton, PromoTilesGridSkeleton, ProductCardSkeleton } from '../components/Skeleton';
 
 const MotionLink = motion(Link);
 
@@ -116,20 +117,50 @@ function Hero() {
 
 function PromoTilesSection() {
   const [tiles, setTiles] = useState(null);
+  const [error, setError] = useState(null);
   const reduceMotion = useReducedMotion();
 
-  useEffect(() => {
+  function load() {
+    setError(null);
     let cancelled = false;
     api
       .get('/promo-tiles')
       .then((d) => !cancelled && setTiles(d))
-      .catch(() => !cancelled && setTiles([]));
+      .catch((err) => !cancelled && setError(err.message));
     return () => {
       cancelled = true;
     };
-  }, []);
+  }
 
-  if (!tiles || tiles.length === 0) return null;
+  useEffect(() => load(), []);
+
+  if (error) {
+    return (
+      <section className="section" id="promo-tiles-section">
+        <div className="section-head">
+          <div>
+            <span className="eyebrow">Hot Deals</span>
+            <h2>Today's Deals</h2>
+          </div>
+        </div>
+        <ErrorState message={error} onRetry={load} />
+      </section>
+    );
+  }
+  if (tiles === null) {
+    return (
+      <section className="section" id="promo-tiles-section">
+        <div className="section-head">
+          <div>
+            <span className="eyebrow">Hot Deals</span>
+            <h2>Today's Deals</h2>
+          </div>
+        </div>
+        <PromoTilesGridSkeleton count={4} />
+      </section>
+    );
+  }
+  if (tiles.length === 0) return null;
 
   return (
     <section className="section" id="promo-tiles-section">
@@ -167,21 +198,38 @@ function PromoTilesSection() {
 
 function BestsellerSection() {
   const [products, setProducts] = useState(null);
+  const [error, setError] = useState(null);
   const wishlistIds = useWishlistIds();
   const reduceMotion = useReducedMotion();
 
-  useEffect(() => {
+  function load() {
+    setError(null);
     let cancelled = false;
     api
       .get('/products?bestseller=true&limit=8')
       .then((d) => !cancelled && setProducts(d))
-      .catch(() => !cancelled && setProducts([]));
+      .catch((err) => !cancelled && setError(err.message));
     return () => {
       cancelled = true;
     };
-  }, []);
+  }
 
-  if (!products || products.length === 0) return null;
+  useEffect(() => load(), []);
+
+  if (error) {
+    return (
+      <section className="section" id="bestseller-section">
+        <div className="section-head">
+          <div>
+            <span className="eyebrow">Top Picks</span>
+            <h2>Best Selling</h2>
+          </div>
+        </div>
+        <ErrorState message={error} onRetry={load} />
+      </section>
+    );
+  }
+  if (products && products.length === 0) return null;
 
   return (
     <section className="section" id="bestseller-section">
@@ -199,9 +247,11 @@ function BestsellerSection() {
         prevLabel="Previous best sellers"
         nextLabel="More best sellers"
       >
-        {products.map((p, i) => (
-          <ProductCard key={p._id} product={p} delay={reduceMotion ? 0 : Math.min(i, 8) * 0.05} isWishlisted={wishlistIds.has(p._id)} />
-        ))}
+        {products === null
+          ? Array.from({ length: 5 }).map((_, i) => <ProductCardSkeleton key={i} />)
+          : products.map((p, i) => (
+              <ProductCard key={p._id} product={p} delay={reduceMotion ? 0 : Math.min(i, 8) * 0.05} isWishlisted={wishlistIds.has(p._id)} />
+            ))}
       </SlidableRail>
     </section>
   );
@@ -286,21 +336,21 @@ function QuoteStrip() {
 
 function TrendingSection() {
   const [products, setProducts] = useState(null);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
+  function load() {
+    setError(null);
     let cancelled = false;
     api
       .get('/products?featured=true&limit=8')
       .then((d) => !cancelled && setProducts(d))
-      .catch((err) => {
-        if (cancelled) return;
-        showToast(err.message);
-        setProducts([]);
-      });
+      .catch((err) => !cancelled && setError(err.message));
     return () => {
       cancelled = true;
     };
-  }, []);
+  }
+
+  useEffect(() => load(), []);
 
   return (
     <section className="section">
@@ -311,14 +361,16 @@ function TrendingSection() {
         </div>
         <Link to="/shop.html">View all →</Link>
       </div>
-      {products === null ? (
-        <div className="dot-loader">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+      {error ? (
+        <ErrorState message={error} onRetry={load} />
+      ) : products === null ? (
+        <ProductGridSkeleton count={8} />
       ) : (
-        <ProductGrid products={products} emptyMessage="No products to show right now." />
+        <ProductGrid
+          products={products}
+          emptyMessage="No products to show right now."
+          emptyAction={{ label: 'Browse Shop', href: '/shop.html' }}
+        />
       )}
     </section>
   );

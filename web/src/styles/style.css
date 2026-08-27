@@ -721,6 +721,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 50%;
   background: var(--border);
   cursor: pointer;
+  border: none;
+  padding: 0;
   transition: width 0.25s ease, background 0.25s ease;
 }
 .banner-carousel-dot.active { width: 18px; border-radius: 3px; background: var(--primary); }
@@ -1352,6 +1354,7 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 }
 .pd-gallery .main-image img { width: 100%; height: 100%; object-fit: cover; }
 .pd-thumbs { display: flex; gap: 10px; margin-top: 12px; }
+.pd-thumbs button { background: none; border: none; padding: 0; display: block; cursor: pointer; }
 .pd-thumbs img {
   width: 64px; height: 64px; object-fit: cover;
   border-radius: var(--radius-sm);
@@ -1404,7 +1407,7 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   flex: 1; min-width: 0; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   padding: 9px 12px; font-size: 0.88rem; outline: none; transition: border-color 0.15s ease;
 }
-.delivery-check-row input:focus { border-color: var(--primary); }
+.delivery-check-row input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
 .delivery-check-result { margin-top: 10px; font-size: 0.85rem; }
 .delivery-check-error { color: #dc2626; }
 .delivery-check-loading { color: var(--text-muted); }
@@ -1491,6 +1494,8 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
 .empty-state .icon-circle { width: 74px; height: 74px; margin: 0 auto 18px; background: var(--primary-light); color: var(--primary); }
 .empty-state .icon-circle svg { width: 34px; height: 34px; }
+.empty-state .icon-circle.icon-circle-danger { background: #fee2e2; color: #dc2626; }
+.empty-state-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 6px; }
 
 /* ===== Forms / Auth ===== */
 .auth-page-bg {
@@ -1836,6 +1841,8 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
   z-index: 200;
   animation: toast-in 0.25s ease;
 }
+.toast-success { border-left: 4px solid var(--success); }
+.toast-error { border-left: 4px solid #b91c1c; }
 @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ===== Animations ===== */
@@ -1873,7 +1880,7 @@ footer { background: #14112a; color: #cfc9e6; margin-top: 64px; padding: 50px 0 
 
 .skeleton {
   border-radius: var(--radius);
-  background: linear-gradient(90deg, #eceaf7 25%, #f6f5fc 37%, #eceaf7 63%);
+  background: linear-gradient(90deg, var(--line) 25%, var(--surface) 37%, var(--line) 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
 }

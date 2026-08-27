@@ -10,6 +10,8 @@ import { showToast } from '../lib/cart';
 import Icon from '../icons/Icon';
 import ProductGrid from '../components/ProductGrid';
 import Modal from '../components/Modal';
+import ErrorState from '../components/ErrorState';
+import { ProductGridSkeleton, OrdersListSkeleton, AddressGridSkeleton } from '../components/Skeleton';
 
 const TABS = [
   { key: 'profile', label: 'Profile', icon: 'user' },
@@ -131,18 +133,26 @@ function ProfileTab({ user }) {
   return (
     <div>
       <h2 className="account-panel-title">Profile</h2>
-      {message && <div className={`form-message ${message.type}`}>{message.text}</div>}
+      {message && (
+        <div
+          id="profile-form-message"
+          role={message.type === 'error' ? 'alert' : 'status'}
+          className={`form-message ${message.type}`}
+        >
+          {message.text}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="checkout-card">
         <div className="field">
-          <label>Email</label>
-          <input value={user.email} disabled />
+          <label htmlFor="profile-email">Email</label>
+          <input id="profile-email" value={user.email} disabled />
         </div>
         <div className="field">
-          <label>Full Name</label>
-          <input required value={name} onChange={(e) => setName(e.target.value)} />
+          <label htmlFor="profile-name">Full Name</label>
+          <input id="profile-name" required value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="field">
-          <label>
+          <label htmlFor="profile-phone">
             Phone Number{' '}
             {user.phone && (
               <span
@@ -158,10 +168,15 @@ function ProfileTab({ user }) {
           </label>
           <div className="phone-input-group">
             <span className="phone-prefix">+91</span>
-            <input pattern="[0-9]{10}" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <input id="profile-phone" pattern="[0-9]{10}" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
         </div>
-        <button type="submit" className="btn btn-primary" disabled={saving}>
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={saving}
+          aria-describedby={message ? 'profile-form-message' : undefined}
+        >
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
@@ -193,7 +208,7 @@ function PaymentTab({ user }) {
       auth.setSession(data.user, auth.getToken());
       showToast('Preferred payment method updated');
     } catch (err) {
-      showToast(err.message);
+      showToast(err.message, 'error');
       setSelected(prev);
     } finally {
       setSaving(false);
@@ -268,11 +283,20 @@ function SettingsTab() {
       <h2 className="account-panel-title">Settings</h2>
       <div className="checkout-card">
         <h3 style={{ fontSize: '1rem', marginBottom: '14px' }}>Change Password</h3>
-        {message && <div className={`form-message ${message.type}`}>{message.text}</div>}
+        {message && (
+          <div
+            id="settings-form-message"
+            role={message.type === 'error' ? 'alert' : 'status'}
+            className={`form-message ${message.type}`}
+          >
+            {message.text}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label>Current Password</label>
+            <label htmlFor="settings-current-password">Current Password</label>
             <input
+              id="settings-current-password"
               type="password"
               required
               value={currentPassword}
@@ -280,8 +304,9 @@ function SettingsTab() {
             />
           </div>
           <div className="field">
-            <label>New Password</label>
+            <label htmlFor="settings-new-password">New Password</label>
             <input
+              id="settings-new-password"
               type="password"
               required
               minLength={6}
@@ -290,8 +315,9 @@ function SettingsTab() {
             />
           </div>
           <div className="field">
-            <label>Confirm New Password</label>
+            <label htmlFor="settings-confirm-password">Confirm New Password</label>
             <input
+              id="settings-confirm-password"
               type="password"
               required
               minLength={6}
@@ -299,7 +325,12 @@ function SettingsTab() {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="btn btn-primary" disabled={saving}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={saving}
+            aria-describedby={message ? 'settings-form-message' : undefined}
+          >
             {saving ? 'Updating...' : 'Update Password'}
           </button>
         </form>
@@ -320,20 +351,18 @@ function SettingsTab() {
 
 function WishlistTab() {
   const [items, setItems] = useState(null);
+  const [error, setError] = useState(null);
+
+  function load() {
+    setError(null);
+    wishlist.getProducts().then(setItems).catch((err) => setError(err.message));
+  }
 
   useEffect(() => {
-    function load() {
-      wishlist
-        .getProducts()
-        .then(setItems)
-        .catch((err) => {
-          showToast(err.message);
-          setItems([]);
-        });
-    }
     load();
     window.addEventListener('retalla:wishlist-changed', load);
     return () => window.removeEventListener('retalla:wishlist-changed', load);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -346,14 +375,16 @@ function WishlistTab() {
           View Full Wishlist
         </a>
       </div>
-      {items === null ? (
-        <div className="dot-loader">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+      {error ? (
+        <ErrorState message={error} onRetry={load} />
+      ) : items === null ? (
+        <ProductGridSkeleton count={4} />
       ) : (
-        <ProductGrid products={items} emptyMessage="Your wishlist is empty." />
+        <ProductGrid
+          products={items}
+          emptyMessage="Your wishlist is empty."
+          emptyAction={{ label: 'Discover Products', href: '/shop.html' }}
+        />
       )}
     </div>
   );
@@ -361,26 +392,22 @@ function WishlistTab() {
 
 function OrdersTab() {
   const [orders, setOrders] = useState(null);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    api
-      .get('/orders/myorders')
-      .then(setOrders)
-      .catch((err) => {
-        showToast(err.message);
-        setOrders([]);
-      });
-  }, []);
+  function load() {
+    setError(null);
+    api.get('/orders/myorders').then(setOrders).catch((err) => setError(err.message));
+  }
+
+  useEffect(() => load(), []);
 
   return (
     <div>
       <h2 className="account-panel-title">Orders</h2>
-      {orders === null ? (
-        <div className="dot-loader">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+      {error ? (
+        <ErrorState message={error} onRetry={load} />
+      ) : orders === null ? (
+        <OrdersListSkeleton count={3} />
       ) : orders.length === 0 ? (
         <div className="empty-state">
           <div className="icon-circle">
@@ -496,19 +523,15 @@ const EMPTY_ADDRESS = {
 
 function AddressesTab() {
   const [items, setItems] = useState(null);
+  const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [saving, setSaving] = useState(false);
 
   function load() {
-    addresses
-      .list()
-      .then(setItems)
-      .catch((err) => {
-        showToast(err.message);
-        setItems([]);
-      });
+    setError(null);
+    addresses.list().then(setItems).catch((err) => setError(err.message));
   }
   useEffect(load, []);
 
@@ -521,7 +544,7 @@ function AddressesTab() {
       setModalOpen(false);
       load();
     } catch (err) {
-      showToast(err.message);
+      showToast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -534,7 +557,7 @@ function AddressesTab() {
       setDeleteTarget(null);
       load();
     } catch (err) {
-      showToast(err.message);
+      showToast(err.message, 'error');
     }
   }
 
@@ -543,18 +566,33 @@ function AddressesTab() {
       await addresses.setDefault(addr._id);
       load();
     } catch (err) {
-      showToast(err.message);
+      showToast(err.message, 'error');
     }
   }
 
   return (
     <div>
       <h2 className="account-panel-title">Addresses</h2>
-      {items === null ? (
-        <div className="dot-loader">
-          <span></span>
-          <span></span>
-          <span></span>
+      {error ? (
+        <ErrorState message={error} onRetry={load} />
+      ) : items === null ? (
+        <AddressGridSkeleton count={2} />
+      ) : items.length === 0 ? (
+        <div className="empty-state">
+          <div className="icon-circle">
+            <Icon name="home" size={30} />
+          </div>
+          <p>You haven't saved any addresses yet.</p>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              setEditing(null);
+              setModalOpen(true);
+            }}
+          >
+            Add New Address
+          </button>
         </div>
       ) : (
         <div className="address-grid">
@@ -647,39 +685,39 @@ function AddressForm({ initial, saving, onCancel, onSubmit }) {
       }}
     >
       <div className="field">
-        <label>Full Name</label>
-        <input required value={form.fullName} onChange={set('fullName')} />
+        <label htmlFor="address-fullname">Full Name</label>
+        <input id="address-fullname" required value={form.fullName} onChange={set('fullName')} />
       </div>
       <div className="field">
-        <label>Phone Number</label>
+        <label htmlFor="address-phone">Phone Number</label>
         <div className="phone-input-group">
           <span className="phone-prefix">+91</span>
-          <input required pattern="[0-9]{10}" value={form.phone} onChange={set('phone')} />
+          <input id="address-phone" required pattern="[0-9]{10}" value={form.phone} onChange={set('phone')} />
         </div>
       </div>
       <div className="field">
-        <label>Address Line 1</label>
-        <input required value={form.addressLine1} onChange={set('addressLine1')} />
+        <label htmlFor="address-line1">Address Line 1</label>
+        <input id="address-line1" required value={form.addressLine1} onChange={set('addressLine1')} />
       </div>
       <div className="field">
-        <label>
+        <label htmlFor="address-line2">
           Address Line 2 <span className="field-optional">(optional)</span>
         </label>
-        <input value={form.addressLine2} onChange={set('addressLine2')} />
+        <input id="address-line2" value={form.addressLine2} onChange={set('addressLine2')} />
       </div>
       <div className="field-row">
         <div className="field">
-          <label>City</label>
-          <input required value={form.city} onChange={set('city')} />
+          <label htmlFor="address-city">City</label>
+          <input id="address-city" required value={form.city} onChange={set('city')} />
         </div>
         <div className="field">
-          <label>State</label>
-          <input required value={form.state} onChange={set('state')} />
+          <label htmlFor="address-state">State</label>
+          <input id="address-state" required value={form.state} onChange={set('state')} />
         </div>
       </div>
       <div className="field">
-        <label>Pincode</label>
-        <input required pattern="[0-9]{6}" value={form.pincode} onChange={set('pincode')} />
+        <label htmlFor="address-pincode">Pincode</label>
+        <input id="address-pincode" required pattern="[0-9]{6}" value={form.pincode} onChange={set('pincode')} />
       </div>
       <div className="app-modal-actions">
         <button type="button" className="btn btn-outline" onClick={onCancel}>

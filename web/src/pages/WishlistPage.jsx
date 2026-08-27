@@ -4,6 +4,8 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { wishlist } from '../lib/wishlist';
 import { cart, showToast } from '../lib/cart';
 import Icon from '../icons/Icon';
+import ErrorState from '../components/ErrorState';
+import { WishlistListSkeleton } from '../components/Skeleton';
 
 function StarRow({ rating, size = 13 }) {
   const rounded = Math.round(rating);
@@ -23,17 +25,13 @@ const REMOVE_DURATION = 250;
 export default function WishlistPage() {
   useDocumentTitle('My Wishlist — Retalla');
   const [items, setItems] = useState(null); // null while loading
+  const [error, setError] = useState(null);
   const [removingIds, setRemovingIds] = useState(() => new Set());
   const reduceMotion = useReducedMotion();
 
   function load() {
-    wishlist
-      .getProducts()
-      .then(setItems)
-      .catch((err) => {
-        showToast(err.message);
-        setItems([]);
-      });
+    setError(null);
+    wishlist.getProducts().then(setItems).catch((err) => setError(err.message));
   }
 
   useEffect(() => {
@@ -50,7 +48,7 @@ export default function WishlistPage() {
       try {
         await wishlist.remove(productId);
       } catch (err) {
-        showToast(err.message);
+        showToast(err.message, 'error');
       }
       setItems((prev) => (prev || []).filter((p) => p._id !== productId));
       setRemovingIds((prev) => {
@@ -79,12 +77,10 @@ export default function WishlistPage() {
         </a>
       </div>
 
-      {items === null ? (
-        <div className="dot-loader">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+      {error ? (
+        <ErrorState message={error} onRetry={load} />
+      ) : items === null ? (
+        <WishlistListSkeleton count={3} />
       ) : items.length === 0 ? (
         <div className="empty-state">
           <div className="icon-circle">

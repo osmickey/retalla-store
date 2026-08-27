@@ -10,6 +10,8 @@ import { wishlist, useWishlistIds } from '../lib/wishlist';
 import Icon from '../icons/Icon';
 import QtyStepper from '../components/QtyStepper';
 import ProductGrid from '../components/ProductGrid';
+import ErrorState from '../components/ErrorState';
+import { ProductDetailSkeleton, ReviewListSkeleton, ProductGridSkeleton } from '../components/Skeleton';
 
 function StarRow({ rating, size = 16 }) {
   const rounded = Math.round(rating);
@@ -100,15 +102,21 @@ function ProductGallery({ product }) {
         })}
       </div>
       <div className="pd-thumbs">
-        {images.map((src) => (
-          <motion.img
+        {images.map((src, i) => (
+          <button
             key={src}
-            src={src}
-            className={src === mainSrc ? 'active' : ''}
+            type="button"
             onClick={() => setMainSrc(src)}
-            whileHover={reduceMotion ? {} : { scale: 1.05 }}
-            transition={{ duration: 0.15 }}
-          />
+            aria-current={src === mainSrc ? 'true' : undefined}
+          >
+            <motion.img
+              src={src}
+              alt={`${product.name} — view ${i + 1}`}
+              className={src === mainSrc ? 'active' : ''}
+              whileHover={reduceMotion ? {} : { scale: 1.05 }}
+              transition={{ duration: 0.15 }}
+            />
+          </button>
         ))}
       </div>
     </div>
@@ -217,7 +225,7 @@ function ReviewCard({ review }) {
 
 function StarInput({ value, onChange }) {
   return (
-    <div className="star-input">
+    <div className="star-input" role="radiogroup" aria-label="Rating">
       {[1, 2, 3, 4, 5].map((i) => (
         <motion.button
           key={i}
@@ -225,6 +233,7 @@ function StarInput({ value, onChange }) {
           className={`star-btn${i <= value ? ' active' : ''}`}
           onClick={() => onChange(i)}
           whileTap={{ scale: 0.85 }}
+          aria-label={`Rate ${i} star${i === 1 ? '' : 's'}`}
         >
           <Icon name="star" size={26} />
         </motion.button>
@@ -237,6 +246,7 @@ function StarInput({ value, onChange }) {
 // pile of booleans: loading | logged-out | already-reviewed | not-eligible | can-review.
 function Reviews({ product, pathname, search }) {
   const [reviews, setReviews] = useState(null);
+  const [reviewsError, setReviewsError] = useState(null);
   const [gateState, setGateState] = useState('loading');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -244,11 +254,12 @@ function Reviews({ product, pathname, search }) {
   const [submitting, setSubmitting] = useState(false);
 
   async function loadReviews() {
+    setReviewsError(null);
     try {
       const data = await api.get(`/products/${product._id}/reviews`);
       setReviews(data);
-    } catch {
-      setReviews([]);
+    } catch (err) {
+      setReviewsError(err.message);
     }
   }
 
@@ -342,7 +353,11 @@ function Reviews({ product, pathname, search }) {
         <div className="review-form-card">
           <h3>Write a Review</h3>
           <StarInput value={rating} onChange={setRating} />
-          {formError && <div className="form-message error">{formError}</div>}
+          {formError && (
+            <div id="review-form-error" role="alert" className="form-message error">
+              {formError}
+            </div>
+          )}
           <textarea
             rows={3}
             className="review-textarea"
@@ -350,18 +365,21 @@ function Reviews({ product, pathname, search }) {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
-          <button className="btn btn-primary" onClick={submitReview} disabled={submitting}>
+          <button
+            className="btn btn-primary"
+            onClick={submitReview}
+            disabled={submitting}
+            aria-describedby={formError ? 'review-form-error' : undefined}
+          >
             {submitting ? 'Submitting...' : 'Submit Review'}
           </button>
         </div>
       )}
 
-      {reviews === null ? (
-        <div className="dot-loader">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+      {reviewsError ? (
+        <ErrorState message={reviewsError} onRetry={loadReviews} />
+      ) : reviews === null ? (
+        <ReviewListSkeleton count={3} />
       ) : reviews.length === 0 ? (
         <div className="empty-state">
           <p>No reviews yet — be the first to review this product!</p>
@@ -381,8 +399,10 @@ function Reviews({ product, pathname, search }) {
 
 function RelatedProducts({ product }) {
   const [related, setRelated] = useState(null);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
+  function load() {
+    setError(null);
     let cancelled = false;
     api
       .get(`/products?category=${encodeURIComponent(product.category)}&limit=9`)
@@ -390,15 +410,38 @@ function RelatedProducts({ product }) {
         if (cancelled) return;
         setRelated(results.filter((p) => p._id !== product._id).slice(0, 4));
       })
-      .catch(() => {
-        if (!cancelled) setRelated([]);
+      .catch((err) => {
+        if (!cancelled) setError(err.message);
       });
     return () => {
       cancelled = true;
     };
-  }, [product._id, product.category]);
+  }
 
-  if (!related || related.length === 0) return null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => load(), [product._id, product.category]);
+
+  if (error) {
+    return (
+      <section id="related-section" className="section">
+        <div className="section-head">
+          <h2>Related Products</h2>
+        </div>
+        <ErrorState message={error} onRetry={load} />
+      </section>
+    );
+  }
+  if (related === null) {
+    return (
+      <section id="related-section" className="section">
+        <div className="section-head">
+          <h2>Related Products</h2>
+        </div>
+        <ProductGridSkeleton count={4} />
+      </section>
+    );
+  }
+  if (related.length === 0) return null;
 
   return (
     <section id="related-section" className="section">
@@ -420,11 +463,12 @@ export default function ProductPage() {
 
   useDocumentTitle(product ? `${product.name} — Retalla` : 'Product — Retalla');
 
-  useEffect(() => {
+  function loadProduct() {
     if (!id) {
       setError('Product not found.');
-      return;
+      return undefined;
     }
+    setError('');
     let cancelled = false;
     api
       .get(`/products/${id}`)
@@ -440,7 +484,10 @@ export default function ProductPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => loadProduct(), [id]);
 
   function stepQty(delta) {
     if (!product) return;
@@ -468,14 +515,18 @@ export default function ProductPage() {
         showToast('Added to wishlist');
       }
     } catch (err) {
-      showToast(err.message);
+      showToast(err.message, 'error');
     }
   }
 
   if (error) {
     return (
       <main className="container">
-        <div className="empty-state">{error}</div>
+        <ErrorState
+          message={error}
+          onRetry={id ? loadProduct : undefined}
+          secondaryAction={{ label: 'Back to Shop', href: '/shop.html' }}
+        />
       </main>
     );
   }
@@ -483,13 +534,7 @@ export default function ProductPage() {
   if (!product) {
     return (
       <main className="container">
-        <div id="product-detail-wrap" className="product-detail">
-          <div className="dot-loader">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
+        <ProductDetailSkeleton />
       </main>
     );
   }

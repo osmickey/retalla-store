@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { CATEGORIES } from '../lib/config';
 import { api } from '../lib/api';
-import { showToast } from '../lib/cart';
 import ProductGrid from '../components/ProductGrid';
 import ShopFilters, { PRICE_BUCKETS } from '../components/ShopFilters';
 import SortMenu, { SORT_OPTIONS } from '../components/SortMenu';
 import SidePanel from '../components/SidePanel';
 import Icon from '../icons/Icon';
+import ErrorState from '../components/ErrorState';
+import NoResultsState from '../components/NoResultsState';
+import { ProductGridSkeleton } from '../components/Skeleton';
 
 function CategoryPill({ label, to, active }) {
   return (
@@ -64,12 +66,14 @@ function applySort(products, sortKey) {
 
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const category = searchParams.get('category') || '';
   const search = searchParams.get('search') || '';
   const sort = searchParams.get('sort') || '';
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const heading = search ? `Search: "${search}"` : SORT_HEADINGS[sort] || category || 'All Products';
@@ -79,9 +83,10 @@ export default function ShopPage() {
   // (price/brand/rating/inStock/discount) are read via the same
   // searchParams below but applied client-side in the useMemo pipeline, so
   // they don't need to re-trigger a fetch.
-  useEffect(() => {
+  function loadProducts() {
     let cancelled = false;
     setLoading(true);
+    setError(null);
     const query = new URLSearchParams();
     if (category) query.set('category', category);
     if (search) query.set('search', search);
@@ -93,7 +98,7 @@ export default function ShopPage() {
         if (!cancelled) setProducts(data);
       })
       .catch((err) => {
-        if (!cancelled) showToast(err.message);
+        if (!cancelled) setError(err.message);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -102,7 +107,10 @@ export default function ShopPage() {
     return () => {
       cancelled = true;
     };
-  }, [category, search, sort]);
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => loadProducts(), [category, search, sort]);
 
   const filters = {
     price: searchParams.get('price') || '',
@@ -123,6 +131,7 @@ export default function ShopPage() {
   }
 
   const clearFilters = () => updateParams({ price: '', brand: [], rating: '', inStock: false, discount: '' });
+  const hasActiveFilters = Boolean(filters.price || filters.brand.length || filters.rating || filters.inStock || filters.discount);
 
   const visibleProducts = useMemo(() => {
     // sort=offers is a Navbar shortcut (see Navbar.jsx SORT_LINKS) folded
@@ -164,7 +173,7 @@ export default function ShopPage() {
         <div className="shop-main">
           <div className="shop-toolbar">
             <span className="shop-count">
-              {loading ? 'Loading…' : `${visibleProducts.length} product${visibleProducts.length === 1 ? '' : 's'}`}
+              {error ? '' : loading ? 'Loading…' : `${visibleProducts.length} product${visibleProducts.length === 1 ? '' : 's'}`}
             </span>
             <div className="shop-toolbar-actions">
               <button type="button" className="shop-filter-btn" onClick={() => setFiltersOpen(true)}>
@@ -176,23 +185,31 @@ export default function ShopPage() {
           </div>
 
           {loading ? (
-            <div className="dot-loader">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
+            <ProductGridSkeleton count={8} />
+          ) : error ? (
+            <ErrorState message={error} onRetry={loadProducts} />
+          ) : visibleProducts.length === 0 && search ? (
+            <NoResultsState
+              query={search}
+              onPopularSearch={(term) => navigate(`/shop.html?search=${encodeURIComponent(term)}`)}
+            />
           ) : (
             <motion.div key={signature} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}>
               <ProductGrid
                 products={visibleProducts}
-                emptyMessage={search ? `No products found for "${search}".` : 'No products match these filters.'}
+                emptyMessage="No products match these filters."
+                emptyAction={
+                  hasActiveFilters
+                    ? { label: 'Clear Filters', onClick: clearFilters }
+                    : { label: 'Browse All Products', href: '/shop.html' }
+                }
               />
             </motion.div>
           )}
         </div>
       </div>
 
-      <SidePanel open={filtersOpen} onClose={() => setFiltersOpen(false)}>
+      <SidePanel open={filtersOpen} onClose={() => setFiltersOpen(false)} ariaLabel="Filters">
         <ShopFilters products={products} filters={filters} onChange={updateParams} onClear={clearFilters} />
         <button type="button" className="btn btn-primary btn-block filter-apply-btn" onClick={() => setFiltersOpen(false)}>
           Show {visibleProducts.length} Result{visibleProducts.length === 1 ? '' : 's'}

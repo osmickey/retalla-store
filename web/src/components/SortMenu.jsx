@@ -56,9 +56,11 @@ export default function SortMenu({ value, onChange }) {
           transition={{ duration: reduceMotion ? 0 : 0.18, ease: [0.16, 1, 0.3, 1] }}
         >
           {SORT_OPTIONS.map((o) => (
-            <li key={o.key} role="option" aria-selected={o.key === value}>
+            <li key={o.key} role="presentation">
               <button
                 type="button"
+                role="option"
+                aria-selected={o.key === value}
                 className={o.key === value ? 'active' : undefined}
                 onClick={() => {
                   onChange(o.key);

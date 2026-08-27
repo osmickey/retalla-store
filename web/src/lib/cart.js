@@ -97,7 +97,8 @@ export function useCartCount() {
 // Dispatches to <ToastHost> (mounted once at the app root), which animates the
 // message in and out with framer-motion — the old DOM-imperative version just
 // yanked the node out via setTimeout+remove() with no way to animate out.
-// Callers don't need to change at all.
-export function showToast(message) {
-  window.dispatchEvent(new CustomEvent('retalla:toast', { detail: message }));
+// type is 'success' (default, unchanged behavior for existing callers) or
+// 'error' -- ToastHost uses it only for a left-border color distinction.
+export function showToast(message, type = 'success') {
+  window.dispatchEvent(new CustomEvent('retalla:toast', { detail: { message, type } }));
 }

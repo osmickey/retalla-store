@@ -32,7 +32,7 @@ async function quickAdd(e, productId) {
     cart.add(product, 1);
     showToast(`${product.name} added to cart`);
   } catch (err) {
-    showToast(err.message);
+    showToast(err.message, 'error');
   }
 }
 
@@ -49,7 +49,7 @@ async function toggleWishlist(e, productId, isWishlisted) {
       showToast('Added to wishlist');
     }
   } catch (err) {
-    showToast(err.message);
+    showToast(err.message, 'error');
   }
 }
 
@@ -125,7 +125,7 @@ export function ProductCard({ product: p, delay = 0, isWishlisted }) {
 // card, and naturally correct when the product list changes in place (new
 // products mean new component instances, so whileInView fires again on its
 // own -- no extra remount/key trick needed).
-export default function ProductGrid({ products, emptyMessage = 'No products found.' }) {
+export default function ProductGrid({ products, emptyMessage = 'No products found.', emptyAction }) {
   const reduceMotion = useReducedMotion();
   // Called once here, not once per card, so N cards don't fire N duplicate
   // /wishlist/ids fetches.
@@ -138,6 +138,19 @@ export default function ProductGrid({ products, emptyMessage = 'No products foun
           <Icon name="search" size={26} />
         </div>
         <p>{emptyMessage}</p>
+        {emptyAction && (
+          <div className="empty-state-actions">
+            {emptyAction.href ? (
+              <a className="btn btn-primary" href={emptyAction.href}>
+                {emptyAction.label}
+              </a>
+            ) : (
+              <button type="button" className="btn btn-primary" onClick={emptyAction.onClick}>
+                {emptyAction.label}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     );
   }

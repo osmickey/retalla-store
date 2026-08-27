@@ -16,6 +16,7 @@ export default function Icon({ name, size = 22, className }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
+      aria-hidden="true"
       // ICON_PATHS is a hardcoded internal constant, never user input.
       dangerouslySetInnerHTML={{ __html: ICON_PATHS[name] || '' }}
     />

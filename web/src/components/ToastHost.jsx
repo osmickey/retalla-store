@@ -9,7 +9,7 @@ import { useDelayedUnmount } from '../hooks/useDelayedUnmount';
 // (a plain timer) rather than AnimatePresence to drive the actual
 // removal -- see that hook's comment for why.
 export default function ToastHost() {
-  const [message, setMessage] = useState(null);
+  const [toast, setToast] = useState(null); // { message, type }
   const [visible, setVisible] = useState(false);
   const render = useDelayedUnmount(visible, 250);
   const reduceMotion = useReducedMotion();
@@ -17,7 +17,7 @@ export default function ToastHost() {
   useEffect(() => {
     let hideTimer;
     const onToast = (e) => {
-      setMessage(e.detail);
+      setToast(e.detail);
       setVisible(true);
       clearTimeout(hideTimer);
       hideTimer = setTimeout(() => setVisible(false), 2200);
@@ -33,11 +33,13 @@ export default function ToastHost() {
 
   return (
     <motion.div
-      className="toast"
+      className={`toast${toast?.type === 'error' ? ' toast-error' : ' toast-success'}`}
+      role="status"
+      aria-live="polite"
       animate={{ opacity: visible ? 1 : 0, y: reduceMotion ? 0 : visible ? 0 : 10 }}
       transition={{ duration: reduceMotion ? 0 : 0.25, ease: [0.16, 1, 0.3, 1] }}
     >
-      {message}
+      {toast?.message}
     </motion.div>
   );
 }

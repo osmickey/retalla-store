@@ -38,25 +38,47 @@ export default function RegisterPage() {
       <div className="auth-wrap">
         <h2>Create Account</h2>
         <p className="sub">Join Retalla for exclusive deals</p>
-        {error && <div className="form-message error">{error}</div>}
+        {error && (
+          <div id="register-form-error" role="alert" className="form-message error">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label>Full Name</label>
-            <input required value={name} onChange={(e) => setName(e.target.value)} />
+            <label htmlFor="register-name">Full Name</label>
+            <input id="register-name" required value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="field">
-            <label>Email</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <label htmlFor="register-email">Email</label>
+            <input id="register-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="field">
-            <label>Phone Number</label>
-            <input pattern="[0-9]{10}" title="10 digit phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <label htmlFor="register-phone">Phone Number</label>
+            <input
+              id="register-phone"
+              pattern="[0-9]{10}"
+              title="10 digit phone number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </div>
           <div className="field">
-            <label>Password</label>
-            <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+            <label htmlFor="register-password">Password</label>
+            <input
+              id="register-password"
+              type="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
-          <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn btn-primary btn-block"
+            disabled={submitting}
+            aria-describedby={error ? 'register-form-error' : undefined}
+          >
             {submitting ? 'Creating account...' : 'Create Account'}
           </button>
         </form>

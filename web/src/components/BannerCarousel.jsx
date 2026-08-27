@@ -89,6 +89,7 @@ export default function BannerCarousel() {
             {b.link ? (
               <a
                 href={b.link}
+                aria-label="View offer"
                 draggable={false}
                 onClickCapture={(e) => {
                   if (draggedRef.current) {
@@ -97,21 +98,24 @@ export default function BannerCarousel() {
                   }
                 }}
               >
-                <img src={b.image} alt="Promotional banner" loading={i === 0 ? 'eager' : 'lazy'} draggable={false} />
+                <img src={b.image} alt="" loading={i === 0 ? 'eager' : 'lazy'} draggable={false} />
               </a>
             ) : (
-              <img src={b.image} alt="Promotional banner" loading={i === 0 ? 'eager' : 'lazy'} draggable={false} />
+              <img src={b.image} alt="" loading={i === 0 ? 'eager' : 'lazy'} draggable={false} />
             )}
           </div>
         ))}
       </motion.div>
       {banners.length > 1 && (
-        <div className="banner-carousel-dots">
+        <div className="banner-carousel-dots" role="group" aria-label="Banner slides">
           {banners.map((b, i) => (
-            <span
+            <button
               key={b._id}
+              type="button"
               className={`banner-carousel-dot${i === index ? ' active' : ''}`}
               onClick={() => setIndex(i)}
+              aria-label={`Slide ${i + 1} of ${banners.length}`}
+              aria-current={i === index ? 'true' : undefined}
             />
           ))}
         </div>

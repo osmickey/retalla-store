@@ -6,6 +6,8 @@ import { api } from '../lib/api';
 import { CATEGORIES, POPULAR_SEARCHES } from '../lib/config';
 import { recentSearches } from '../lib/recentSearches';
 import { useDelayedUnmount } from '../hooks/useDelayedUnmount';
+import NoResultsState from './NoResultsState';
+import { SearchSuggestionSkeleton } from './Skeleton';
 
 // Anchored expanding panel, same shape as SortMenu.jsx (not SidePanel.jsx --
 // a full-height slide-in drawer is the wrong shape for this). Uses
@@ -163,21 +165,7 @@ export default function SearchPanel() {
               </div>
             </>
           ) : showNoResults ? (
-            <div className="search-no-results">
-              <div className="icon-circle search-no-results-icon">
-                <Icon name="search" size={24} />
-              </div>
-              <p>
-                No results for “<em>{trimmed}</em>”
-              </p>
-              <div className="search-pills">
-                {POPULAR_SEARCHES.slice(0, 3).map((term) => (
-                  <button key={term} type="button" className="search-pill" onClick={() => goSearch(term)}>
-                    {term}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <NoResultsState query={trimmed} onPopularSearch={goSearch} />
           ) : (
             <>
               {matchedCategories.length > 0 && (
@@ -192,21 +180,28 @@ export default function SearchPanel() {
                   </div>
                 </div>
               )}
-              {suggestions.length > 0 && (
+              {loadingSuggestions ? (
                 <div className="search-suggest-group">
                   <h4>Products</h4>
-                  <div className="search-product-list">
-                    {suggestions.map((p) => (
-                      <button key={p._id} type="button" className="search-product-row" onClick={() => goProduct(p)}>
-                        <img src={p.image} alt="" />
-                        <span className="search-product-info">
-                          <span className="name">{p.name}</span>
-                          <span className="price">Rs. {p.price.toFixed(2)}</span>
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                  <SearchSuggestionSkeleton count={4} />
                 </div>
+              ) : (
+                suggestions.length > 0 && (
+                  <div className="search-suggest-group">
+                    <h4>Products</h4>
+                    <div className="search-product-list">
+                      {suggestions.map((p) => (
+                        <button key={p._id} type="button" className="search-product-row" onClick={() => goProduct(p)}>
+                          <img src={p.image} alt="" />
+                          <span className="search-product-info">
+                            <span className="name">{p.name}</span>
+                            <span className="price">Rs. {p.price.toFixed(2)}</span>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )
               )}
               <button type="button" className="search-suggest-submit" onClick={() => goSearch(trimmed)}>
                 Search for “{trimmed}”

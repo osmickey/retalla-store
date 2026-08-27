@@ -193,7 +193,7 @@ function FullNavbar() {
         </div>
       </div>
 
-      <SidePanel open={drawerOpen} onClose={closeDrawer}>
+      <SidePanel open={drawerOpen} onClose={closeDrawer} ariaLabel="Main menu">
         <a href="/index.html">
           <Icon name="home" size={18} /> Home
         </a>
