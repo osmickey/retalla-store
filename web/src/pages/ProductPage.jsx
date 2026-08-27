@@ -1,15 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useScrolledPast } from '../hooks/useScrolledPast';
+import { useDelayedUnmount } from '../hooks/useDelayedUnmount';
 import { api } from '../lib/api';
 import { auth } from '../lib/auth';
 import { cart, showToast } from '../lib/cart';
+import { EASE } from '../lib/motion';
 import { recentlyViewed } from '../lib/recentlyViewed';
 import { wishlist, useWishlistIds } from '../lib/wishlist';
 import Icon from '../icons/Icon';
 import QtyStepper from '../components/QtyStepper';
-import ProductGrid from '../components/ProductGrid';
+import SortMenu from '../components/SortMenu';
+import SlidableRail from '../components/SlidableRail';
+import { ProductCard } from '../components/ProductGrid';
+import VariantSelector from '../components/VariantSelector';
+import CartDrawer from '../components/CartDrawer';
 import ErrorState from '../components/ErrorState';
 import { ProductDetailSkeleton, ReviewListSkeleton, ProductGridSkeleton } from '../components/Skeleton';
 
@@ -26,12 +33,23 @@ function StarRow({ rating, size = 16 }) {
   );
 }
 
-function ProductGallery({ product }) {
-  const images = [product.image, ...(product.images || [])];
-  const [mainSrc, setMainSrc] = useState(product.image);
+function ProductGallery({ product, overrideImage }) {
+  const images = useMemo(() => {
+    const base = [product.image, ...(product.images || [])];
+    return overrideImage && !base.includes(overrideImage) ? [overrideImage, ...base] : base;
+  }, [product, overrideImage]);
+  const [mainSrc, setMainSrc] = useState(images[0]);
   const [zooming, setZooming] = useState(false);
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
   const reduceMotion = useReducedMotion();
+
+  // Nudges the main image to follow the active variant's photo. An option
+  // without its own image leaves whatever's showing alone, rather than
+  // snapping back to the base image -- less surprising when the *other*
+  // variant group is the one being changed.
+  useEffect(() => {
+    if (overrideImage) setMainSrc(overrideImage);
+  }, [overrideImage]);
 
   // Desktop-only by nature -- touch devices don't fire continuous
   // mousemove, so mobile just keeps tap-a-thumbnail with no zoom.
@@ -101,24 +119,26 @@ function ProductGallery({ product }) {
           );
         })}
       </div>
-      <div className="pd-thumbs">
-        {images.map((src, i) => (
-          <button
-            key={src}
-            type="button"
-            onClick={() => setMainSrc(src)}
-            aria-current={src === mainSrc ? 'true' : undefined}
-          >
-            <motion.img
-              src={src}
-              alt={`${product.name} — view ${i + 1}`}
-              className={src === mainSrc ? 'active' : ''}
-              whileHover={reduceMotion ? {} : { scale: 1.05 }}
-              transition={{ duration: 0.15 }}
-            />
-          </button>
-        ))}
-      </div>
+      {images.length > 1 && (
+        <div className="pd-thumbs">
+          {images.map((src, i) => (
+            <button
+              key={src}
+              type="button"
+              onClick={() => setMainSrc(src)}
+              aria-current={src === mainSrc ? 'true' : undefined}
+            >
+              <motion.img
+                src={src}
+                alt={`${product.name} — view ${i + 1}`}
+                className={src === mainSrc ? 'active' : ''}
+                whileHover={reduceMotion ? {} : { scale: 1.05 }}
+                transition={{ duration: 0.15 }}
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -196,6 +216,149 @@ function DeliveryCheck({ product }) {
   );
 }
 
+// Real per-product policy facts, reformatted as Q&A -- nothing fabricated,
+// nothing shown here that isn't already stated elsewhere on this same page.
+function buildFaqItems(product) {
+  return [
+    {
+      q: 'What are the delivery charges?',
+      a: product.freeDelivery
+        ? 'This product ships free, with no delivery charge.'
+        : `A delivery charge of Rs. ${(product.deliveryCharge || 0).toFixed(2)} applies to this product.`,
+    },
+    {
+      q: 'What is the return policy?',
+      a: product.isReturnable
+        ? 'This product is eligible for a 7-day return window from the date of delivery.'
+        : 'This item is part of a final-sale category and is not eligible for return.',
+    },
+    {
+      q: 'Is Cash on Delivery available?',
+      a:
+        product.codAvailable !== false
+          ? 'Yes, Cash on Delivery is available for this product.'
+          : 'This product requires prepaid online payment; Cash on Delivery is not available.',
+    },
+    { q: 'Is checkout secure?', a: 'Yes — all payments are processed through an encrypted, secure checkout.' },
+  ];
+}
+
+function FaqAccordion({ product }) {
+  const [openIndex, setOpenIndex] = useState(null);
+  const reduceMotion = useReducedMotion();
+  const items = buildFaqItems(product);
+
+  return (
+    <section id="faq-section" className="section">
+      <div className="section-head">
+        <h2>Questions & Answers</h2>
+      </div>
+      <div className="faq-list">
+        {items.map((item, i) => {
+          const open = openIndex === i;
+          return (
+            <div className="faq-item" key={item.q}>
+              <button
+                type="button"
+                className="faq-question"
+                aria-expanded={open}
+                onClick={() => setOpenIndex(open ? null : i)}
+              >
+                {item.q}
+                <Icon name="chevron-down" size={16} className={open ? 'rotated' : undefined} />
+              </button>
+              <motion.div
+                className="faq-answer"
+                animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.2, ease: 'easeOut' }}
+                style={reduceMotion ? { height: open ? 'auto' : 0, opacity: open ? 1 : 0 } : undefined}
+              >
+                <p>{item.a}</p>
+              </motion.div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function ProductStory({ product }) {
+  return (
+    <section id="description-section" className="section">
+      <div className="section-head">
+        <h2>About This Product</h2>
+      </div>
+      <p className="pd-story-text">{product.description || 'No description available for this product.'}</p>
+      <div className="pd-fact-chips">
+        <span className="pd-fact-chip">
+          <Icon name="tag" size={14} />
+          {product.category}
+        </span>
+        {product.freeDelivery && (
+          <span className="pd-fact-chip">
+            <Icon name="truck" size={14} />
+            Free Delivery
+          </span>
+        )}
+        {product.isReturnable && (
+          <span className="pd-fact-chip">
+            <Icon name="return" size={14} />
+            7-Day Returns
+          </span>
+        )}
+        {product.codAvailable !== false && (
+          <span className="pd-fact-chip">
+            <Icon name="wallet" size={14} />
+            COD Available
+          </span>
+        )}
+        {product.numReviews > 0 && (
+          <span className="pd-fact-chip">
+            <Icon name="star" size={14} />
+            {product.rating.toFixed(1)} rated
+          </span>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function StickyPurchaseBar({ visible, product, image, displayPrice, discount, outOfStock, onAddToCart, onBuyNow }) {
+  const reduceMotion = useReducedMotion();
+  const render = useDelayedUnmount(visible, 200);
+  if (!render) return null;
+  return (
+    <motion.div
+      className="pd-sticky-bar"
+      role="region"
+      aria-label="Quick purchase"
+      animate={{ y: visible ? 0 : '100%', opacity: visible ? 1 : 0 }}
+      transition={{ duration: reduceMotion ? 0 : 0.25, ease: EASE }}
+      style={reduceMotion ? { transform: visible ? 'none' : 'translateY(100%)', opacity: visible ? 1 : 0 } : undefined}
+    >
+      <div className="pd-sticky-bar-inner container">
+        <img src={image} alt="" className="pd-sticky-bar-thumb" />
+        <div className="pd-sticky-bar-info">
+          <strong>{product.name}</strong>
+          <span className="pd-sticky-bar-price">
+            Rs. {displayPrice.toFixed(2)}
+            {discount > 0 && <span className="discount">{discount}% off</span>}
+          </span>
+        </div>
+        <div className="pd-sticky-bar-actions">
+          <button type="button" className="btn btn-primary btn-sm" disabled={outOfStock} onClick={onAddToCart}>
+            Add to Cart
+          </button>
+          <button type="button" className="btn btn-accent btn-sm" disabled={outOfStock} onClick={onBuyNow}>
+            Buy Now
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function ReviewCard({ review }) {
   const name = review.user?.name || 'Anonymous';
   const initials = name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
@@ -211,7 +374,16 @@ function ReviewCard({ review }) {
       <div className="review-card-head">
         <span className="avatar">{initials}</span>
         <div className="review-card-who">
-          <strong>{name}</strong>
+          <strong>
+            {name}
+            {/* Every review is purchase-gated server-side (see the eligibility
+                check below), so this is true by construction, not a claim
+                being invented for display. */}
+            <span className="review-verified">
+              <Icon name="check" size={11} />
+              Verified Purchase
+            </span>
+          </strong>
           <span className="review-date">
             {new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
           </span>
@@ -242,6 +414,20 @@ function StarInput({ value, onChange }) {
   );
 }
 
+const REVIEW_SORT_OPTIONS = [
+  { key: 'recent', label: 'Most Recent' },
+  { key: 'highest', label: 'Highest Rated' },
+  { key: 'lowest', label: 'Lowest Rated' },
+];
+
+function sortReviews(list, key) {
+  const copy = [...list];
+  if (key === 'highest') copy.sort((a, b) => b.rating - a.rating);
+  else if (key === 'lowest') copy.sort((a, b) => a.rating - b.rating);
+  else copy.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  return copy;
+}
+
 // Eligibility-gated review form, modeled as one explicit state rather than a
 // pile of booleans: loading | logged-out | already-reviewed | not-eligible | can-review.
 function Reviews({ product, pathname, search }) {
@@ -252,6 +438,7 @@ function Reviews({ product, pathname, search }) {
   const [comment, setComment] = useState('');
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [reviewSort, setReviewSort] = useState('recent');
 
   async function loadReviews() {
     setReviewsError(null);
@@ -310,6 +497,11 @@ function Reviews({ product, pathname, search }) {
   }
 
   const avg = reviews && reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
+  const distribution = [5, 4, 3, 2, 1].map((star) => ({
+    star,
+    count: reviews ? reviews.filter((r) => Math.round(r.rating) === star).length : 0,
+  }));
+  const sortedReviews = reviews ? sortReviews(reviews, reviewSort) : null;
 
   return (
     <section id="reviews-section" className="section">
@@ -318,15 +510,34 @@ function Reviews({ product, pathname, search }) {
       </div>
 
       {reviews && reviews.length > 0 && (
-        <div className="review-summary">
-          <div className="review-summary-score">{avg.toFixed(1)}</div>
-          <div>
-            <StarRow rating={avg} size={18} />
-            <div className="review-summary-count">
-              {reviews.length} review{reviews.length === 1 ? '' : 's'}
+        <>
+          <div className="review-summary-head">
+            <div className="review-summary">
+              <div className="review-summary-score">{avg.toFixed(1)}</div>
+              <div>
+                <StarRow rating={avg} size={18} />
+                <div className="review-summary-count">
+                  {reviews.length} review{reviews.length === 1 ? '' : 's'}
+                </div>
+              </div>
             </div>
+            <SortMenu value={reviewSort} onChange={setReviewSort} options={REVIEW_SORT_OPTIONS} />
           </div>
-        </div>
+          <div className="rating-distribution">
+            {distribution.map(({ star, count }) => (
+              <div className="rating-distribution-row" key={star}>
+                <span>{star} star</span>
+                <div className="rating-distribution-track">
+                  <div
+                    className="rating-distribution-fill"
+                    style={{ width: reviews.length ? `${(count / reviews.length) * 100}%` : '0%' }}
+                  />
+                </div>
+                <span>{count}</span>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {gateState === 'logged-out' && (
@@ -378,16 +589,16 @@ function Reviews({ product, pathname, search }) {
 
       {reviewsError ? (
         <ErrorState message={reviewsError} onRetry={loadReviews} />
-      ) : reviews === null ? (
+      ) : sortedReviews === null ? (
         <ReviewListSkeleton count={3} />
-      ) : reviews.length === 0 ? (
+      ) : sortedReviews.length === 0 ? (
         <div className="empty-state">
           <p>No reviews yet — be the first to review this product!</p>
         </div>
       ) : (
         <div className="review-list">
           <AnimatePresence>
-            {reviews.map((r) => (
+            {sortedReviews.map((r) => (
               <ReviewCard key={r._id} review={r} />
             ))}
           </AnimatePresence>
@@ -397,7 +608,7 @@ function Reviews({ product, pathname, search }) {
   );
 }
 
-function RelatedProducts({ product }) {
+function RelatedProducts({ product, wishlistIds }) {
   const [related, setRelated] = useState(null);
   const [error, setError] = useState(null);
 
@@ -425,7 +636,7 @@ function RelatedProducts({ product }) {
     return (
       <section id="related-section" className="section">
         <div className="section-head">
-          <h2>Related Products</h2>
+          <h2>You May Also Like</h2>
         </div>
         <ErrorState message={error} onRetry={load} />
       </section>
@@ -435,7 +646,7 @@ function RelatedProducts({ product }) {
     return (
       <section id="related-section" className="section">
         <div className="section-head">
-          <h2>Related Products</h2>
+          <h2>You May Also Like</h2>
         </div>
         <ProductGridSkeleton count={4} />
       </section>
@@ -446,9 +657,19 @@ function RelatedProducts({ product }) {
   return (
     <section id="related-section" className="section">
       <div className="section-head">
-        <h2>Related Products</h2>
+        <h2>You May Also Like</h2>
       </div>
-      <ProductGrid products={related} />
+      <SlidableRail
+        wrapClassName="related-rail"
+        railClassName="related-shelf"
+        visibleCount={4}
+        prevLabel="Previous related products"
+        nextLabel="More related products"
+      >
+        {related.map((p, i) => (
+          <ProductCard key={p._id} product={p} delay={i * 0.05} isWishlisted={wishlistIds.has(p._id)} />
+        ))}
+      </SlidableRail>
     </section>
   );
 }
@@ -459,7 +680,11 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [error, setError] = useState('');
   const [qty, setQty] = useState(1);
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const wishlistIds = useWishlistIds();
+  const actionsRef = useRef(null);
+  const scrolledPastActions = useScrolledPast(actionsRef);
 
   useDocumentTitle(product ? `${product.name} — Retalla` : 'Product — Retalla');
 
@@ -489,19 +714,65 @@ export default function ProductPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => loadProduct(), [id]);
 
-  function stepQty(delta) {
-    if (!product) return;
-    setQty((q) => Math.min(product.stock || 99, Math.max(1, q + delta)));
+  // Reset + re-seed default (first option per group) whenever a different
+  // product loads -- same reasoning as the setQty(1) reset above: a stale
+  // selection must never leak from one product to the next.
+  useEffect(() => {
+    if (!product?.variants?.length) {
+      setSelectedOptions({});
+      return;
+    }
+    const defaults = {};
+    product.variants.forEach((group) => {
+      if (group.options?.length) defaults[group.name] = group.options[0].value;
+    });
+    setSelectedOptions(defaults);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?._id]);
+
+  const activeOptions = useMemo(() => {
+    if (!product?.variants?.length) return [];
+    return product.variants
+      .map((group) => group.options?.find((o) => o.value === selectedOptions[group.name]))
+      .filter(Boolean);
+  }, [product, selectedOptions]);
+
+  // Everything price/stock/image-related that depends on the active variant
+  // selection, computed once here so the JSX below and currentVariantDescriptor()
+  // both read the same values instead of two separate derivations drifting
+  // apart. Safe to run unconditionally (before the !product early return)
+  // since every field falls back sensibly when product is still null.
+  const variantPriceDelta = activeOptions.reduce((sum, o) => sum + (o.priceDelta || 0), 0);
+  const displayPrice = (product?.price || 0) + variantPriceDelta;
+  const displayMrp = (product?.mrp || 0) + variantPriceDelta;
+  const discount = displayMrp > displayPrice ? Math.round(((displayMrp - displayPrice) / displayMrp) * 100) : 0;
+  const optionStocks = activeOptions.map((o) => o.stock).filter((s) => s != null);
+  const displayStock = optionStocks.length ? Math.min(product?.stock ?? 0, ...optionStocks) : product?.stock ?? 0;
+  const variantImage = activeOptions.map((o) => o.image).find(Boolean) || null;
+  const outOfStock = displayStock <= 0;
+
+  function stepQty(delta, max) {
+    setQty((q) => Math.min(max || 99, Math.max(1, q + delta)));
+  }
+
+  function currentVariantDescriptor() {
+    if (!product.variants?.length) return null;
+    return {
+      key: product.variants.map((g) => `${g.name}:${selectedOptions[g.name] || ''}`).join('|'),
+      label: activeOptions.map((o) => o.label).join(' / '),
+      image: variantImage,
+      priceDelta: variantPriceDelta,
+    };
   }
 
   function addToCart() {
-    cart.add(product, qty);
-    showToast(`${product.name} added to cart`);
+    cart.add(product, qty, currentVariantDescriptor());
+    setDrawerOpen(true);
   }
 
   function buyNow() {
-    cart.add(product, qty);
-    window.location.href = '/cart.html';
+    cart.add(product, qty, currentVariantDescriptor());
+    window.location.href = '/checkout.html';
   }
 
   async function toggleWishlist() {
@@ -539,18 +810,16 @@ export default function ProductPage() {
     );
   }
 
-  const discount = product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
-  const outOfStock = product.stock <= 0;
   const isWishlisted = wishlistIds.has(product._id);
 
   return (
-    <main className="container">
+    <main className="container product-page">
       <div className="breadcrumb">
         <a href="/index.html">Home</a> / <a href="/shop.html">Shop</a> / <span>{product.name}</span>
       </div>
 
       <div className="product-detail">
-        <ProductGallery product={product} />
+        <ProductGallery key={product._id} product={product} overrideImage={variantImage} />
 
         <div className="pd-info">
           <span className="cat">
@@ -562,7 +831,7 @@ export default function ProductPage() {
           <div className="rating-row">
             <StarRow rating={product.rating} size={16} />
             <span className="rating-pill">{product.rating.toFixed(1)}</span>
-            <span>({product.numReviews} reviews)</span>
+            <a href="#reviews-section">({product.numReviews} reviews)</a>
             {product.isBestSeller && (
               <span className="badge" style={{ position: 'static' }}>
                 BESTSELLER
@@ -570,29 +839,43 @@ export default function ProductPage() {
             )}
           </div>
           <div className="price-row">
-            <span className="price">Rs. {product.price.toFixed(2)}</span>
-            {product.mrp > product.price && (
+            <motion.span
+              key={displayPrice}
+              className="price"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18 }}
+            >
+              Rs. {displayPrice.toFixed(2)}
+            </motion.span>
+            {displayMrp > displayPrice && (
               <>
-                <span className="mrp">Rs. {product.mrp.toFixed(2)}</span>
+                <span className="mrp">Rs. {displayMrp.toFixed(2)}</span>
                 <span className="discount">{discount}% off</span>
               </>
             )}
           </div>
+
+          <VariantSelector
+            groups={product.variants}
+            selected={selectedOptions}
+            onSelect={(groupName, value) => setSelectedOptions((prev) => ({ ...prev, [groupName]: value }))}
+          />
 
           <DeliveryCheck product={product} />
 
           <QtyStepper
             value={qty}
             min={1}
-            max={product.stock}
-            onDecrement={() => stepQty(-1)}
-            onIncrement={() => stepQty(1)}
+            max={displayStock}
+            onDecrement={() => stepQty(-1, displayStock)}
+            onIncrement={() => stepQty(1, displayStock)}
             onInputChange={(v) => {
               const n = Number(v);
-              if (n) setQty(Math.min(product.stock || 99, Math.max(1, n)));
+              if (n) setQty(Math.min(displayStock || 99, Math.max(1, n)));
             }}
           />
-          <div className="pd-actions">
+          <div className="pd-actions" ref={actionsRef}>
             <button className="btn btn-primary" disabled={outOfStock} onClick={addToCart}>
               Add to Cart
             </button>
@@ -623,7 +906,7 @@ export default function ProductPage() {
               </span>
               <div>
                 <strong>{product.freeDelivery ? 'Free Delivery' : 'Paid Delivery'}</strong>
-                <span>{outOfStock ? 'Out of stock' : `${product.stock} in stock`}</span>
+                <span>{outOfStock ? 'Out of stock' : `${displayStock} in stock`}</span>
               </div>
             </div>
             <div className="pd-badge">
@@ -648,12 +931,7 @@ export default function ProductPage() {
         </div>
       </div>
 
-      <section id="description-section" className="section">
-        <div className="section-head">
-          <h2>Description</h2>
-        </div>
-        <p className="pd-description">{product.description || 'No description available for this product.'}</p>
-      </section>
+      <ProductStory product={product} />
 
       <section id="specifications-section" className="section">
         <div className="section-head">
@@ -680,7 +958,7 @@ export default function ProductPage() {
               )}
               <tr>
                 <td>Availability</td>
-                <td>{outOfStock ? 'Out of stock' : `${product.stock} units in stock`}</td>
+                <td>{outOfStock ? 'Out of stock' : `${displayStock} units in stock`}</td>
               </tr>
             </tbody>
           </table>
@@ -754,7 +1032,20 @@ export default function ProductPage() {
       )}
 
       <Reviews product={product} pathname={window.location.pathname} search={window.location.search} />
-      <RelatedProducts product={product} />
+      <FaqAccordion product={product} />
+      <RelatedProducts product={product} wishlistIds={wishlistIds} />
+
+      <StickyPurchaseBar
+        visible={scrolledPastActions}
+        product={product}
+        image={variantImage || product.image}
+        displayPrice={displayPrice}
+        discount={discount}
+        outOfStock={outOfStock}
+        onAddToCart={addToCart}
+        onBuyNow={buyNow}
+      />
+      <CartDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </main>
   );
 }

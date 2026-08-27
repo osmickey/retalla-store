@@ -34,6 +34,32 @@ const productSchema = new mongoose.Schema(
     codAvailable: { type: Boolean, default: true },
     videoUrl: { type: String, default: '' },
     isLiveVideo: { type: Boolean, default: false },
+    // Optional, additive. Absent/empty on every product until an admin
+    // populates it directly -- ProductPage renders no configurator at all
+    // when this is empty, so it's a pure capability add with zero behavior
+    // change for existing products.
+    variants: {
+      type: [
+        {
+          name: { type: String, required: true, trim: true },
+          type: { type: String, enum: ['swatch', 'button', 'card'], default: 'button' },
+          options: {
+            type: [
+              {
+                label: { type: String, required: true, trim: true },
+                value: { type: String, required: true, trim: true },
+                swatch: { type: String, default: '' },
+                image: { type: String, default: '' },
+                priceDelta: { type: Number, default: 0 },
+                stock: { type: Number, default: null },
+              },
+            ],
+            default: [],
+          },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );

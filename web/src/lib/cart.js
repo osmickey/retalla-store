@@ -18,38 +18,48 @@ export const cart = {
     window.dispatchEvent(new Event('retalla:cart-changed'));
   },
 
-  add(product, qty = 1) {
+  // variant: { key, label, image, priceDelta } | null -- lets two different
+  // variants of the same product coexist as distinct cart lines instead of
+  // colliding into one ambiguous line. Every existing call site omits this
+  // param, so (i.variantKey || null) === (variant?.key || null) is always
+  // null === null there -- identical merge behavior to before this changed.
+  add(product, qty = 1, variant = null) {
     const items = this.getItems();
-    const existing = items.find((i) => i.productId === product._id);
+    const existing = items.find(
+      (i) => i.productId === product._id && (i.variantKey || null) === (variant?.key || null)
+    );
     if (existing) {
       existing.qty += qty;
     } else {
       items.push({
         productId: product._id,
         name: product.name,
-        image: product.image,
-        price: product.price,
-        mrp: product.mrp,
+        image: variant?.image || product.image,
+        price: product.price + (variant?.priceDelta || 0),
+        mrp: product.mrp + (variant?.priceDelta || 0),
         stock: product.stock,
         codAvailable: product.codAvailable !== false,
         freeDelivery: product.freeDelivery !== false,
         deliveryCharge: product.deliveryCharge || 0,
         qty,
+        ...(variant ? { variantKey: variant.key, variantLabel: variant.label } : {}),
       });
     }
     this.saveItems(items);
   },
 
-  updateQty(productId, qty) {
+  updateQty(productId, qty, variantKey = null) {
     const items = this.getItems();
-    const item = items.find((i) => i.productId === productId);
+    const item = items.find((i) => i.productId === productId && (i.variantKey || null) === variantKey);
     if (!item) return;
     item.qty = Math.max(1, qty);
     this.saveItems(items);
   },
 
-  remove(productId) {
-    this.saveItems(this.getItems().filter((i) => i.productId !== productId));
+  remove(productId, variantKey = null) {
+    this.saveItems(
+      this.getItems().filter((i) => !(i.productId === productId && (i.variantKey || null) === variantKey))
+    );
   },
 
   clear() {

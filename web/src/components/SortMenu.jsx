@@ -18,7 +18,7 @@ export const SORT_OPTIONS = [
 // Small anchored dropdown -- not built on SidePanel (a full-height slide-in
 // panel is the wrong shape here). Uses the same useDelayedUnmount pattern
 // as every other overlay in this app instead of AnimatePresence/exit.
-export default function SortMenu({ value, onChange }) {
+export default function SortMenu({ value, onChange, options = SORT_OPTIONS }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
   const reduceMotion = useReducedMotion();
@@ -40,7 +40,7 @@ export default function SortMenu({ value, onChange }) {
     };
   }, [open]);
 
-  const current = SORT_OPTIONS.find((o) => o.key === value) || SORT_OPTIONS[0];
+  const current = options.find((o) => o.key === value) || options[0];
 
   return (
     <div className="sort-menu" ref={rootRef}>
@@ -55,7 +55,7 @@ export default function SortMenu({ value, onChange }) {
           animate={{ opacity: open ? 1 : 0, y: open ? 0 : -6 }}
           transition={{ duration: reduceMotion ? 0 : 0.18, ease: [0.16, 1, 0.3, 1] }}
         >
-          {SORT_OPTIONS.map((o) => (
+          {options.map((o) => (
             <li key={o.key} role="presentation">
               <button
                 type="button"
