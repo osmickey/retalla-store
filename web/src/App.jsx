@@ -15,6 +15,8 @@ import CartPage from './pages/CartPage';
 import WishlistPage from './pages/WishlistPage';
 import AccountPage from './pages/AccountPage';
 import HomePage from './pages/HomePage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -28,10 +30,12 @@ export default function App() {
             <Route path="/shipping-returns.html" element={<ShippingReturnsPage />} />
             <Route path="/privacy-policy.html" element={<PrivacyPolicyPage />} />
             <Route path="/terms.html" element={<TermsPage />} />
+            <Route path="/checkout.html" element={<CheckoutPage />} />
           </Route>
           <Route element={<AuthLayout />}>
             <Route path="/login.html" element={<LoginPage />} />
             <Route path="/register.html" element={<RegisterPage />} />
+            <Route path="/order-success.html" element={<OrderSuccessPage />} />
           </Route>
           <Route element={<StorefrontLayout navbarVariant="full" />}>
             <Route path="/" element={<HomePage />} />

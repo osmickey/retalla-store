@@ -61,6 +61,8 @@ const REACT_ROUTES = [
   '/cart.html',
   '/wishlist.html',
   '/account.html',
+  '/checkout.html',
+  '/order-success.html',
 ];
 
 const webDistDir = path.join(__dirname, '..', 'web', 'dist');

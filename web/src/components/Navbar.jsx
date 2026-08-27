@@ -13,6 +13,11 @@ import SearchPanel from './SearchPanel';
 // /customer-service.html, etc.) stay plain <a href> on purpose. Links to pages
 // that ARE in this app (Shop, Cart) use <Link> for client-side navigation.
 export default function Navbar({ variant = 'simple' }) {
+  // Called unconditionally, before either early return, so hook order stays
+  // fixed across renders regardless of variant -- only the 'simple' JSX
+  // below actually reads the value.
+  const cartCount = useCartCount();
+
   if (variant === 'transparent') {
     return (
       <nav className="navbar navbar-transparent">
@@ -28,8 +33,6 @@ export default function Navbar({ variant = 'simple' }) {
   if (variant === 'full') {
     return <FullNavbar />;
   }
-
-  const cartCount = useCartCount();
 
   return (
     <nav className="navbar">

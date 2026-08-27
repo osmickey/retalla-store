@@ -11,6 +11,7 @@ import Icon from '../icons/Icon';
 import ProductGrid from '../components/ProductGrid';
 import Modal from '../components/Modal';
 import ErrorState from '../components/ErrorState';
+import AddressForm from '../components/AddressForm';
 import { ProductGridSkeleton, OrdersListSkeleton, AddressGridSkeleton } from '../components/Skeleton';
 
 const TABS = [
@@ -645,7 +646,7 @@ function AddressesTab() {
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} labelledBy="address-modal-title">
         <h3 id="address-modal-title">{editing ? 'Edit Address' : 'Add New Address'}</h3>
-        <AddressForm
+        <AddressFormModal
           key={editing ? editing._id : 'new'}
           initial={editing || EMPTY_ADDRESS}
           saving={saving}
@@ -673,52 +674,11 @@ function AddressesTab() {
   );
 }
 
-function AddressForm({ initial, saving, onCancel, onSubmit }) {
+function AddressFormModal({ initial, saving, onCancel, onSubmit }) {
   const [form, setForm] = useState(initial);
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
-
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit(form);
-      }}
-    >
-      <div className="field">
-        <label htmlFor="address-fullname">Full Name</label>
-        <input id="address-fullname" required value={form.fullName} onChange={set('fullName')} />
-      </div>
-      <div className="field">
-        <label htmlFor="address-phone">Phone Number</label>
-        <div className="phone-input-group">
-          <span className="phone-prefix">+91</span>
-          <input id="address-phone" required pattern="[0-9]{10}" value={form.phone} onChange={set('phone')} />
-        </div>
-      </div>
-      <div className="field">
-        <label htmlFor="address-line1">Address Line 1</label>
-        <input id="address-line1" required value={form.addressLine1} onChange={set('addressLine1')} />
-      </div>
-      <div className="field">
-        <label htmlFor="address-line2">
-          Address Line 2 <span className="field-optional">(optional)</span>
-        </label>
-        <input id="address-line2" value={form.addressLine2} onChange={set('addressLine2')} />
-      </div>
-      <div className="field-row">
-        <div className="field">
-          <label htmlFor="address-city">City</label>
-          <input id="address-city" required value={form.city} onChange={set('city')} />
-        </div>
-        <div className="field">
-          <label htmlFor="address-state">State</label>
-          <input id="address-state" required value={form.state} onChange={set('state')} />
-        </div>
-      </div>
-      <div className="field">
-        <label htmlFor="address-pincode">Pincode</label>
-        <input id="address-pincode" required pattern="[0-9]{6}" value={form.pincode} onChange={set('pincode')} />
-      </div>
+    <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }}>
+      <AddressForm value={form} onChange={setForm} idPrefix="address" />
       <div className="app-modal-actions">
         <button type="button" className="btn btn-outline" onClick={onCancel}>
           Cancel
