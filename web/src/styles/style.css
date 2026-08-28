@@ -1449,22 +1449,80 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding: 32px;
   box-shadow: var(--shadow-sm);
 }
-.pd-gallery .main-image {
-  aspect-ratio: 1/1;
+/* Swipeable media stage: slides sit side by side in a dragged track rather
+   than crossfading in place, so a swipe moves between them on touch. */
+.pd-stage {
+  position: relative;
+  aspect-ratio: 1 / 1;
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--primary-light);
 }
-.pd-gallery .main-image img { width: 100%; height: 100%; object-fit: cover; }
-.pd-thumbs { display: flex; gap: 10px; margin-top: 12px; }
-.pd-thumbs button { background: none; border: none; padding: 0; display: block; cursor: pointer; }
-.pd-thumbs img {
-  width: 64px; height: 64px; object-fit: cover;
-  border-radius: var(--radius-sm);
-  border: 2px solid transparent;
-  cursor: pointer;
+.pd-track {
+  display: flex;
+  height: 100%;
+  /* Lets the page still scroll vertically while the track owns horizontal
+     gestures -- without this a swipe down over the gallery is swallowed. */
+  touch-action: pan-y;
+  cursor: grab;
 }
-.pd-thumbs img.active { border-color: var(--primary); }
+.pd-track:active { cursor: grabbing; }
+.pd-slide { flex: 0 0 100%; width: 100%; height: 100%; }
+.pd-slide img,
+.pd-slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.pd-slide video { background: #14112a; object-fit: contain; }
+
+.pd-stage-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; line-height: 1; padding-bottom: 3px;
+  cursor: pointer; z-index: 2;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+.pd-stage-nav.prev { left: 10px; }
+.pd-stage-nav.next { right: 10px; }
+.pd-stage-nav:hover { background: #fff; }
+.pd-stage-nav[disabled] { opacity: 0; pointer-events: none; }
+
+.pd-thumbs { display: flex; gap: 10px; margin-top: 12px; }
+.pd-thumb {
+  position: relative;
+  width: 64px; height: 64px;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.pd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pd-thumb.active { border-color: var(--primary); }
+.pd-thumb:hover { border-color: var(--gold); }
+/* Marks the video slide in the thumbnail strip. */
+.pd-thumb-play {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(23, 21, 28, 0.42);
+  color: #fff;
+}
 .pd-info h1 { font-size: clamp(1.25rem, 2.4vw + 0.7rem, 1.6rem); margin-bottom: 8px; }
 .pd-sku { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; }
 .pd-info .price-row { font-size: 1.3rem; margin: 16px 0; }
@@ -2401,7 +2459,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   .wishlist-item-info { grid-area: info; }
   .wishlist-item-actions { grid-area: actions; margin-top: 4px; flex-wrap: wrap; }
   .product-detail { padding: 18px; }
-  .pd-thumbs { overflow-x: auto; padding-bottom: 4px; }
+  .pd-thumbs { overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .pd-stage-nav { display: none; } /* touch users swipe; the buttons eat thumb space */
   .pd-actions .btn { min-width: 0; }
   .pd-badges { grid-template-columns: 1fr 1fr; gap: 8px; }
   .pd-trust-strip { grid-template-columns: 1fr; gap: 8px; }

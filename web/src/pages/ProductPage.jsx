@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion, useMotionValue, animate } from 'framer-motion';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useScrolledPast } from '../hooks/useScrolledPast';
 import { useDelayedUnmount } from '../hooks/useDelayedUnmount';
@@ -33,26 +33,81 @@ function StarRow({ rating, size = 16 }) {
   );
 }
 
+// Swipeable media stage. The product video used to live in its own section
+// far below the fold, where most visitors never reached it; it's now the
+// first slide alongside the photography. All slides sit side by side in a
+// dragged track rather than crossfading in place, so touch users can swipe
+// between them the way they expect to.
 function ProductGallery({ product, overrideImage }) {
-  const images = useMemo(() => {
-    const base = [product.image, ...(product.images || [])];
-    return overrideImage && !base.includes(overrideImage) ? [overrideImage, ...base] : base;
-  }, [product, overrideImage]);
-  const [mainSrc, setMainSrc] = useState(images[0]);
+  const reduceMotion = useReducedMotion();
+  const [index, setIndex] = useState(0);
   const [zooming, setZooming] = useState(false);
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
-  const reduceMotion = useReducedMotion();
+  const stageRef = useRef(null);
+  const videoRef = useRef(null);
+  const draggedRef = useRef(false);
+  // Driven imperatively rather than through the `animate` prop: framer's
+  // `drag` owns the x transform, and an animate={{x}} alongside it is
+  // silently dropped (the thumbnails changed but the track never moved).
+  // SlidableRail uses this same useMotionValue + animate() pairing.
+  const x = useMotionValue(0);
+  const [slideWidth, setSlideWidth] = useState(0);
 
-  // Nudges the main image to follow the active variant's photo. An option
-  // without its own image leaves whatever's showing alone, rather than
-  // snapping back to the base image -- less surprising when the *other*
-  // variant group is the one being changed.
+  const media = useMemo(() => {
+    const items = [];
+    if (product.videoUrl) items.push({ key: 'video', type: 'video', src: product.videoUrl, poster: product.image });
+    const imgs = [product.image, ...(product.images || [])];
+    if (overrideImage && !imgs.includes(overrideImage)) imgs.unshift(overrideImage);
+    imgs.forEach((src) => items.push({ key: src, type: 'image', src }));
+    return items;
+  }, [product, overrideImage]);
+
+  // Measure the stage so slide offsets are real pixels; percentage-based x
+  // doesn't survive framer's drag handling.
   useEffect(() => {
-    if (overrideImage) setMainSrc(overrideImage);
+    const stage = stageRef.current;
+    if (!stage) return undefined;
+    const measure = () => setSlideWidth(stage.offsetWidth);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(stage);
+    return () => ro.disconnect();
+  }, []);
+
+  // Single place the track is moved, so thumbnails, arrows, swipes and a
+  // width change all settle the same way.
+  useEffect(() => {
+    if (!slideWidth) return;
+    animate(x, -index * slideWidth, reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 36 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, slideWidth, reduceMotion]);
+
+  // Follow the active variant's photo when it has one. Runs on overrideImage
+  // rather than on `media` so simply having a video doesn't reset the slide.
+  useEffect(() => {
+    if (!overrideImage) return;
+    const i = media.findIndex((m) => m.type === 'image' && m.src === overrideImage);
+    if (i >= 0) setIndex(i);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overrideImage]);
 
-  // Desktop-only by nature -- touch devices don't fire continuous
-  // mousemove, so mobile just keeps tap-a-thumbnail with no zoom.
+  // Only the visible slide plays. A mount-time play() can fire before the
+  // browser has buffered enough and reject silently, so this also retries on
+  // `canplay` -- the same defence LiveVideoSection documents for the same
+  // reason. Muted + inline is what makes autoplay permissible at all.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return undefined;
+    if (media[index]?.type !== 'video') {
+      video.pause?.();
+      return undefined;
+    }
+    const tryPlay = () => video.play?.().catch(() => {});
+    tryPlay();
+    video.addEventListener('canplay', tryPlay);
+    return () => video.removeEventListener('canplay', tryPlay);
+  }, [index, media]);
+
   function handleMouseMove(e) {
     const rect = e.currentTarget.getBoundingClientRect();
     setOrigin({
@@ -61,80 +116,111 @@ function ProductGallery({ product, overrideImage }) {
     });
   }
 
+  const count = media.length;
+  const go = (next) => setIndex(Math.max(0, Math.min(count - 1, next)));
+
   return (
     <div className="pd-gallery">
-      {/* All images stay mounted, stacked, and cross-fade via opacity --
-          rather than unmounting the outgoing one (AnimatePresence's exit),
-          which depends on an animation-completion signal that isn't
-          reliable when the tab is hidden/backgrounded. This also avoids
-          any flash-of-missing-image mid-swap as a side benefit.
-
-          Under reduced motion, opacity is driven by a plain style prop
-          instead of framer's `animate` -- verified directly (not assumed)
-          that `animate` + a duration:0 transition does not reliably commit
-          on *updates* in this framer-motion version once more than one
-          motion.img shares this animate shape (only surfaces with 2+
-          images; single-image products never exercised this path before).
-          Skipping framer's animate pathway entirely under reduced motion
-          sidesteps that rather than depending on its duration:0 handling --
-          same "skip the animated pathway" convention QtyStepper/CartBadge
-          already use elsewhere in this app, just applied at the value
-          level instead of the trigger level. This also means zoom's
-          `scale` (which only ever applies via `animate`) naturally never
-          activates under reduced motion, matching framer's own stance on
-          transform-family values -- not fought against.
-
-          Zoom's `scale` lives in the SAME `animate` object as `opacity`
-          (not a plain style.transform) -- framer-motion only recomputes
-          `transform` itself once a transform-family key is under its own
-          tracked values, so mixing a manual transform in alongside a
-          framer-tracked one would get silently clobbered. transformOrigin
-          stays a plain style prop -- framer never touches that. */}
       <div
-        className="main-image"
-        style={{ position: 'relative' }}
+        className="pd-stage"
+        ref={stageRef}
         onMouseEnter={() => setZooming(true)}
         onMouseLeave={() => setZooming(false)}
         onMouseMove={handleMouseMove}
       >
-        {images.map((src) => {
-          const isActive = src === mainSrc;
-          return (
-            <motion.img
-              key={src}
-              src={src}
-              alt={product.name}
-              animate={reduceMotion ? undefined : { opacity: isActive ? 1 : 0, scale: zooming && isActive ? 1.8 : 1 }}
-              transition={{ duration: 0.2 }}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                pointerEvents: isActive ? 'auto' : 'none',
-                transformOrigin: `${origin.x}% ${origin.y}%`,
-                opacity: reduceMotion ? (isActive ? 1 : 0) : undefined,
-              }}
-            />
-          );
-        })}
-      </div>
-      {images.length > 1 && (
-        <div className="pd-thumbs">
-          {images.map((src, i) => (
+        <motion.div
+          className="pd-track"
+          style={{ x }}
+          drag={count > 1 ? 'x' : false}
+          dragConstraints={{ left: -(count - 1) * slideWidth, right: 0 }}
+          dragElastic={0.08}
+          onPointerDownCapture={() => {
+            draggedRef.current = false;
+          }}
+          onDragEnd={(_, info) => {
+            draggedRef.current = Math.abs(info.offset.x) > 6;
+            // Commit to a neighbouring slide on a decisive swipe or flick;
+            // anything smaller springs back to the current one.
+            const travelled = info.offset.x + info.velocity.x * 0.1;
+            const threshold = (slideWidth || 1) * 0.18;
+            if (travelled < -threshold) go(index + 1);
+            else if (travelled > threshold) go(index - 1);
+            else animate(x, -index * slideWidth, { type: 'spring', stiffness: 320, damping: 36 });
+          }}
+        >
+          {media.map((m, i) => (
+            <div className="pd-slide" key={m.key}>
+              {m.type === 'video' ? (
+                <video
+                  ref={videoRef}
+                  src={m.src}
+                  poster={m.poster}
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  controls
+                  draggable={false}
+                />
+              ) : (
+                <motion.img
+                  src={m.src}
+                  alt={`${product.name} — view ${i + 1}`}
+                  draggable={false}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  // Zoom is desktop-only by nature (touch fires no sustained
+                  // mousemove) and never applies to the video slide.
+                  animate={reduceMotion ? undefined : { scale: zooming && i === index ? 1.8 : 1 }}
+                  transition={{ duration: 0.25 }}
+                  style={{ transformOrigin: `${origin.x}% ${origin.y}%` }}
+                />
+              )}
+            </div>
+          ))}
+        </motion.div>
+
+        {count > 1 && (
+          <>
             <button
-              key={src}
               type="button"
-              onClick={() => setMainSrc(src)}
-              aria-current={src === mainSrc ? 'true' : undefined}
+              className="pd-stage-nav prev"
+              aria-label="Previous image"
+              disabled={index === 0}
+              onClick={() => go(index - 1)}
             >
-              <motion.img
-                src={src}
-                alt={`${product.name} — view ${i + 1}`}
-                className={src === mainSrc ? 'active' : ''}
-                whileHover={reduceMotion ? {} : { scale: 1.05 }}
-                transition={{ duration: 0.15 }}
-              />
+              ‹
+            </button>
+            <button
+              type="button"
+              className="pd-stage-nav next"
+              aria-label="Next image"
+              disabled={index === count - 1}
+              onClick={() => go(index + 1)}
+            >
+              ›
+            </button>
+          </>
+        )}
+      </div>
+
+      {count > 1 && (
+        <div className="pd-thumbs" role="group" aria-label="Product media">
+          {media.map((m, i) => (
+            <button
+              key={m.key}
+              type="button"
+              className={`pd-thumb${i === index ? ' active' : ''}`}
+              onClick={() => go(i)}
+              aria-label={m.type === 'video' ? 'Play product video' : `View image ${i + 1}`}
+              aria-current={i === index ? 'true' : undefined}
+            >
+              <img src={m.type === 'video' ? m.poster : m.src} alt="" draggable={false} loading="lazy" />
+              {m.type === 'video' && (
+                <span className="pd-thumb-play" aria-hidden="true">
+                  <Icon name="video" size={16} />
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -1009,27 +1095,8 @@ export default function ProductPage() {
         </div>
       </section>
 
-      {product.videoUrl && (
-        <section id="video-section" className="section">
-          <div className="section-head">
-            <h2>Product Video</h2>
-          </div>
-          <div className="pd-video">
-            <video
-              src={product.videoUrl}
-              poster={product.image}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              onClick={(e) => {
-                e.target.controls = true;
-              }}
-            />
-          </div>
-        </section>
-      )}
+      {/* The standalone "Product Video" section was removed: the video is now
+          the first slide of the gallery above, where it's actually seen. */}
 
       <Reviews product={product} pathname={window.location.pathname} search={window.location.search} />
       <FaqAccordion product={product} />

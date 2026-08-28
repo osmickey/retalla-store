@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useMotionValueEvent, animate, useReducedMotion } from 'framer-motion';
 
+// Below this many pixels of travel, a pointer gesture is treated as a click
+// rather than a drag. Real taps and mouse clicks almost always move a few px.
+const DRAG_SLOP = 6;
+
 // Generic drag-to-scroll rail with prev/next arrows, shared by the homepage's
 // category and bestseller sections (mirrors how the vanilla site unified
 // both into one initSlidableRail() helper). Presentational only -- no data
@@ -51,6 +55,11 @@ export default function SlidableRail({ wrapClassName, railClassName, visibleCoun
 
   function handleDragEnd(_, info) {
     setIsDragging(false);
+    // Suppress the click only when the pointer actually travelled. Previously
+    // this flag was set by onDragStart alone -- so a tap with a few px of
+    // jitter, or any click following an earlier drag, had its click eaten and
+    // the product needed a second click to open.
+    draggedRef.current = Math.abs(info.offset.x) > DRAG_SLOP;
     const projected = x.get() + info.velocity.x * 0.12;
     goTo(Math.round(projected / step) * step);
   }
@@ -67,16 +76,17 @@ export default function SlidableRail({ wrapClassName, railClassName, visibleCoun
         drag={count > 1 ? 'x' : false}
         dragConstraints={{ left: maxX, right: 0 }}
         dragElastic={0.08}
-        onDragStart={() => {
-          draggedRef.current = true;
-          setIsDragging(true);
+        // Clears any flag left over from a previous gesture, so a stale
+        // "was dragged" can never swallow a later, unrelated click.
+        onPointerDownCapture={() => {
+          draggedRef.current = false;
         }}
+        onDragStart={() => setIsDragging(true)}
         onDragEnd={handleDragEnd}
         onClickCapture={(e) => {
           if (draggedRef.current) {
             e.preventDefault();
             e.stopPropagation();
-            draggedRef.current = false;
           }
         }}
       >

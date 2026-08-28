@@ -3,6 +3,8 @@ import { motion, useMotionValue, animate, useReducedMotion } from 'framer-motion
 import { api } from '../lib/api';
 
 const AUTOPLAY_MS = 2000;
+// See SlidableRail: below this much travel a gesture is a click, not a drag.
+const DRAG_SLOP = 6;
 
 export default function BannerCarousel() {
   const [banners, setBanners] = useState(null); // null = loading
@@ -64,6 +66,9 @@ export default function BannerCarousel() {
   function handleDragEnd(_, info) {
     setPaused(false);
     setIsDragging(false);
+    // Only swallow the banner's link click if the pointer really moved --
+    // otherwise a plain tap on a banner was eaten and needed a second tap.
+    draggedRef.current = Math.abs(info.offset.x) > DRAG_SLOP;
     const projected = x.get() + info.velocity.x * 0.15;
     setIndex(Math.max(0, Math.min(banners.length - 1, Math.round(-projected / step))));
   }
@@ -77,8 +82,10 @@ export default function BannerCarousel() {
         drag={banners.length > 1 ? 'x' : false}
         dragConstraints={{ left: maxX, right: 0 }}
         dragElastic={0.1}
+        onPointerDownCapture={() => {
+          draggedRef.current = false;
+        }}
         onDragStart={() => {
-          draggedRef.current = true;
           setIsDragging(true);
           setPaused(true);
         }}
@@ -92,10 +99,7 @@ export default function BannerCarousel() {
                 aria-label="View offer"
                 draggable={false}
                 onClickCapture={(e) => {
-                  if (draggedRef.current) {
-                    e.preventDefault();
-                    draggedRef.current = false;
-                  }
+                  if (draggedRef.current) e.preventDefault();
                 }}
               >
                 <img src={b.image} alt="" loading={i === 0 ? 'eager' : 'lazy'} draggable={false} />
