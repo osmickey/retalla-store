@@ -70,13 +70,13 @@ function SectionHead({ eyebrow, title, href, linkLabel = 'View all', align = 'le
 
 /* ============================== 1. HERO ============================== */
 
-function Hero({ products }) {
+function Hero() {
   const reduceMotion = useReducedMotion();
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  // Deliberately small ranges -- §9 asks for parallax that stays comfortable.
-  const artY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 60]);
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 18]);
+  // Deliberately small ranges -- parallax that stays comfortable to read over.
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 26]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.85], [1, reduceMotion ? 1 : 0.35]);
 
   const [hero, setHero] = useState(undefined); // undefined = loading
 
@@ -110,97 +110,115 @@ function Hero({ products }) {
     href: hero?.secondaryLink || HERO_COPY.secondaryCta.href,
   };
 
-  // Real product photography, not decorative shapes. Falls back to the
-  // admin hero image when one is set.
-  const art = hero?.image ? [hero.image] : (products || []).slice(0, 3).map((p) => p.image);
+  // An admin-set hero image still renders as a full-bleed backdrop, but the
+  // section no longer borrows product photography to fill space -- with no
+  // image set it stands on typography alone.
+  const backdrop = hero?.image || null;
 
   const stagger = (i) => ({
-    initial: reduceMotion ? false : { opacity: 0, y: 22 },
+    initial: reduceMotion ? false : { opacity: 0, y: 24 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: reduceMotion ? 0 : 0.8, ease: EASE, delay: reduceMotion ? 0 : 0.08 * i },
+    transition: { duration: reduceMotion ? 0 : 0.85, ease: EASE, delay: reduceMotion ? 0 : 0.09 * i },
   });
 
-  return (
-    <section className="hero" ref={ref}>
-      <div className="container hero-inner">
-        <motion.div className="hero-copy" style={{ y: copyY }}>
-          <motion.span className="hero-eyebrow" {...stagger(0)}>
-            {badge || HERO_COPY.eyebrow}
-          </motion.span>
-          <motion.h1 {...stagger(1)}>
-            {title}
-            {accent && (
-              <>
-                {' '}
-                <em>{accent}</em>
-              </>
-            )}
-          </motion.h1>
-          <motion.p {...stagger(2)}>{subtitle}</motion.p>
-          <motion.div className="hero-actions" {...stagger(3)}>
-            <a href={primary.href} className="btn btn-primary btn-arrow">
-              {primary.label} <span aria-hidden="true">→</span>
-            </a>
-            <a href={secondary.href} className="btn btn-quiet">
-              {secondary.label}
-            </a>
-          </motion.div>
-          <motion.ul className="hero-trust" {...stagger(4)}>
-            <li>
-              <Icon name="truck" size={15} /> Free shipping over Rs. 499
-            </li>
-            <li>
-              <Icon name="return" size={15} /> 7-day returns
-            </li>
-            <li>
-              <Icon name="wallet" size={15} /> Cash on delivery
-            </li>
-          </motion.ul>
-        </motion.div>
+  // The headline reveals word by word from behind a mask -- the one piece of
+  // real choreography on the page, and the reason the rest stays quiet.
+  const words = `${title}${accent ? ` ${accent}` : ''}`.trim().split(' ');
+  const accentFrom = accent ? words.length - accent.trim().split(' ').length : -1;
 
-        <motion.div className="hero-art" style={{ y: artY }} aria-hidden="true">
-          {art.length > 0 ? (
-            art.slice(0, 3).map((src, i) => (
-              <motion.figure
-                key={src}
-                className={`hero-art-${i + 1}`}
-                initial={reduceMotion ? false : { opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: reduceMotion ? 0 : 1.1, ease: EASE, delay: reduceMotion ? 0 : 0.1 + i * 0.12 }}
+  return (
+    <section className={`hero${backdrop ? ' hero--image' : ''}`} ref={ref}>
+      {backdrop && (
+        <motion.div
+          className="hero-backdrop"
+          aria-hidden="true"
+          initial={reduceMotion ? false : { opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: reduceMotion ? 0 : 1.4, ease: EASE }}
+          style={{ backgroundImage: `url(${backdrop})` }}
+        />
+      )}
+      <motion.div className="container hero-inner" style={{ y: copyY, opacity: copyOpacity }}>
+        <motion.span className="hero-eyebrow" {...stagger(0)}>
+          {badge || HERO_COPY.eyebrow}
+        </motion.span>
+
+        <h1 className="hero-title">
+          {words.map((word, i) => (
+            <span className="hero-word" key={`${word}-${i}`}>
+              <motion.span
+                className={i >= accentFrom && accentFrom !== -1 ? 'hero-word-accent' : undefined}
+                initial={reduceMotion ? false : { y: '105%' }}
+                animate={{ y: '0%' }}
+                transition={{ duration: reduceMotion ? 0 : 0.9, ease: EASE, delay: reduceMotion ? 0 : 0.12 + i * 0.06 }}
               >
-                <img src={src} alt="" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
-              </motion.figure>
-            ))
-          ) : (
-            <div className="hero-art-empty" />
-          )}
+                {word}
+              </motion.span>
+            </span>
+          ))}
+        </h1>
+
+        <motion.p className="hero-sub" {...stagger(3)}>
+          {subtitle}
+        </motion.p>
+        <motion.div className="hero-actions" {...stagger(4)}>
+          <a href={primary.href} className="btn btn-primary btn-arrow">
+            {primary.label} <span aria-hidden="true">→</span>
+          </a>
+          <a href={secondary.href} className="btn btn-quiet">
+            {secondary.label}
+          </a>
         </motion.div>
-      </div>
+        <motion.ul className="hero-trust" {...stagger(5)}>
+          <li>
+            <Icon name="truck" size={15} /> Free shipping over Rs. 499
+          </li>
+          <li>
+            <Icon name="return" size={15} /> 7-day returns
+          </li>
+          <li>
+            <Icon name="wallet" size={15} /> Cash on delivery
+          </li>
+        </motion.ul>
+      </motion.div>
     </section>
   );
 }
 
 /* ======================== 2. FEATURED CATEGORIES ======================== */
 
-// Editorial rather than a uniform grid (§12): the first tile runs tall beside
-// a stacked pair, then the rest fall into a quieter row.
-const FEATURED_CATS = CATEGORIES.slice(0, 3);
-const SECONDARY_CATS = CATEGORIES.slice(3, 7);
-
-function CategoryCard({ cat, size, delay }) {
+// One evenly-weighted grid rather than the previous large-tile-plus-stack
+// arrangement: at 340px tall with an oversized icon, that big tile dominated
+// the page and read as heavy rather than editorial. Equal, lighter cards let
+// all nine categories show and keep the emphasis on the products below.
+function CategoryCard({ cat, index }) {
   const reduceMotion = useReducedMotion();
+
   return (
-    <motion.div className={`cat-card cat-card--${size}`} {...reveal(reduceMotion, delay)}>
+    <motion.div
+      className="cat-card"
+      initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2, margin: '0px 0px -50px 0px' }}
+      transition={{
+        duration: reduceMotion ? 0 : 0.55,
+        ease: EASE,
+        // Capped so the last cards in a 9-item grid don't lag noticeably
+        // behind the first.
+        delay: reduceMotion ? 0 : Math.min(index, 8) * 0.045,
+      }}
+      whileHover={reduceMotion ? undefined : { y: -4 }}
+    >
       <Link to={`/shop.html?category=${encodeURIComponent(cat)}`}>
-        <span className="cat-card-media">
-          <Icon name={CATEGORY_ICONS[cat]} size={size === 'lg' ? 44 : 28} />
+        <span className="cat-card-icon">
+          <Icon name={CATEGORY_ICONS[cat]} size={20} />
         </span>
-        <span className="cat-card-body">
+        <span className="cat-card-text">
           <span className="cat-card-name">{cat}</span>
-          {size === 'lg' && <span className="cat-card-blurb">{CATEGORY_BLURBS[cat]}</span>}
-          <span className="cat-card-arrow" aria-hidden="true">
-            →
-          </span>
+          <span className="cat-card-blurb">{CATEGORY_BLURBS[cat]}</span>
+        </span>
+        <span className="cat-card-arrow" aria-hidden="true">
+          →
         </span>
       </Link>
     </motion.div>
@@ -211,17 +229,9 @@ function FeaturedCategories() {
   return (
     <section className="section" id="categories-section">
       <SectionHead eyebrow="Browse" title="Shop by category" href="/shop.html" />
-      <div className="cat-editorial">
-        <CategoryCard cat={FEATURED_CATS[0]} size="lg" delay={0} />
-        <div className="cat-editorial-stack">
-          {FEATURED_CATS.slice(1).map((c, i) => (
-            <CategoryCard key={c} cat={c} size="sm" delay={0.06 * (i + 1)} />
-          ))}
-        </div>
-      </div>
-      <div className="cat-row">
-        {SECONDARY_CATS.map((c, i) => (
-          <CategoryCard key={c} cat={c} size="xs" delay={0.04 * i} />
+      <div className="cat-grid">
+        {CATEGORIES.map((cat, i) => (
+          <CategoryCard key={cat} cat={cat} index={i} />
         ))}
       </div>
     </section>
@@ -601,7 +611,7 @@ export default function HomePage() {
 
   return (
     <>
-      <Hero products={bestsellers.data} />
+      <Hero />
       <main className="home-main">
         <div className="container">
           <BannerCarousel />
@@ -614,6 +624,7 @@ export default function HomePage() {
             state={bestsellers}
             wishlistIds={wishlistIds}
           />
+          <LiveVideoSection />
         </div>
 
         <BrandStory image={storyImage} />
@@ -634,7 +645,6 @@ export default function HomePage() {
             state={newest}
             wishlistIds={wishlistIds}
           />
-          <LiveVideoSection />
           <Benefits />
           <SocialProof />
           <ShopTheLook products={featured.data || bestsellers.data} />

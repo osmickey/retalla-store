@@ -3,6 +3,7 @@ import StorefrontLayout from './layouts/StorefrontLayout';
 import AuthLayout from './layouts/AuthLayout';
 import ToastHost from './components/ToastHost';
 import ErrorBoundary from './components/ErrorBoundary';
+import ScrollToTop from './components/ScrollToTop';
 import CustomerServicePage from './pages/CustomerServicePage';
 import ShippingReturnsPage from './pages/ShippingReturnsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
@@ -22,6 +23,7 @@ import NotFoundPage from './pages/NotFoundPage';
 export default function App() {
   return (
     <>
+      <ScrollToTop />
       <ToastHost />
       <ErrorBoundary>
         <Routes>

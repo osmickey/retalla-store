@@ -576,86 +576,119 @@ ul { margin: 0; padding: 0; list-style: none; }
   .shop-filter-btn { display: inline-flex; }
 }
 
-/* ===== Homepage: editorial hero =====
-   Replaces the previous animated purple/pink gradient with blurred orbs and
-   perpetually floating icon tiles. That treatment fought the ink/gold/Fraunces
-   identity used everywhere else, and it was hidden entirely below 751px, so
-   mobile visitors got no hero at all. This version is typography-led, uses
-   real product photography, and works at every width. */
+/* ===== Homepage: typographic hero =====
+   Product photography was pulled out of this section: borrowing best-seller
+   images to fill a right-hand column made the hero look like another product
+   shelf, and repeated imagery that already appears further down the page.
+   The hero now stands on type alone, centred, with a masked word-by-word
+   reveal as the page's one piece of real choreography. An admin-set hero
+   image still renders, as a full-bleed backdrop rather than a collage. */
 .hero {
   position: relative;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
   overflow: hidden;
+  isolation: isolate;
 }
 /* Reserves roughly the hero's height while /hero resolves, so the sections
    below don't jump upward on first paint (CLS). */
-.hero-placeholder { min-height: 58vh; background: var(--paper); border-bottom: 1px solid var(--line); }
+.hero-placeholder { min-height: 52vh; background: var(--paper); border-bottom: 1px solid var(--line); }
+
+/* Two hairlines converging on the centre column -- enough structure that the
+   space around the type reads as composed rather than empty. */
+.hero::before,
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+  z-index: -1;
+}
+.hero::before { left: max(24px, calc(50% - 30rem)); }
+.hero::after { right: max(24px, calc(50% - 30rem)); }
+
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-size: cover;
+  background-position: center;
+}
+/* Scrim keeps the headline legible over whatever image an admin uploads. */
+.hero--image .hero-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(250, 249, 246, 0.92), rgba(250, 249, 246, 0.78));
+}
+.hero--image::before, .hero--image::after { display: none; }
 
 .hero-inner {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: clamp(32px, 5vw, 80px);
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding-top: clamp(44px, 6vw, 100px);
-  padding-bottom: clamp(44px, 6vw, 100px);
+  text-align: center;
+  max-width: 60rem;
+  padding-top: clamp(52px, 7vw, 108px);
+  padding-bottom: clamp(52px, 7vw, 108px);
 }
 .hero-eyebrow {
   display: inline-block;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   color: var(--gold-deep);
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
-.hero h1 {
-  font-size: clamp(2.3rem, 4.6vw + 0.7rem, 4.2rem);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+
+/* Each word gets a clipping wrapper so its inner span can slide up from
+   below the baseline without bleeding into the line above. */
+.hero-title {
+  font-size: clamp(2.4rem, 5.6vw + 0.6rem, 4.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
   color: var(--ink);
-  margin-bottom: 20px;
-  text-wrap: balance;
+  margin: 0 0 22px;
+  max-width: 18ch;
 }
-.hero h1 em { font-style: italic; font-weight: 500; color: var(--gold-deep); }
-.hero-copy p {
-  font-size: clamp(0.95rem, 0.35vw + 0.86rem, 1.06rem);
+.hero-word {
+  display: inline-flex;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Padding gives descenders and the italic's overhang room inside the mask;
+     the matching negative margin keeps word spacing visually correct. */
+  padding: 0 0.06em 0.12em;
+  margin: 0 -0.02em;
+}
+.hero-word > span { display: block; will-change: transform; }
+.hero-word-accent { font-style: italic; font-weight: 500; color: var(--gold-deep); }
+
+.hero-sub {
+  font-size: clamp(0.98rem, 0.4vw + 0.88rem, 1.12rem);
   line-height: 1.7;
   color: var(--text-soft);
-  max-width: 34rem;
-  margin: 0 0 30px;
+  max-width: 40ch;
+  margin: 0 0 32px;
 }
-.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 34px; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 38px; }
 .hero-trust {
   display: flex;
-  gap: clamp(14px, 2vw, 26px);
+  gap: clamp(14px, 2.2vw, 30px);
   flex-wrap: wrap;
-  padding-top: 22px;
+  justify-content: center;
+  padding-top: 24px;
   border-top: 1px solid var(--line);
   font-size: 0.82rem;
   color: var(--text-soft);
+  width: 100%;
+  max-width: 34rem;
 }
 .hero-trust li { display: inline-flex; align-items: center; gap: 7px; }
 .hero-trust svg { color: var(--gold-deep); flex-shrink: 0; }
 
-/* Offset composition built from real product images rather than decorative
-   shapes -- three overlapping frames on a 6x6 grid. */
-.hero-art {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(6, 1fr);
-  aspect-ratio: 1 / 1;
-}
-.hero-art figure { margin: 0; overflow: hidden; border-radius: var(--radius); background: var(--surface); }
-.hero-art img { width: 100%; height: 100%; object-fit: cover; }
-.hero-art-1 { grid-column: 1 / 5; grid-row: 1 / 6; box-shadow: var(--shadow); }
-.hero-art-2 { grid-column: 4 / 7; grid-row: 4 / 7; box-shadow: var(--shadow-lg); }
-.hero-art-3 { grid-column: 5 / 7; grid-row: 1 / 3; box-shadow: var(--shadow-sm); }
-.hero-art-empty {
-  grid-column: 1 / -1; grid-row: 1 / -1;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-}
 
 .home-main > .container > .section:first-child { margin-top: 40px; }
 
@@ -734,57 +767,73 @@ ul { margin: 0; padding: 0; list-style: none; }
 .btn-invert { background: var(--paper); color: var(--ink); }
 .btn-invert:hover { background: #fff; transform: translateY(-2px); }
 
-/* ===== Featured categories (editorial layout) ===== */
-.cat-editorial {
+/* ===== Featured categories =====
+   Previously a 340px-tall feature tile with a 44px icon beside a stacked
+   pair. That block dominated the viewport and read as heavy rather than
+   editorial, so it's now one evenly-weighted grid: lighter type, a small
+   tinted icon, and room for all nine categories instead of seven. */
+.cat-grid {
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
 }
-.cat-editorial-stack { display: grid; grid-template-rows: 1fr 1fr; gap: 16px; }
-.cat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-
 .cat-card > a {
   position: relative;
   display: flex;
+  align-items: center;
+  gap: 14px;
   height: 100%;
+  padding: 18px 44px 18px 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  overflow: hidden;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
-.cat-card > a:hover { border-color: var(--gold); box-shadow: var(--shadow); transform: translateY(-3px); }
-.cat-card-media {
-  display: flex; align-items: center; justify-content: center;
+.cat-card > a:hover { border-color: var(--gold); box-shadow: var(--shadow-sm); }
+.cat-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--paper);
   color: var(--gold-deep);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 0.3s ease, color 0.3s ease;
 }
-.cat-card > a:hover .cat-card-media { transform: scale(1.08); }
-.cat-card-body { display: flex; flex-direction: column; }
-.cat-card-name { font-family: var(--font-display); color: var(--ink); letter-spacing: -0.01em; }
-.cat-card-blurb { color: var(--text-soft); font-size: 0.88rem; line-height: 1.6; margin-top: 8px; max-width: 26rem; }
-.cat-card-arrow { color: var(--gold-deep); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-.cat-card > a:hover .cat-card-arrow { transform: translateX(5px); }
-
-/* Large tile: media band above, copy below. */
-.cat-card--lg > a { flex-direction: column; min-height: 340px; padding: 0; }
-.cat-card--lg .cat-card-media { flex: 1; background: var(--paper); }
-.cat-card--lg .cat-card-body { padding: 24px 26px 26px; }
-.cat-card--lg .cat-card-name { font-size: 1.5rem; }
-.cat-card--lg .cat-card-arrow { margin-top: 14px; font-size: 1.1rem; }
-
-/* Small + extra-small tiles: media beside copy. */
-.cat-card--sm > a, .cat-card--xs > a { align-items: center; gap: 16px; padding: 20px 22px; }
-.cat-card--sm .cat-card-media, .cat-card--xs .cat-card-media {
-  width: 52px; height: 52px; flex-shrink: 0;
-  background: var(--paper); border-radius: 50%;
+.cat-card > a:hover .cat-card-icon { background: var(--ink); color: var(--gold); }
+.cat-card-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cat-card-name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
 }
-.cat-card--sm .cat-card-body, .cat-card--xs .cat-card-body { flex: 1; min-width: 0; }
-.cat-card--sm .cat-card-name { font-size: 1.05rem; }
-.cat-card--xs .cat-card-name { font-size: 0.95rem; }
-.cat-card--sm .cat-card-arrow, .cat-card--xs .cat-card-arrow { position: absolute; right: 20px; top: 50%; margin-top: -10px; }
-
+.cat-card-blurb {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-soft);
+  /* Two lines max so uneven blurb lengths can't stagger the row heights. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cat-card-arrow {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  margin-top: -0.6em;
+  color: var(--gold-deep);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cat-card > a:hover .cat-card-arrow,
+.cat-card > a:focus-visible .cat-card-arrow { opacity: 1; transform: translateX(0); }
 /* ===== Product rails (best sellers / new arrivals) ===== */
 .product-rail { position: relative; }
 .product-shelf {
@@ -2102,8 +2151,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   /* Homepage motion is driven by framer-motion, which already branches on
      useReducedMotion() in JS. These rules cover the CSS-only transitions
      (hover zooms, overlay reveals, arrow nudges) that JS never sees. */
-  .hero-art img, .brand-story-media img, .showcase-media img, .look-tile img,
-  .cat-card-media, .cat-card-arrow, .link-arrow span, .btn-arrow span,
+  .hero-backdrop, .brand-story-media img, .showcase-media img, .look-tile img,
+  .cat-card-icon, .cat-card-arrow, .link-arrow span, .btn-arrow span,
   .benefit-icon, .look-tile-overlay, .footer-col a::after {
     animation: none !important;
     transition: none !important;
@@ -2188,13 +2237,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 @media (max-width: 960px) {
   /* Hero stacks copy over art (the art is real product photography and worth
      keeping at this width -- the old hero hid its visual here entirely). */
-  .hero-inner { grid-template-columns: 1fr; gap: 36px; }
-  .hero-art { max-width: 520px; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .brand-story-inner, .showcase-inner, .newsletter-inner { grid-template-columns: 1fr; }
   /* Image after the copy on the story band reads better once stacked. */
   .brand-story-media { order: 2; aspect-ratio: 16 / 9; }
-  .cat-editorial { grid-template-columns: 1fr; }
-  .cat-row { grid-template-columns: repeat(2, 1fr); }
   .benefits { grid-template-columns: repeat(2, 1fr); }
   .reviews-row { grid-template-columns: 1fr; }
   .look-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 150px; }
@@ -2290,19 +2336,36 @@ ul { margin: 0; padding: 0; list-style: none; }
 
   /* --- Homepage at phone widths --- */
   .announcement-bar-inner { min-height: 34px; font-size: 0.74rem; padding-left: 12px; padding-right: 12px; }
-  .hero-inner { padding-top: 32px; padding-bottom: 36px; gap: 28px; }
-  .hero-eyebrow { margin-bottom: 14px; }
-  .hero h1 { margin-bottom: 14px; }
-  .hero-copy p { margin-bottom: 22px; }
-  .hero-actions { gap: 10px; margin-bottom: 24px; }
+  .hero-inner { padding-top: 40px; padding-bottom: 44px; }
+  .hero::before, .hero::after { display: none; }
+  .hero-eyebrow { margin-bottom: 14px; letter-spacing: 0.18em; }
+  .hero-title { margin-bottom: 14px; max-width: 14ch; }
+  .hero-sub { margin-bottom: 24px; }
+  .hero-actions { gap: 10px; margin-bottom: 26px; width: 100%; }
   .hero-actions .btn { flex: 1 1 100%; }
-  .hero-trust { gap: 10px 18px; padding-top: 18px; font-size: 0.78rem; }
-  .hero-art { max-width: none; }
+  .hero-trust {
+    gap: 10px;
+    padding-top: 18px;
+    font-size: 0.78rem;
+    /* Stacked and left-aligned reads better than three centred fragments
+       wrapping unevenly at this width. */
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
   .brand-story, .campaign { margin: 44px 0; }
   .newsletter { margin-top: 44px; }
-  .cat-row { grid-template-columns: 1fr; }
-  .cat-card--lg > a { min-height: 260px; }
-  .cat-card--lg .cat-card-name { font-size: 1.25rem; }
+  /* Kept at two columns on phones: nine single-column rows would push the
+     product rails a long way down the page. */
+  .cat-grid { gap: 10px; }
+  .cat-card > a { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 14px 16px; }
+  .cat-card-icon { width: 36px; height: 36px; }
+  .cat-card-name { font-size: 0.88rem; }
+  /* The blurb is the first thing to go at this size -- the category name and
+     icon already carry the meaning, and two lines of 0.8rem copy per card
+     across nine cards is just noise. */
+  .cat-card-blurb { display: none; }
+  .cat-card-arrow { display: none; }
   .benefits { grid-template-columns: 1fr; }
   .benefit { padding: 20px 18px; }
   /* Two full cards plus a peek of the third signals the rail scrolls. */
