@@ -14,6 +14,7 @@ const heroRoutes = require('./routes/heroRoutes');
 const promoTileRoutes = require('./routes/promoTileRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const addressRoutes = require('./routes/addressRoutes');
+const subscriberRoutes = require('./routes/subscriberRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/hero', heroRoutes);
 app.use('/api/promo-tiles', promoTileRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/addresses', addressRoutes);
+app.use('/api/subscribers', subscriberRoutes);
 
 // --- React SPA (web/) -- incremental page migration -------------------------
 // Allowlist of URL paths served by the Vite-built React app in web/dist

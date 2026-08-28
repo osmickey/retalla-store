@@ -8,6 +8,9 @@ import { useAuth } from '../lib/auth';
 import { CATEGORIES } from '../lib/config';
 import SidePanel from './SidePanel';
 import SearchPanel from './SearchPanel';
+import AnnouncementBar from './AnnouncementBar';
+
+const HOME_PATHS = ['/', '/index.html'];
 
 // Links to pages outside this app's route table (/index.html, /account.html,
 // /customer-service.html, etc.) stay plain <a href> on purpose. Links to pages
@@ -114,8 +117,14 @@ function FullNavbar() {
   const activeCategory = location.pathname === '/shop.html' ? params.get('category') : null;
   const activeSort = location.pathname === '/shop.html' ? params.get('sort') : null;
 
+  // Scoped to the homepage on purpose -- the redesign brief covers home only,
+  // so the bar doesn't appear on Shop/Product/Cart/Account. It sits outside
+  // (above) the sticky nav so it scrolls away rather than sticking too.
+  const isHome = HOME_PATHS.includes(location.pathname);
+
   return (
     <>
+      {isHome && <AnnouncementBar />}
       <nav className={`navbar${scrolled ? ' is-scrolled' : ''}`}>
         <div className="container">
           <button
